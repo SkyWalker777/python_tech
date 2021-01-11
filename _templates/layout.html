@@ -1,0 +1,25 @@
+{% extends "!layout.html" %}
+  {% block footer %} {{ super() }}
+
+  <style>
+         .wy-nav-content { max-width: none; }
+         .rst-versions.shift-up {
+							    height: auto;
+							    display: none;
+							    max-height: 100%;
+							    overflow-y: scroll;
+							}
+		.rst-versions {
+					    position: fixed;
+					    display: none;
+					    bottom: 0;
+					    left: 0;
+					    width: 300px;
+					    color: #fcfcfc;
+					    background: #1f1d1d;
+					    font-family: "Lato","proxima-nova","Helvetica Neue",Arial,sans-serif;
+					    z-index: 400;
+					}
+  </style>
+
+{% endblock %}
