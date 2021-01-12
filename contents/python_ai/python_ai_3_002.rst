@@ -369,6 +369,127 @@ for 列表渲染
 
 * index
 
+.. code-block:: html
+	:linenos:
+
+	<ol>
+	  <li v-for="(todo,index) in todos">
+	    {{ todo.text }}-{{index}}
+	  </li>
+	</ol>
+
+效果:
+
+::
+
+	1. 学习 JavaScript-0
+	2. 学习 Vue-1
+	3. 整个牛X项目-2
+
+* 对象
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	  <ul>
+	    <li v-for="value in object">
+	      {{ value }}
+	    </li>
+	  </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	    object: {
+	      title: 'How to do lists in Vue',
+	      author: 'Jane Doe',
+	      publishedAt: '2016-04-10'
+	    }
+	  }
+	})
+	</script>
+	</html>
+
+效果:
+
+::
+
+	How to do lists in Vue
+	Jane Doe
+	2016-04-10
+
+* 对象列表
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	   <ul>
+	    <li v-for="item in items">
+	      {{ item.title }}~~~{{item.author}}~~~{{item.publishedAt}}
+	    </li>
+	  </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	    items: [
+	       {
+	        title: 'Vue',
+	        author: 'Jane Doe',
+	        publishedAt: '2016-04-10'
+	      },
+	      {
+	        title: 'python',
+	        author: 'Ricky',
+	        publishedAt: '2019-04-10'
+	      },
+	      {
+	        title: 'itcast',
+	        author: 'itcast',
+	        publishedAt: '2006-05-08'
+	      }
+	    ]
+	  }
+	})
+	</script>
+	</html>
+
+效果:
+
+::
+
+	Vue~~~Jane Doe~~~2016-04-10
+	python~~~Ricky~~~2019-04-10
+	itcast~~~itcast~~~2006-05-08
+
+methods 事件
+==================================================================================
+
+
 
 
 .. |image0| image:: /_static/python_ai/data-bind.webp
