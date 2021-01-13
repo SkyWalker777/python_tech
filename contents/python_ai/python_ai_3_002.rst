@@ -27,7 +27,7 @@ Vue.js是前端三大新框架：Angular.js、React.js、Vue.js之一，Vue.js�
 | 可视化学习网站: ``https://scrimba.com/playlist/pXKqta``
 
 第一个 Vue 应用
-==================================================================================
+**********************************************************************************
 
 | 文档地址: ``https://cn.vuejs.org/v2/guide/#%E8%B5%B7%E6%AD%A5``
 | 官方提供了两个包
@@ -102,7 +102,7 @@ Vue.js是前端三大新框架：Angular.js、React.js、Vue.js之一，Vue.js�
 	使用浏览器开发者模式动态修改 message 的值: app.$data.message='lilizhao'
 
 data(数据)
-==================================================================================
+**********************************************************************************
 
 * 基本语法
 
@@ -210,7 +210,7 @@ Mustache 标签将会被替代为对应数据对象上message属性的值。无�
 	v-bind: 简写 :
 
 if 条件渲染
-==================================================================================
+**********************************************************************************
 
 通过条件指令可以控制元素的创建(显示)或者销毁(隐藏)
 
@@ -320,7 +320,7 @@ if 条件渲染
 	| 注意在vue中使用v-show, 原来的css代码不能设置display属性, 会导致冲突
 
 for 列表渲染
-==================================================================================
+**********************************************************************************
 
 | v-for 指令可以绑定数组的数据来渲染一个项目列表
 | v-for 指令需要使用 item in items 形式的特殊语法，items 是源数据数组并且 item 是数组元素迭代的别名。
@@ -487,17 +487,398 @@ for 列表渲染
 	itcast~~~itcast~~~2006-05-08
 
 methods 事件
-==================================================================================
+**********************************************************************************
 
+可以用v-on指令监听 DOM 事件，并在触发时运行一些 JavaScript 代码。
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	  <button v-on:click="counter += 1">Add 1</button>
+	  <p>The button above has been clicked {{ counter }} times.</p>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	    counter:0
+	  }
+	})
+	</script>
+	</html>
+
+|image3|
+
+* 事件处理方法
+
+然而许多事件处理逻辑会更为复杂，所以直接把 JavaScript 代码写在v-on指令中是不可行的。因此v-on还可以接收一个需要调用的方法名称
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	  <button v-on:click="add">Add 1</button>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	    counter:0
+	  },
+	  methods:{
+	    add:function(){
+	      counter+=1
+	      alert(this.counter)
+	    }
+	  }
+	})
+	</script>
+	</html>
+
+* 事件处理方法传递参数
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	  <button v-on:click="addnum(counter)">Add {{counter}}</button> 
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	    counter:1
+	  },
+	  methods:{
+	    addnum:function(num){
+	      this.counter = num+this.counter
+	      alert(this.counter)
+	    }
+	  }
+	})
+	</script>
+	</html>
+
+.. tip::
+
+	v-on: 简写 @
+
+model 表单输入绑定(双向绑定数据)
+**********************************************************************************
+
+::
+
+	单行文本框
+	多行文本框
+	单选框
+	多选框
+	下拉框
+
+	参考地址: https://cn.vuejs.org/v2/guide/forms.html
+
+可以用v-model指令在表单<input>、<textarea>及<select>元素上创建双向数据绑定。它会根据控件类型自动选取正确的方法来更新元素。尽管有些神奇。它负责监听用户的输入事件以更新数据，并对一些极端场景进行一些特殊处理。
+
+.. note::
+
+	v-model会忽略所有表单元素的value、checked、selected特性的初始值而总是将 Vue 实例的数据作为数据来源。你应该通过 JavaScript 在组件的data选项中声明初始值
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	    <table border="1">
+	      <tr><td>用 户 名</td><td><input type="text" v-model="username" @blur="checkusername"> </td></tr>
+	      <tr><td>密码</td><td><input type="password" v-model="password1"> </td></tr>
+	      <tr><td>确认密码</td><td><input type="password" v-model="password2"></td></tr>
+	      <tr><td>性别</td>
+	        <td>
+	          男<input type="radio" name="sex"  value="boy" v-model="sex"> 
+	          女 <input type="radio" name="sex" value="girl" v-model="sex"></td>
+	        </tr>
+	      <tr><td>爱好</td>
+	        <td>
+	          足球 <input type="checkbox" name="like" value="足球" v-model="like"> 
+	          篮球 <input type="checkbox" name="like" value="篮球" v-model="like">
+	          兵乓球<input type="checkbox" name="like" value="兵乓球" v-model="like"> 
+	        </td>
+	      </tr>
+	      <tr><td>所在城市</td>
+	        <td>
+	          <select name="city" v-model="city">
+	            <option value="北京">北京</option>
+	            <option value="上海">上海</option>
+	            <option value="广州">广州</option>
+	            <option value="深圳">深圳</option>
+	          </select> 
+	        </td>
+	      </tr>
+	      <tr><td>个人简介</td><td><textarea name="desc" v-model="desc"></textarea> </td></tr>
+	    </table>
+	    <button @click="register">注册</button>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	      username:'',
+	      password1:'',
+	      password2:'',
+	      sex:'',
+	      like:[],
+	      city:'',
+	      desc:''
+
+	  },
+	  methods:{
+	    register:function(){
+
+	        alert(this.username+this.password1+this.password2+this.sex+this.like+this.city+this.desc)
+	    },
+	    checkusername:function(){
+	      alert(this.username)
+	    }
+	  }
+	})
+	</script>
+	</html>
+
+效果
+
+|image4|
+
+Todolist 案例
+**********************************************************************************
+
+|image5|
+
+准备工作
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	   <input type="text"> <button>添加</button>
+	   <hr/>
+	   <ul>
+	     <li>1</li>
+	     <li>2</li>
+	     <li>3</li>
+	   </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	      items:['学习Vue','学习Django基础','学习Django前台'],
+	  },
+	  methods:{
+
+	  }
+	})
+	</script>
+	</html>
+
+* 列表数据渲染
+
+.. code-block:: html
+	:linenos:
+
+	<ul>
+	 <li v-for="item in items">{{item}}</li>
+	</ul>
+
+* 绑定数据能够添加到列表中
+
+.. code-block:: html
+	:linenos:
+
+	<body>
+	<div id="app">
+	   <input type="text" v-model="newitem"> <button @click="addNetItem">添加</button>
+	   <hr/>
+	   <ul>
+	     <li v-for="item in items">{{item}}</li>
+	   </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	      items:['学习Vue','学习Django基础','学习Django前台'],
+	      newitem:'',
+	  },
+	  methods:{
+	      addNetItem:function(){
+	        this.items.push(this.newitem);
+	        this.newitem='';
+	      }
+	  }
+	})
+	</script>
+	</html>
+
+* 实现删除功能
+
+.. code-block:: html
+	:linenos:
+
+	<div id="app">
+	   <input type="text" v-model="newitem"> <button @click="addNetItem">添加</button>
+	   <hr/>
+	   <ul>
+	     <li v-for="(item,index) in items">
+	      <span>{{item}}</span> 
+	      <a href="javascript:;" @click="deleteItem(index)">删除</a>
+	     </li>
+	   </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	      items:['学习Vue','学习Django基础','学习Django前台'],
+	      newitem:'',
+	  },
+	  methods:{
+	      addNetItem:function(){
+	        this.items.push(this.newitem);
+	        this.newitem='';
+	      },
+	      deleteItem:function(index){
+	        this.items.splice(index,1)
+	      }
+	  }
+	})
+	</script>
+	</html>
+
+* 添加移动按钮,实现移动功能
+
+.. code-block:: html
+	:linenos:
+
+	<!DOCTYPE html>
+	<html>
+	<head>
+	    <meta charset="utf-8">
+	    <title></title>
+	    <!-- 开发环境版本 -->
+	    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	</head>
+	<body>
+	<div id="app">
+	   <input type="text" v-model="newitem"> <button @click="addNetItem">添加</button>
+	   <hr/>
+	   <ul>
+	     <li v-for="(item,index) in items">
+	     <a href="javascript:;" @click="upItem(index)">↑</a>
+	      <span>{{item}}</span> 
+	      <a href="javascript:;" @click="downItem(index)">↓</a>
+	      <a href="javascript:;" @click="deleteItem(index)">删除</a>
+	     </li>
+	   </ul>
+	</div>
+	</body>
+	<script type="text/javascript">
+	var app = new Vue({
+	  el: '#app',
+	  data: {
+	      items:['学习Vue','学习Django基础','学习Django前台'],
+	      newitem:'',
+	  },
+	  methods:{
+	      addNetItem:function(){
+	        this.items.push(this.newitem);
+	        this.newitem='';
+	      },
+	      deleteItem:function(index){
+	        this.items.splice(index,1);
+	      },
+	      upItem:function(index){
+	          current=this.items[index];
+	          this.items.splice(index,1);
+	          this.items.splice(index-1,0,current);
+	      },
+	      downItem:function(index){
+	          current=this.items[index];
+	          this.items.splice(index,1);
+	          this.items.splice(index+1,0,current);
+	      }
+	  }
+	})
+	</script>
+	</html>
+
+ES6 语法
+**********************************************************************************
+
+.. tip::
+
+	ES6标准入门: http://caibaojian.com/es6/
+
+* ES6 语法介绍
 
 
 
 .. |image0| image:: /_static/python_ai/data-bind.webp
 .. |image1| image:: /_static/python_ai/v-if.webp
 .. |image2| image:: /_static/python_ai/show-if.webp
-
-
-
+.. |image3| image:: /_static/python_ai/v-on.png
+.. |image4| image:: /_static/python_ai/input-model.webp
+.. |image5| image:: /_static/python_ai/todo_list.png
 
 
 
