@@ -871,7 +871,162 @@ ES6 语法
 
 * ES6 语法介绍
 
+ES6是JavaScript语言的新版本，它也可以叫做ES2015，之前学习的JavaScript属于ES5，ES6在它的基础上增加了一些语法，ES6是未来JavaScript的趋势，而且vue组件开发中会使用很多的ES6的语法，所以掌握这些常用的ES6语法是必须的。
 
+* 变量声明
+
+var:它是用来声明变量的。如果在方法中声明，则为局部变量；如果在全局中声明，则为全局变量。``var num=10``
+
+|image6|
+
+let:ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
+
+.. code-block:: javascript
+	:linenos:
+
+	{
+	  let a = 10;
+	  var b = 1;
+	}
+
+|image7|
+
+上面代码在代码块之中，分别用let和var声明了两个变量。然后在代码块之外调用这两个变量，结果let声明的变量报错，var声明的变量返回了正确的值。这表明，let声明的变量只在它所在的代码块有效。
+
+::
+
+	for循环的计数器，就很合适使用let命令。
+
+	for (let i = 0; i < 10; i++) {}
+	计数器i只在for循环体内有效，在循环体外引用就会报错。
+
+const:const声明一个只读的常量。一旦声明，常量的值就不能改变。``const PI = 3.1415;``
+
+|image8|
+
+* Javascript对象的写法
+
+ES5的写法
+
+.. code-block:: javascript
+	:linenos:
+
+	var person = { 
+	    name:'itcast',
+	    age:13,
+	    say:function(){
+	        alert('hello')
+	    }
+	}
+
+	person.say()
+
+|image9|
+
+还可以写
+
+.. code-block:: javascript
+	:linenos:
+
+	var person = {};
+	person.name='itheima';
+	person.age=13;
+	person.say = function (){alert('hello')}
+	person.say();
+
+ES6的写法
+
+需要注意的是, 实现简写,有一个前提,必须变量名属性名一致
+
+.. code-block:: javascript
+	:linenos:
+
+	//定义变量
+	var name='itcast';
+	var age=13;
+	//创建对象
+	var person = {
+	    name,
+	    age,
+	    say:function(){
+	        alert('hello');
+	    }
+	};
+	//调用
+	person.say()
+
+|image10|
+
+* ES6 的箭头函数
+
+作用:
+
+::
+
+	定义函数新的方式
+	改变this的指向
+
+定义函数新的方式
+
+.. code-block:: javascript
+	:linenos:
+
+	//无参数,无返回值
+	var say = ()=> {
+	    alert('我是无参数无返回值函数');
+	}
+	//有参数,无返回值
+	var eat = food => {
+	    alert('我喜欢吃'+food);
+	}
+	//有参数,有返回值
+	var total = (num1,num2) => {
+	    return num1+num2;
+	}
+
+改变this的指向
+
+如果层级比较深的时候, this的指向就变成了window, 这时候就可以通过箭头函数解决这个指向的问题
+
+.. code-block:: javascript
+	:linenos:
+
+	var person = {
+	    name:'itcast',
+	    age:13,
+	    say:function(){
+	        alert('my name is ' + this.name);
+	    }
+	}
+	//调用
+	person.say()
+
+实例生命周期
+**********************************************************************************
+
+|image11|
+
+各个生命周期函数的作用
+
+::
+
+	beforeCreate
+		vm对象实例化之前
+	created
+		vm对象实例化之后
+	beforeMount
+		vm将作用标签之前
+	mounted(重要时机初始化数据使用)
+		vm将作用标签之后
+	beforeUpdate
+		数据或者属性更新之前
+	updated
+		数据或者属性更新之后
+
+axios 发送 ajax 请求
+**********************************************************************************
+
+axios github : https://github.com/axios/axios
 
 .. |image0| image:: /_static/python_ai/data-bind.webp
 .. |image1| image:: /_static/python_ai/v-if.webp
@@ -879,12 +1034,12 @@ ES6 语法
 .. |image3| image:: /_static/python_ai/v-on.png
 .. |image4| image:: /_static/python_ai/input-model.webp
 .. |image5| image:: /_static/python_ai/todo_list.png
-
-
-
-
-
-
+.. |image6| image:: /_static/python_ai/var_define.png
+.. |image7| image:: /_static/python_ai/let.png
+.. |image8| image:: /_static/python_ai/const_define.png
+.. |image9| image:: /_static/python_ai/js_object.png
+.. |image10| image:: /_static/python_ai/js_object_6.png
+.. |image11| image:: /_static/python_ai/vue-life.webp
 
 
 
