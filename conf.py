@@ -26,7 +26,7 @@ master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
 project = 'Python 工程师'
-copyright = '2011-2020'
+copyright = '2011-2021'
 author = 'lilizhao'
 
 # The full version, including alpha/beta/rc tags
@@ -72,9 +72,9 @@ html_static_path = ['_static']
 html_search_language = 'zh'
 
 def setup(app):
-    app.add_stylesheet("default.css") # also can be a full URL
-    app.add_javascript("default.js")
-    # app.add_stylesheet("AND_ANOTHER.css")
+    app.add_css_file("default.css") # also can be a full URL
+    app.add_js_file("default.js")
+    # app.add_css_file("AND_ANOTHER.css")
     
 html_additional_pages = {
    #'index': 'header.html',
