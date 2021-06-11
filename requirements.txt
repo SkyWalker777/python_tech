@@ -1,3 +1,4 @@
 recommonmark
 sphinxcontrib-httpdomain
 sphinx_rtd_theme
+sphinx-comments
