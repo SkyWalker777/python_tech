@@ -44,7 +44,8 @@ extensions = [
 
 comments_config = {
    "utterances": {
-      "repo": "lilizhaolilizhao/python_learn"
+      "repo": "lilizhaolilizhao/python_learn",
+      "optional": "config",
    }
 }
 
