@@ -50,6 +50,20 @@ num_op函数一共有四个返回值，但是调用的时候只接收三个返�
 解决方案：修改调用参数的代码，保持接收参数个数与函数返回参数个数一致。 a, b, c, d = num_op(1,2), 这样就可以正确返回了。
 
 
+.. raw:: html
+
+	<script
+	   type="text/javascript"
+	   src="https://utteranc.es/client.js"
+	   async="async"
+	   repo="lilizhaolilizhao/python_learn"
+	   issue-term="pathname"
+	   theme="github-light"
+	   label="💬 comment"
+	   crossorigin="anonymous"
+	/>
+
+
 
 
 
