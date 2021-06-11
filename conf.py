@@ -43,7 +43,10 @@ extensions = [
 ]
 
 comments_config = {
-   "hypothesis": True
+   "utterances": {
+      "repo": "github-org/github-repo",
+      "optional": "config",
+   }
 }
 
 # Add any paths that contain templates here, relative to this directory.
