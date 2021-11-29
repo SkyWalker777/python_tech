@@ -1204,7 +1204,9 @@ Pandas查询数据的简便方法df.query
 
 	df.query("yWendu<=@high_temperature & yWendu>=@low_temperature").head()
 
+.. tip::
 
+	Pandas GUI 神器，自动转代码: "https://blog.csdn.net/SeizeeveryDay/article/details/121173429"
 
 
 
