@@ -1895,7 +1895,7 @@ Selenium 完整案例
 	    # 循环事件单号, 获得相应的订单号
 	    for event_orderid in event_list:
 	        # 临时打开事件单页面, 查找到订单号后关闭
-	        wd.get('http://web.itsv.jd.com/incident/detail?id=' + event_orderid)
+	        wd.get('http://web.itsv.xxx.com/incident/detail?id=' + event_orderid)
 
 	        element = wd.find_element_by_css_selector('#title')
 	        # print(event_orderid + '-----> ' + element.get_attribute('value'))
@@ -1957,7 +1957,7 @@ Selenium 完整案例
 	event_list = []  ## 空列表
 
 	# 打开运营服务台，查看分配的工单, 跳转到登录页面, 输入用户名和密码
-	wd.get('http://web.itsv.jd.com/')
+	wd.get('http://web.itsv.xxx.com/')
 
 	# 获得应用服务台页面句柄
 	yyfwtWin = wd.current_window_handle
@@ -2078,7 +2078,7 @@ Selenium 完整案例
 	        # 对账信息 0.00 -- 0.00 诊断
 	        duizhang_info = wd.find_element_by_xpath('/html/body/div[1]/div/div[2]/div/table/tbody/tr[3]/td[4]').text
 	        if duizhang_info == '0.00 -- 0.00':
-	            wd.get('http://om.jd.com/detail?orderId=' + event_order[1])
+	            wd.get('http://om.xxx.com/detail?orderId=' + event_order[1])
 
 	            # 预售标题栏
 	            yushou_title = wd.find_element_by_xpath('/html/body/div[2]/div[3]/div[12]/table/tbody/tr[1]/td').text
@@ -2091,7 +2091,7 @@ Selenium 完整案例
 
 	    # 赔付金额超过 实付 问题
 	    try:
-	        wd.get('http://rcweb-fm.jd.com/rest/demo/getPayout3?orderId=' + event_order[1])
+	        wd.get('http://rcweb-fm.xxx.com/rest/demo/getPayout3?orderId=' + event_order[1])
 	        match_obj = re.findall('"totalAmount":([0-9.]{0,20})', wd.find_element_by_xpath('/html/body').text)
 	        if match_obj and total_shifu_cost < float(match_obj[0]):
 	            success_flag = True
@@ -2153,7 +2153,7 @@ Selenium 完整案例
 	    # pop 虚拟退款0元问题诊断
 	    if not success_flag:
 	        try:
-	            wd.get('http://rcweb-fm.jd.com/rest/sys/queryAfterSaleDBTable')
+	            wd.get('http://rcweb-fm.xxx.com/rest/sys/queryAfterSaleDBTable')
 	            wd.find_element_by_xpath('/html/body/form/table/tbody/tr/td[4]/input').send_keys(event_order[1])
 	            wd.find_element_by_xpath('/html/body/form/div[2]/div[2]/div[12]/div[1]').click()
 	            # 业务类型 + 退款金额

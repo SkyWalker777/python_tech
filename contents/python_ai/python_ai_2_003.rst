@@ -907,7 +907,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 
 ::
 
-	➜  jd_note git:(master) ✗ python3  -m http.server 9000
+	➜ .xxx.note git:(master) ✗ python3  -m http.server 9000
 	Serving HTTP on 0.0.0.0 port 9000 (http://0.0.0.0:9000/) ...
 	127.0.0.1 - - [15/Nov/2020 17:03:09] "GET / HTTP/1.1" 200 -
 
