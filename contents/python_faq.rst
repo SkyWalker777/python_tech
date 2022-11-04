@@ -39,7 +39,6 @@ ValueError: too many values to unpack (expected 3)
 该bug是由于你所调用的方法返回值个数和你接收参数的个数不一致造成的。比如：
 
 .. code-block:: python
-	:linenos:
 
 	def num_op(x, y):
 		return x+y, x-y, x*y, x/y
@@ -62,6 +61,21 @@ num_op函数一共有四个返回值，但是调用的时候只接收三个返�
 	   label="💬 comment"
 	   crossorigin="anonymous"
 	/>
+
+current limit exceeds maximum limit
+**********************************************************************************
+
+in init_resources resource.setrlimit(resource.RLIMIT_NOFILE, (soft, hard)) ValueError: current limit exceeds maximum limit
+
+.. code-block:: python
+
+	$ ulimit -n -H
+	unlimited
+	$ sysctl kern.maxfilesperproc
+	kern.maxfilesperproc: 10240
+
+	$ sudo sysctl -w kern.maxfilesperproc=20000
+	kern.maxfilesperproc: 10240 -> 20000
 
 
 
