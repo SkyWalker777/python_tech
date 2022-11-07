@@ -1,6 +1,21 @@
 Python 常见问题
 ##################################################################################
 
+current limit exceeds maximum limit
+**********************************************************************************
+
+in init_resources resource.setrlimit(resource.RLIMIT_NOFILE, (soft, hard)) ValueError: current limit exceeds maximum limit
+
+.. code-block:: python
+
+	$ ulimit -n -H
+	unlimited
+	$ sysctl kern.maxfilesperproc
+	kern.maxfilesperproc: 10240
+
+	$ sudo sysctl -w kern.maxfilesperproc=20000
+	kern.maxfilesperproc: 10240 -> 20000
+
 python 正则不能正确识别
 **********************************************************************************
 
@@ -59,21 +74,6 @@ num_op函数一共有四个返回值，但是调用的时候只接收三个返�
 	   label="💬 comment"
 	   crossorigin="anonymous"
 	/>
-
-current limit exceeds maximum limit
-**********************************************************************************
-
-in init_resources resource.setrlimit(resource.RLIMIT_NOFILE, (soft, hard)) ValueError: current limit exceeds maximum limit
-
-.. code-block:: python
-
-	$ ulimit -n -H
-	unlimited
-	$ sysctl kern.maxfilesperproc
-	kern.maxfilesperproc: 10240
-
-	$ sudo sysctl -w kern.maxfilesperproc=20000
-	kern.maxfilesperproc: 10240 -> 20000
 
 
 
