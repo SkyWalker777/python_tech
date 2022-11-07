@@ -20,14 +20,12 @@ JavaScript 的使用方式
 * 行内式（主要用于事件）
 
 .. code-block:: html
-	:linenos:
 
 	<input type="button" name="" onclick="alert('ok！');">
 
 * 内嵌式
 
 .. code-block:: html
-	:linenos:
 
 	<script type="text/javascript">        
 	    alert('ok！');
@@ -36,7 +34,6 @@ JavaScript 的使用方式
 * 外链式
 
 .. code-block:: html
-	:linenos:
 
 	<script type="text/javascript" src="js/index.js"></script>
 
@@ -59,7 +56,6 @@ JavaScript 是一种弱类型语言，也就是说不需要指定变量的类型
 定义变量的语法格式: var 变量名 = 值;
 
 .. code-block:: javascript
-	:linenos:
 
 	var iNum = 123;
 	var sTr = 'asd';
@@ -73,7 +69,6 @@ JavaScript 是一种弱类型语言，也就是说不需要指定变量的类型
 JavaScript 的注释分为单行注释(//注释内容)和多行注释(/多行注释/)
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">    
 
@@ -104,7 +99,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 1种复合类型： 1、object 后面学习的数组、函数和JavaScript对象都属于复合类型
 
 .. code-block:: javascript
-	:linenos:
 
 	//1.1 数字 number
 	var iOne = 10.1;
@@ -172,7 +166,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 函数就是可以重复使用的代码块, 使用关键字 function 定义函数。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    // 函数定义
@@ -186,7 +179,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 函数调用就是函数名加小括号，比如:函数名(参数[参数可选])
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    // 函数定义
@@ -202,7 +194,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 定义函数时，函数如果有参数，参数放到小括号里面，函数如果有返回值，返回值通过 return 关键字来返回
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	function fnAdd(iNum01,iNum02){
@@ -254,7 +245,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 局部变量就是在函数内使用的变量，只能在函数内部使用。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    function myalert()
@@ -272,7 +262,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 全局变量就是在函数外定义的变量，可以在不同函数内使用。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    // 定义全局变量
@@ -326,7 +315,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 比较运算符示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	var iNum01 = 12;
 	var sNum01 = '12';
@@ -378,7 +366,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 逻辑运算符示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	var x = 6;
 	var y = 3;
@@ -421,7 +408,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 可以使用内置对象 document 上的 getElementById 方法来获取页面上设置了id属性的标签元素，获取到的是一个html对象，然后将它赋值给一个变量，比如：
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    var oDiv = document.getElementById('div1');
@@ -436,7 +422,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 第一种方法：将javascript放到页面最下边
 
 .. code-block:: javascript
-	:linenos:
 
 	<div id="div1">这是一个div元素</div>
 
@@ -448,7 +433,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 第二种方法：设置页面加载完成执行的函数，在执行函数里面获取标签元素。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    window.onload = function(){
@@ -480,7 +464,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 2. “style” 属性里面的属性，有横杠的改成驼峰式，比如：“font-size”，改成”style.fontSize”
 
 .. code-block:: javascript
-	:linenos:
 
 	<style>
 	    .sty01{
@@ -524,7 +507,6 @@ js中有六种数据类型，包括五种基本数据类型和一种复杂数据
 innerHTML可以读取或者设置标签包裹的内容
 
 .. code-block:: javascript
-	:linenos:
 
 	<script type="text/javascript">
 	    window.onload = function(){
@@ -559,7 +541,6 @@ innerHTML可以读取或者设置标签包裹的内容
 * 数组的定义
 
 .. code-block:: javascript
-	:linenos:
 
 	// 实例化对象方式创建
 	var aList = new Array(1,2,3);
@@ -572,7 +553,6 @@ innerHTML可以读取或者设置标签包裹的内容
 多维数组指的是数组的成员也是数组，把这样的数组叫做多维数组。
 
 .. code-block:: javascript
-	:linenos:
 
 	var aList = [[1,2,3],['a','b','c']];
 
@@ -645,7 +625,6 @@ innerHTML可以读取或者设置标签包裹的内容
 * for 循环
 
 .. code-block:: javascript
-	:linenos:
 
 	var array = [1, 4, 5];
 
@@ -657,7 +636,6 @@ innerHTML可以读取或者设置标签包裹的内容
 * while 循环
 
 .. code-block:: javascript
-	:linenos:
 
 	var array = [1, 4, 5];        
 	var index = 0;
@@ -673,7 +651,6 @@ innerHTML可以读取或者设置标签包裹的内容
 * do-while循环
 
 .. code-block:: javascript
-	:linenos:
 
 	var array = [1, 4, 5];
 	var index = 0;
@@ -694,7 +671,6 @@ innerHTML可以读取或者设置标签包裹的内容
 字符串拼接使用: "+" 运算符
 
 .. code-block:: javascript
-	:linenos:
 
 	var iNum1 = 10;
 	var fNum2 = 11.1;
@@ -737,7 +713,6 @@ setTimeout函数的参数说明:
 	第三个参数 param1, 表示定时器执行函数的第一个参数，一次类推传入多个执行函数对应的参数。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script> 
 	    function hello(){ 
@@ -757,7 +732,6 @@ setInterval函数的参数说明:
 	第三个参数 param1, 表示定时器执行函数的第一个参数，一次类推传入多个执行函数对应的参数。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script> 
 	    function hello(){ 
@@ -781,7 +755,6 @@ clearTimeout函数的参数说明:
 timeoutID 为调用 setTimeout 函数时所获得的返回值，使用该返回标识符作为参数，可以取消该 setTimeout 所设定的定时执行操作。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    function hello(){
@@ -798,7 +771,6 @@ clearInterval函数的参数说明:
 timeoutID 为调用 setInterval 函数时所获得的返回值，使用该返回标识符作为参数，可以取消该 setInterval 所设定的定时执行操作。
 
 .. code-block:: javascript
-	:linenos:
 
 	<script> 
 	    function hello(){ 
@@ -860,7 +832,6 @@ jQuery 的用法
 * jQuery 的引入
 
 .. code-block:: javascript
-	:linenos:
 
 	<script src="js/jquery-1.12.4.min.js"></script>
 
@@ -871,7 +842,6 @@ jQuery 的用法
 入口函数示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script src="js/jquery-1.12.4.min.js"></script>
 	<script>
@@ -890,7 +860,6 @@ jQuery 的用法
 入口函数的简写示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script src="js/jquery-1.12.4.min.js"></script>
 	<script>
@@ -954,7 +923,6 @@ jquery选择器就是快速选择标签元素，获取标签的，选择规则�
 示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	$('#myId') //选择id为myId的标签
 	$('.myClass') // 选择class为myClass的标签
@@ -965,7 +933,6 @@ jquery选择器就是快速选择标签元素，获取标签的，选择规则�
 说明: 可以使用length属性来判断标签是否选择成功, 如果length大于0表示选择成功，否则选择失败。
 
 .. code-block:: javascript
-	:linenos:
 
 	$(function(){
 	    result = $("div").length;
@@ -1000,7 +967,6 @@ jquery选择器就是快速选择标签元素，获取标签的，选择规则�
 has方法的示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){
@@ -1025,7 +991,6 @@ has方法的示例代码:
 eq方法的示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){
@@ -1082,7 +1047,6 @@ eq方法的示例代码:
 选择集转移的示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){
@@ -1130,7 +1094,6 @@ jquery中的html方法可以获取和设置标签的html内容
 示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){
@@ -1170,7 +1133,6 @@ jquery中的html方法可以获取和设置标签的html内容
 示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<style>
 	    .a01{
@@ -1231,7 +1193,6 @@ jQuery 事件
 示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){
@@ -1322,7 +1283,6 @@ jQuery常用事件:
 事件冒泡代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	 <script>
 	    $(function(){
@@ -1353,7 +1313,6 @@ jQuery常用事件:
 一般绑定事件的写法:
 
 .. code-block:: javascript
-	:linenos:
 
 	$(function(){
 	    $ali = $('#list li');
@@ -1373,7 +1332,6 @@ jQuery常用事件:
 事件代理的写法
 
 .. code-block:: javascript
-	:linenos:
 
 	$(function(){
 	    $list = $('#list');
@@ -1427,7 +1385,6 @@ JavaScript 中的所有事物都是对象：字符串、数值、数组、函数
 Object类创建对象的示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    var person = new Object();
@@ -1449,7 +1406,6 @@ Object类创建对象的示例代码:
 对象字面量创建对象的示例代码: 
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    var person2 = {
@@ -1497,7 +1453,6 @@ json有两种格式：
 对象格式的json数据:
 
 .. code-block:: javascript
-	:linenos:
 
 	{
 	    "name":"tom",
@@ -1512,7 +1467,6 @@ json有两种格式：
 实际开发的json格式比较复杂,例如:
 
 .. code-block:: javascript
-	:linenos:
 
 	{
 	    "name":"jack",
@@ -1527,7 +1481,6 @@ json有两种格式：
 json数据转换成JavaScript对象
 
 .. code-block:: javascript
-	:linenos:
 
 	var sJson = '{"name":"tom","age":18}';
 	var oPerson = JSON.parse(sJson);
@@ -1559,7 +1512,6 @@ jquery将它封装成了一个方法$.ajax()，我们可以直接用这个方法
 示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $.ajax({
@@ -1604,7 +1556,6 @@ ajax的简写方式: $.ajax按照请求方式可以简写成$.get或者$.post方
 ajax简写方式的示例代码:
 
 .. code-block:: javascript
-	:linenos:
 
 	<script>
 	    $(function(){

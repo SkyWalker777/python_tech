@@ -680,7 +680,6 @@ string
 	创建redis_string.py文件
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -696,7 +695,6 @@ string
 ⽅法set，添加键、值，如果添加成功则返回True，如果添加失败则返回False
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -715,7 +713,6 @@ string
 ⽅法get，添加键对应的值，如果键存在则返回对应的值，如果键不存在则返回None
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -734,7 +731,6 @@ string
 ⽅法set，如果键已经存在则进⾏修改，如果键不存在则进⾏添加
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -753,7 +749,6 @@ string
 ⽅法delete，删除键及对应的值，如果删除成功则返回受影响的键数，否则则返 回0
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -772,7 +767,6 @@ string
 ⽅法keys，根据正则表达式获取键
 
 .. code-block:: python
-	:linenos:
 
 	from redis import *
 	if __name__=="__main__":
@@ -1024,7 +1018,6 @@ Python 交互
 | 创建⽂件redis_cluster.py，示例码如下
 
 .. code-block:: python
-	:linenos:
 
 	from rediscluster import *
 	if __name__ == '__main__':

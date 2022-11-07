@@ -592,7 +592,6 @@ more命令: 当查看内容信息过长无法在一屏上显示时，可以使�
 grep 命令效果:
 
 .. code-block:: python
-    :linenos:
 
 	➜  logs cat hello.py
 	AAaaA

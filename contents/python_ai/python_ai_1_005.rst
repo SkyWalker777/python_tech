@@ -28,7 +28,6 @@
 1 语法
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    可能发生错误的代码
@@ -40,7 +39,6 @@
 需求：尝试以`r`模式打开文件，如果文件不存在，则以`w`方式打开。
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    f = open('test.txt', 'r')
@@ -50,7 +48,6 @@
 3 捕获指定异常
 
 .. code-block:: python
-	:linenos:
 
 	语法
 	try:
@@ -74,7 +71,6 @@
 当捕获多个异常时，可以把要捕获的异常类型的名字，放到except 后，并使用元组的方式进行书写。
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    print(1/0)
@@ -85,7 +81,6 @@
 5 捕获异常描述信息
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    print(num)
@@ -97,7 +92,6 @@
 Exception是所有程序异常类的父类。
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    print(num)
@@ -109,7 +103,6 @@ Exception是所有程序异常类的父类。
 else表示的是如果没有异常要执行的代码。
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    print(1)
@@ -123,7 +116,6 @@ else表示的是如果没有异常要执行的代码。
 finally表示的是无论是否异常都要执行的代码，例如关闭文件。
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    f = open('test.txt', 'r')
@@ -144,7 +136,6 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 	读取内容要求：尝试循环读取内容，读取过程中如果检测到用户意外终止程序，则`except`捕获异常并提示用户。
 
 .. code-block:: python
-	:linenos:
 
 	import time
 	try:
@@ -173,7 +164,6 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 需求：密码长度不足，则报异常（用户输入密码，如果输入的长度不足3位，则报错，即抛出自定义异常，并捕获该异常）。
 
 .. code-block:: python
-	:linenos:
 
 	# 自定义异常类，继承Exception
 	class ShortInputError(Exception):
@@ -202,7 +192,6 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 - 异常语法
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	  	可能发生异常的代码
@@ -216,7 +205,6 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 - 捕获异常
 
 .. code-block:: python
-	:linenos:
 
 	except 异常类型:
 	  	代码
@@ -227,7 +215,6 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 - 自定义异常
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 自定义异常类
 	class 异常类类名(Exception):
@@ -281,7 +268,6 @@ Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Pyt
 - 语法
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 导入模块
 	import 模块名
@@ -293,7 +279,6 @@ Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Pyt
 - 体验
 
 .. code-block:: python
-	:linenos:
 
 	import math
 	print(math.sqrt(9))  # 3.0
@@ -303,14 +288,12 @@ Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Pyt
 - 语法
 
 .. code-block:: python
-	:linenos:
 
 from 模块名 import 功能1, 功能2, 功能3...
 
 - 体验
 
 .. code-block:: python
-	:linenos:
 
 	from math import sqrt
 	print(sqrt(9))
@@ -320,14 +303,12 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 语法
 
 .. code-block:: python
-	:linenos:
 
 	from 模块名 import *
 
 - 体验
 
 .. code-block:: python
-	:linenos:
 
 	from math import *
 	print(sqrt(9))
@@ -337,7 +318,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 语法
 
 .. code-block:: python
-	:linenos:
 
 	# 模块定义别名
 	import 模块名 as 别名
@@ -348,7 +328,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 体验
 
 .. code-block:: python
-	:linenos:
 
 	# 模块别名
 	import time as tt
@@ -370,7 +349,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 新建一个Python文件，命名为`my_module1.py`，并定义`testA`函数。
 
 .. code-block:: python
-	:linenos:
 
 	def testA(a, b):
 	    print(a + b)
@@ -380,7 +358,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 在实际开中，当一个开发人员编写完一个模块后，为了让模块能够在项目中达到想要的效果，这个开发人员会自行在py文件中添加一些测试信息.，例如，在`my_module1.py`文件中添加测试代码。
 
 .. code-block:: python
-	:linenos:
 
 	def testA(a, b):
 	    print(a + b)
@@ -392,7 +369,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 解决办法如下：
 
 .. code-block:: python
-	:linenos:
 
 	def testA(a, b):
 	    print(a + b)
@@ -404,7 +380,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 3 调用模块
 
 .. code-block:: python
-	:linenos:
 
 	import my_module1
 	my_module1.testA(1, 1)
@@ -416,7 +391,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 体验
 
 .. code-block:: python
-	:linenos:
 
 	# 模块1代码
 	def my_test(a, b):
@@ -458,7 +432,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - my_module1模块代码
 
 .. code-block:: python
-	:linenos:
 
 	__all__ = ['testA']
 
@@ -471,7 +444,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 导入模块的文件代码
 
 .. code-block:: python
-	:linenos:
 
 	from my_module1 import *
 	testA()
@@ -497,7 +469,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 	3. 模块内代码如下
 
 .. code-block:: python
-	:linenos:
 
 	# my_module1
 	print(1)
@@ -516,7 +487,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 2.1 方法一
 
 .. code-block:: python
-	:linenos:
 
 	import 包名.模块名
 
@@ -531,7 +501,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 注意：必须在`__init__.py`文件中添加`__all__ = []`，控制允许导入的模块列表。
 
 .. code-block:: python
-	:linenos:
 
 	from 包名 import *
 	模块名.目标
@@ -546,7 +515,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 导入模块方法
 
 .. code-block:: python
-	:linenos:
 
 	import 模块名
 
@@ -557,7 +525,6 @@ from 模块名 import 功能1, 功能2, 功能3...
 - 导入包
 
 .. code-block:: python
-	:linenos:
 
 	import 包名.模块名
 

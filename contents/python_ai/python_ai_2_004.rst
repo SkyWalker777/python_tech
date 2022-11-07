@@ -32,7 +32,6 @@ html 的基本结构
 * 结构代码
 
 .. code-block:: html
-    :linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -64,7 +63,6 @@ html 的基本结构
 * 常用的 html 标签
 
 .. code-block:: html
-    :linenos:
 
 	<!-- 1、成对出现的标签：-->
 
@@ -121,7 +119,6 @@ html 的基本结构
 从当前操作 html 的文档所在目录算起的路径叫做相对路径
 
 .. code-block:: html
-    :linenos:
 
 	<!-- 相对路径方式1 -->
 	<img src="./images/logo.png">
@@ -133,7 +130,6 @@ html 的基本结构
 从根目录算起的路径叫做绝对路径，Windows 的根目录是指定的盘符，mac OS 和Linux 是/
 
 .. code-block:: html
-    :linenos:
 
 	<!-- 绝对路径 -->
 	<img src="/Users/apple/Desktop/demo/hello/images/logo.png">
@@ -164,7 +160,6 @@ html 的基本结构
 * 无序列表
 
 .. code-block:: html
-    :linenos:
 
 	<!-- ul标签定义无序列表 -->
 	<ul>
@@ -177,7 +172,6 @@ html 的基本结构
 * 有序列表
 
 .. code-block:: html
-    :linenos:
 
 	<!-- ol标签定义有序列表 -->
 	<ol>
@@ -205,7 +199,6 @@ html 的基本结构
 * 表格标签
 
 .. code-block:: html
-	:linenos:
 
 	<table>标签：表示一个表格
 
@@ -237,7 +230,6 @@ html 的基本结构
 * 表单相关标签的使用
 
 .. code-block:: html
-	:linenos:
 
 	<form>标签 表示表单标签，定义整体的表单区域
 
@@ -331,7 +323,6 @@ html 的基本结构
 * 示例代码
 
 .. code-block:: html
-	:linenos:
 
 	<form action="https://www.baidu.com" method="GET">
 	    <p>
@@ -431,7 +422,6 @@ css(Cascading Style Sheet)层叠样式表，它是用来美化页面的一种语
 代码示例:
 
 .. code-block:: html
-	:linenos:
 
 	div{ 
 	    width:100px; 
@@ -476,7 +466,6 @@ css 的三种引入方式
 示例代码:
 
 .. code-block:: html
-	:linenos:
 
 	<head>
 	   <style type="text/css">
@@ -497,7 +486,6 @@ css 的三种引入方式
 示例代码:
 
 .. code-block:: html
-	:linenos:
 
 	<link rel="stylesheet" type="text/css" href="css/main.css">
 
@@ -543,7 +531,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 根据标签来选择标签，以标签开头，此种选择器影响范围大，一般用来做一些通用设置。
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    p{
@@ -559,7 +546,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 根据类名来选择标签，以 . 开头, 一个类选择器可应用于多个标签上，一个标签上也可以使用多个类选择器，多个类选择器需要使用空格分割，应用灵活，可复用，是css中应用最多的一种选择器。 
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    .blue{color:blue}
@@ -576,7 +562,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 根据层级关系选择后代标签，以选择器1 选择器2开头，主要应用在标签嵌套的结构中，减少命名。
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    div p{
@@ -607,7 +592,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 根据id选择标签，以#开头, 元素的id名称不能重复，所以id选择器只能对应于页面上一个元素，不能复用，id名一般给程序使用，所以不推荐使用id作为选择器。
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    #box{color:red} 
@@ -624,7 +608,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 根据组合的选择器选择不同的标签，以 , 分割开, 如果有公共的样式设置，可以使用组选择器。
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    .box1,.box2,.box3{width:100px;height:100px}
@@ -642,7 +625,6 @@ css 选择器是用来选择标签的，选出来以后给标签加样式。
 用于向选择器添加特殊的效果, 以 : 分割开, 当用户和网站交互的时候改变显示效果可以使用伪类选择器
 
 .. code-block:: html
-	:linenos:
 
 	<style type="text/css">
 	    .box1{width:100px;height:100px;background:gold;}
@@ -700,7 +682,6 @@ css 属性
 * 布局常用样式属性示例代码
 
 .. code-block:: html
-	:linenos:
 
 	<style>
 	    .box1{
@@ -756,7 +737,6 @@ css 属性
 * 文本常用样式属性示例
 
 .. code-block:: html
-	:linenos:
 
 	<style>
 	    p{
@@ -815,7 +795,6 @@ overflow的设置项：
 * 示例代码
 
 .. code-block:: html
-	:linenos:
 
 	<style>
 	    .box1{
@@ -860,7 +839,6 @@ display 属性是用来设置元素的类型及隐藏的，常用的属性有：
 * 示例代码
 
 .. code-block:: html
-	:linenos:
 
 	<style>
 	    .box{

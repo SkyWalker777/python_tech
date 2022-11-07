@@ -35,7 +35,6 @@ Vue.js是前端三大新框架：Angular.js、React.js、Vue.js之一，Vue.js�
 开发环境版本/生产环境版本
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -53,7 +52,6 @@ Vue.js是前端三大新框架：Angular.js、React.js、Vue.js之一，Vue.js�
 * 采用模板语法来声明式地将数据渲染进 DOM 的系统
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -72,7 +70,6 @@ Vue.js是前端三大新框架：Angular.js、React.js、Vue.js之一，Vue.js�
 * 创建VUE实例
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -113,7 +110,6 @@ data(数据)
 Mustache 标签将会被替代为对应数据对象上message属性的值。无论何时，绑定的数据对象上message属性发生了改变，插值处的内容都会更新
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -147,7 +143,6 @@ Mustache 标签将会被替代为对应数据对象上message属性的值。无�
 也可以通过改变Vue的分隔符来修改 Mustache 标签
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -176,7 +171,6 @@ Mustache 标签将会被替代为对应数据对象上message属性的值。无�
 * v-bind 绑定元素属性
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -224,7 +218,6 @@ if 条件渲染
 * v-if
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -262,7 +255,6 @@ if 条件渲染
 * v-if和v-else
 
 .. code-block:: html
-	:linenos:
 
 	<a href="#" v-if="islogin">个人中心</a>
 	<a href="#" v-else>登录</a>
@@ -274,7 +266,6 @@ if 条件渲染
 * v-if,v-else-if和v-else
 
 .. code-block:: html
-	:linenos:
 
 	<img src="" alt="皇帝" v-if="level === 1">
 	<img src="" alt="皇亲" v-else-if="level === 2">
@@ -284,7 +275,6 @@ if 条件渲染
 * v-show
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -326,7 +316,6 @@ for 列表渲染
 | v-for 指令需要使用 item in items 形式的特殊语法，items 是源数据数组并且 item 是数组元素迭代的别名。
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -370,7 +359,6 @@ for 列表渲染
 * index
 
 .. code-block:: html
-	:linenos:
 
 	<ol>
 	  <li v-for="(todo,index) in todos">
@@ -389,7 +377,6 @@ for 列表渲染
 * 对象
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -433,7 +420,6 @@ for 列表渲染
 * 对象列表
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -492,7 +478,6 @@ methods 事件
 可以用v-on指令监听 DOM 事件，并在触发时运行一些 JavaScript 代码。
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -525,7 +510,6 @@ methods 事件
 然而许多事件处理逻辑会更为复杂，所以直接把 JavaScript 代码写在v-on指令中是不可行的。因此v-on还可以接收一个需要调用的方法名称
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -559,7 +543,6 @@ methods 事件
 * 事件处理方法传递参数
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -614,7 +597,6 @@ model 表单输入绑定(双向绑定数据)
 	v-model会忽略所有表单元素的value、checked、selected特性的初始值而总是将 Vue 实例的数据作为数据来源。你应该通过 JavaScript 在组件的data选项中声明初始值
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -695,7 +677,6 @@ Todolist 案例
 准备工作
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -732,7 +713,6 @@ Todolist 案例
 * 列表数据渲染
 
 .. code-block:: html
-	:linenos:
 
 	<ul>
 	 <li v-for="item in items">{{item}}</li>
@@ -741,7 +721,6 @@ Todolist 案例
 * 绑定数据能够添加到列表中
 
 .. code-block:: html
-	:linenos:
 
 	<body>
 	<div id="app">
@@ -772,7 +751,6 @@ Todolist 案例
 * 实现删除功能
 
 .. code-block:: html
-	:linenos:
 
 	<div id="app">
 	   <input type="text" v-model="newitem"> <button @click="addNetItem">添加</button>
@@ -808,7 +786,6 @@ Todolist 案例
 * 添加移动按钮,实现移动功能
 
 .. code-block:: html
-	:linenos:
 
 	<!DOCTYPE html>
 	<html>
@@ -882,7 +859,6 @@ var:它是用来声明变量的。如果在方法中声明，则为局部变量�
 let:ES6新增了let命令，用来声明变量。它的用法类似于var，但是所声明的变量，只在let命令所在的代码块内有效。
 
 .. code-block:: javascript
-	:linenos:
 
 	{
 	  let a = 10;
@@ -909,7 +885,6 @@ const:const声明一个只读的常量。一旦声明，常量的值就不能改
 ES5的写法
 
 .. code-block:: javascript
-	:linenos:
 
 	var person = { 
 	    name:'itcast',
@@ -926,7 +901,6 @@ ES5的写法
 还可以写
 
 .. code-block:: javascript
-	:linenos:
 
 	var person = {};
 	person.name='itheima';
@@ -939,7 +913,6 @@ ES6的写法
 需要注意的是, 实现简写,有一个前提,必须变量名属性名一致
 
 .. code-block:: javascript
-	:linenos:
 
 	//定义变量
 	var name='itcast';
@@ -969,7 +942,6 @@ ES6的写法
 定义函数新的方式
 
 .. code-block:: javascript
-	:linenos:
 
 	//无参数,无返回值
 	var say = ()=> {
@@ -989,7 +961,6 @@ ES6的写法
 如果层级比较深的时候, this的指向就变成了window, 这时候就可以通过箭头函数解决这个指向的问题
 
 .. code-block:: javascript
-	:linenos:
 
 	var person = {
 	    name:'itcast',

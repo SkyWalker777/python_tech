@@ -73,7 +73,6 @@
 * 导入进程包
 
 .. code-block:: python
-    :linenos:
 
 	#导入进程包
 	import multiprocessing
@@ -105,7 +104,6 @@ name：当前进程的别名，默认为Process-N，N为从1开始递增的整�
 * 多进程完成多任务的代码
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -178,7 +176,6 @@ os.getpid() 表示获取当前进程编号
 示例代码: 
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -245,7 +242,6 @@ os.getppid() 表示获取当前父进程编号
 示例代码: 
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -334,7 +330,6 @@ os.getppid() 表示获取当前父进程编号
 * args参数的使用
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -364,7 +359,6 @@ os.getppid() 表示获取当前父进程编号
 * kwargs参数的使用
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -411,7 +405,6 @@ os.getppid() 表示获取当前父进程编号
 * 进程之间不共享全局变量
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -472,7 +465,6 @@ os.getppid() 表示获取当前父进程编号
 假如我们现在创建一个子进程，这个子进程执行完大概需要2秒钟，现在让主进程执行0.5秒钟就退出程序，查看一下执行结果，示例代码如下:
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -519,7 +511,6 @@ os.getppid() 表示获取当前父进程编号
 | 子进程销毁: 子进程执行结束. 保证主进程正常退出的示例代码: 
 
 .. code-block:: python
-    :linenos:
 
 	import multiprocessing
 	import time
@@ -590,7 +581,6 @@ os.getppid() 表示获取当前父进程编号
 * 导入线程模块
 
 .. code-block:: python
-    :linenos:
 
 	#导入线程模块
 	import threading
@@ -614,7 +604,6 @@ Thread([group [, target [, name [, args [, kwargs]]]]])
 * 多线程完成多任务的代码
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -686,7 +675,6 @@ Thread类执行任务并给任务传参数有两种方式:
 * args参数的使用
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -715,7 +703,6 @@ Thread类执行任务并给任务传参数有两种方式:
 * kwargs参数的使用
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -764,7 +751,6 @@ Thread类执行任务并给任务传参数有两种方式:
 * 线程之间执行是无序的
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -793,7 +779,6 @@ Thread类执行任务并给任务传参数有两种方式:
 假如我们现在创建一个子线程，这个子线程执行完大概需要2.5秒钟，现在让主线程执行1秒钟就退出程序，查看一下执行结果，示例代码如下:
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -837,7 +822,6 @@ Thread类执行任务并给任务传参数有两种方式:
 设置守护主线程的示例代码:
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -879,7 +863,6 @@ Thread类执行任务并给任务传参数有两种方式:
 	查看线程之间是否共享全局变量数据
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -928,7 +911,6 @@ Thread类执行任务并给任务传参数有两种方式:
 	创建两个子线程执行对应的两个函数，查看计算后的结果
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 
@@ -992,7 +974,6 @@ Thread类执行任务并给任务传参数有两种方式:
 线程等待的示例代码:
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 
@@ -1060,7 +1041,6 @@ threading模块中定义了Lock变量，这个变量本质上是一个函数，�
 互斥锁使用步骤:
 
 .. code-block:: python
-    :linenos:
 
 	# 创建锁
 	mutex = threading.Lock()
@@ -1081,7 +1061,6 @@ threading模块中定义了Lock变量，这个变量本质上是一个函数，�
 * 使用互斥锁完成2个线程对同一个全局变量各加100万次的操作
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 
@@ -1163,7 +1142,6 @@ threading模块中定义了Lock变量，这个变量本质上是一个函数，�
 需求: 根据下标在列表中取值, 保证同一时刻只能有一个线程去取值
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time
@@ -1199,7 +1177,6 @@ threading模块中定义了Lock变量，这个变量本质上是一个函数，�
 在合适的地方释放锁
 
 .. code-block:: python
-    :linenos:
 
 	import threading
 	import time

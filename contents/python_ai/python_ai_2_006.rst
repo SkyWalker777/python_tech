@@ -72,7 +72,6 @@ PyMySQL 的使用
 4. pymysql完成数据的查询操作
 
 .. code-block:: python
-	:linenos:
 
 	import pymysql
 
@@ -104,7 +103,6 @@ PyMySQL 的使用
 5. pymysql完成对数据的增删改
 
 .. code-block:: python
-	:linenos:
 
 	import pymysql
 
@@ -158,7 +156,6 @@ PyMySQL 的使用
 防止SQL注入的示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	from pymysql import connect
 
@@ -270,7 +267,6 @@ show engines;
 查看goods表的创表语句:
 
 .. code-block:: sql
-	:linenos:
 
 	-- 选择数据库
 	use jing_dong;
@@ -388,7 +384,6 @@ show engines;
 索引的创建:
 
 .. code-block:: sql
-	:linenos:
 
 	-- 创建索引的语法格式
 	-- alter table 表名 add index 索引名[可选](列名, ..)
@@ -400,7 +395,6 @@ show engines;
 索引的删除:
 
 .. code-block:: sql
-	:linenos:
 
 	-- 删除索引的语法格式
 	-- alter table 表名 drop index 索引名
@@ -415,7 +409,6 @@ show engines;
 向表中插入十万条数据:
 
 .. code-block:: sql
-	:linenos:
 
 	from pymysql import connect
 
@@ -436,7 +429,6 @@ show engines;
 验证索引性能操作：
 
 .. code-block:: sql
-	:linenos:
 
 	-- 开启运行时间监测：
 	set profiling=1;
@@ -456,7 +448,6 @@ show engines;
 联合索引又叫复合索引，即一个索引覆盖表中两个或者多个字段，一般用在多个字段一起查询的时候。
 
 .. code-block:: sql
-	:linenos:
 
 	-- 创建teacher表
 	create table teacher
@@ -478,7 +469,6 @@ show engines;
 最左原则示例:
 
 .. code-block:: sql
-	:linenos:
 
 	-- 下面的查询使用到了联合索引
 	select * from stu where name='张三' -- 这里使用了联合索引的name部分
@@ -538,7 +528,6 @@ show engines;
 * 简单闭包的示例代码
 
 .. code-block:: python
-	:linenos:
 
 	# 定义一个外部函数
 	def func_out(num1):
@@ -578,7 +567,6 @@ show engines;
 | 实现闭包的标准格式:
 
 .. code-block:: python
-	:linenos:
 
 	 # 外部函数
 	 def test1(a):
@@ -610,7 +598,6 @@ show engines;
 * 功能代码的实现
 
 .. code-block:: python
-	:linenos:
 
 	# 外部函数
 	def config_name(name):
@@ -648,7 +635,6 @@ show engines;
 修改闭包内使用的外部变量的错误示例:
 
 .. code-block:: python
-	:linenos:
 
 	# 定义一个外部函数
 	def func_out(num1):
@@ -676,7 +662,6 @@ show engines;
 修改闭包内使用的外部变量的错误示例:
 
 .. code-block:: python
-	:linenos:
 
 	def func_out(num1):
 
@@ -724,7 +709,6 @@ show engines;
 * 装饰器的示例代码
 
 .. code-block:: python
-	:linenos:
 
 	# 添加一个登录验证的功能
 	def check(fn):
@@ -768,7 +752,6 @@ show engines;
 Python给提供了一个装饰函数更加简单的写法，那就是语法糖，语法糖的书写格式是: @装饰器名字，通过语法糖的方式也可以完成对已有函数的装饰
 
 .. code-block:: python
-	:linenos:
 
 	# 添加一个登录验证的功能
 	def check(fn):
@@ -827,7 +810,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 装饰器实现已有函数执行时间的统计
 
 .. code-block:: python
-	:linenos:
 
 	import time
 
@@ -869,7 +851,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 装饰带有参数的函数
 
 .. code-block:: python
-	:linenos:
 
 	# 添加输出日志的功能
 	def logging(fn):
@@ -897,7 +878,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 装饰带有返回值的函数
 
 .. code-block:: python
-	:linenos:
 
 	# 添加输出日志的功能
 	def logging(fn):
@@ -926,7 +906,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 装饰带有不定长参数的函数
 
 .. code-block:: python
-	:linenos:
 
 	# 添加输出日志的功能
 	def logging(fn):
@@ -960,7 +939,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 通用装饰器
 
 .. code-block:: python
-	:linenos:
 
 	# 添加输出日志的功能
 	def logging(fn):
@@ -1023,7 +1001,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 * 多个装饰器的使用示例代码
 
 .. code-block:: python
-	:linenos:
 
 	def make_div(func):
 	    """对被装饰的函数的返回值 div标签"""
@@ -1064,7 +1041,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 错误写法:
 
 .. code-block:: python
-	:linenos:
 
 	def decorator(fn, flag):
 	    def inner(num1, num2):
@@ -1098,7 +1074,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 正确写法: 在装饰器外面再包裹上一个函数，让最外面的函数接收参数，返回的是装饰器，因为@符号后面必须是装饰器实例。
 
 .. code-block:: python
-	:linenos:
 
 	# 添加输出日志的功能
 	def logging(flag):
@@ -1146,7 +1121,6 @@ Python给提供了一个装饰函数更加简单的写法，那就是语法糖�
 类装饰器示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	class Check(object):
 	    def __init__(self, fn):

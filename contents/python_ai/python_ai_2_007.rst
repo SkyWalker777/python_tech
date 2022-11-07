@@ -18,7 +18,6 @@ property属性就是负责把一个方法当做属性进行使用，这样做可
 * 装饰器方式
 
 .. code-block:: python
-	:linenos:
 
 	class Person(object):
 
@@ -62,7 +61,6 @@ property属性就是负责把一个方法当做属性进行使用，这样做可
 * 类属性方式
 
 .. code-block:: python
-	:linenos:
 
 	class Person(object):
 
@@ -124,7 +122,6 @@ with 语句和上下文管理器
 基础班向文件中写入数据的示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	# 1、以写的方式打开文件
 	f = open("1.txt", "w")
@@ -138,7 +135,6 @@ with 语句和上下文管理器
 这种写法可能出现一定的安全隐患，错误代码如下:
 
 .. code-block:: python
-	:linenos:
 
 	# 1、以读的方式打开文件
 	f = open("1.txt", "r")
@@ -164,7 +160,6 @@ with 语句和上下文管理器
 安全写法, 代码如下:
 
 .. code-block:: python
-	:linenos:
 
 	try:
 	    # 1、以读的方式打开文件
@@ -188,7 +183,6 @@ with 语句和上下文管理器
 with 语句的示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	# 1、以写的方式打开文件
 	with open("1.txt", "w") as f:
@@ -206,7 +200,6 @@ with 语句的示例代码:
 定义一个File类，实现 __enter__() 和 __exit__()方法，然后使用 with 语句来完成操作文件， 示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	class File(object):
 
@@ -253,7 +246,6 @@ with 语句的示例代码:
 假如想要让一个函数成为上下文管理器，Python 还提供了一个 @contextmanager 的装饰器，更进一步简化了上下文管理器的实现方式。通过 yield 将函数分割成两部分，yield 上面的语句在 __enter__ 方法中执行，yield 下面的语句在 __exit__ 方法中执行，紧跟在 yield 后面的参数是函数的返回值。
 
 .. code-block:: python
-	:linenos:
 
 	# 导入装饰器
 	from contextlib import contextmanager
@@ -301,7 +293,6 @@ with 语句的示例代码:
 生成器推导式: 与列表推导式类似，只不过生成器推导式使用小括号
 
 .. code-block:: python
-	:linenos:
 
 	# 创建生成器
 	my_generator = (i * 2 for i in range(5))
@@ -334,7 +325,6 @@ with 语句的示例代码:
 yield 关键字: 只要在def函数里面看到有 yield 关键字那么就是生成器
 
 .. code-block:: python
-	:linenos:
 
 	def mygenerater(n):
 	    for i in range(n):
@@ -387,7 +377,6 @@ yield 关键字: 只要在def函数里面看到有 yield 关键字那么就是�
 现在我们使用生成器来实现这个斐波那契数列，每次取值都通过算法来生成下一个数据, 生成器每次调用只生成一个数据，可以节省大量的内存。
 
 .. code-block:: python
-	:linenos:
 
 	def fibonacci(num):
 	    a = 0
@@ -439,7 +428,6 @@ import copy  # 使用浅拷贝需要导入copy模块
 # 不可变类型有: 数字、字符串、元组
 
 .. code-block:: python
-	:linenos:
 
 	a1 = 123123
 	b1 = copy.copy(a1)  # 使用copy模块里的copy()函数就是浅拷贝了
@@ -476,7 +464,6 @@ import copy  # 使用浅拷贝需要导入copy模块
 可变类型的浅拷贝示例代码:
 
 .. code-block:: python
-	:linenos:
 
 	import copy # 使用浅拷贝需要导入copy模块
 
@@ -550,7 +537,6 @@ import copy  # 使用深拷贝需要导入copy模块
 # 不可变类型有: 数字、字符串、元组
 
 .. code-block:: python
-	:linenos:
 
 	a1 = 1
 	b1 = copy.deepcopy(a1)  # 使用copy模块里的deepcopy()函数就是深拷贝了
@@ -605,7 +591,6 @@ import copy  # 使用深拷贝需要导入copy模块
 # 可变类型有: 列表、字典、集合
 
 .. code-block:: python
-	:linenos:
 
 	a1 = [1, 2]
 	b1 = copy.deepcopy(a1)  # 使用copy模块里的deepcopy()函数就是深拷贝了
@@ -708,7 +693,6 @@ re 模块介绍
 在Python中需要通过正则表达式对字符串进行匹配的时候，可以使用一个 re 模块
 
 .. code-block:: python
-	:linenos:
 
 	# 导入re模块
 	import re
@@ -722,7 +706,6 @@ re 模块介绍
 * re 模块的使用
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -763,7 +746,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例1: 
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -784,7 +766,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例2:
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -833,7 +814,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例3：\d
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -868,7 +848,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例4：\D
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -885,7 +864,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例5：\s
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -912,7 +890,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例6：\S
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -937,7 +914,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例7：\w
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -955,7 +931,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 示例8：\W
 
 .. code-block:: python
-	:linenos:
 
 	# 匹配特殊字符中的一位
 	match_obj = re.match("\W", "&")
@@ -1000,7 +975,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出一个字符串第一个字母为大小字符，后面都是小写字母并且这些小写字母可 有可无
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1023,7 +997,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配一个字符串，第一个字符是t,最后一个字符串是o,中间至少有一个字符
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1042,7 +1015,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出这样的数据，但是https 这个s可能有，也可能是http 这个s没有
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1060,7 +1032,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出，8到20位的密码，可以是大小写英文字母、数字、下划线
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1100,7 +1071,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配以数字开头的数据
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1120,7 +1090,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求: 匹配以数字结尾的数据
 
 .. code-block:: python
-	:linenos:
 
 	import re
 	# 匹配以数字结尾的数据
@@ -1139,7 +1108,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求: 匹配以数字开头中间内容不管以数字结尾
 
 .. code-block:: python
-	:linenos:
 
 	match_obj = re.match("^\d.*\d$", "4hello4")
 	if match_obj:
@@ -1158,7 +1126,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求: 第一个字符除了aeiou的字符都匹配
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1198,7 +1165,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：在列表中["apple", "banana", "orange", "pear"]，匹配apple和pear
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1225,7 +1191,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出163、126、qq等邮箱
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1244,7 +1209,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求: 匹配qq:10567这样的数据，提取出来qq文字和qq号码
 
 .. code-block:: python
-	:linenos:
 
 	import re
 
@@ -1268,7 +1232,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出<html>hh</html>
 
 .. code-block:: python
-	:linenos:
 
 	match_obj = re.match("<[a-zA-Z1-6]+>.*</[a-zA-Z1-6]+>", "<html>hh</div>")
 
@@ -1291,7 +1254,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出<html><h1>www.itcast.cn</h1></html>
 
 .. code-block:: python
-	:linenos:
 
 	match_obj = re.match("<([a-zA-Z1-6]+)><([a-zA-Z1-6]+)>.*</\\2></\\1>", "<html><h1>www.itcast.cn</h1></html>")
 
@@ -1308,7 +1270,6 @@ re.match() 根据正则表达式从头开始匹配字符串数据
 需求：匹配出<html><h1>www.itcast.cn</h1></html>
 
 .. code-block:: python
-	:linenos:
 
 	match_obj = re.match("<(?P<name1>[a-zA-Z1-6]+)><(?P<name2>[a-zA-Z1-6]+)>.*</(?P=name2)></(?P=name1)>", "<html><h1>www.itcast.cn</h1></html>")
 

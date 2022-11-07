@@ -8,7 +8,6 @@
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	a = 'hello world'
 	b = "abcdefg"
@@ -22,7 +21,6 @@
 * 字符串特征
 
 .. code-block:: python
-	:linenos:
 
 	一对引号字符串
 
@@ -46,7 +44,6 @@
 * 字符串输出
 
 .. code-block:: python
-	:linenos:
 
 	print('hello world')
 
@@ -57,7 +54,6 @@
 * 字符串输入
 
 .. code-block:: python
-	:linenos:
 
 	name = input('请输入您的名字：')
 	print(f'您输入的名字是{name}')
@@ -75,7 +71,6 @@
 需求：字符串`name = "abcdef"`，取到不同下标对应的数据。
 
 .. code-block:: python
-	:linenos:
 
 	name = "abcdef"
 
@@ -102,7 +97,6 @@
 	| 2. 步长是选取间隔，正负整数均可，默认步长为1。
 
 .. code-block:: python
-	:linenos:
 
 	name = "abcdefg"
 
@@ -128,7 +122,6 @@
 - find()：检测某个子串是否包含在这个字符串中，如果在返回这个子串开始的位置下标，否则则返回-1。
 
 .. code-block:: python
-	:linenos:
 
 	语法: 字符串序列.find(子串, 开始位置下标, 结束位置下标)
 	注意: 开始和结束位置下标可以省略，表示在整个字符串序列中查找
@@ -142,7 +135,6 @@
 - index()：检测某个子串是否包含在这个字符串中，如果在返回这个子串开始的位置下标，否则则报异常。
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.index(子串, 开始位置下标, 结束位置下标)
 	注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
@@ -158,7 +150,6 @@
 | - count()：返回某个子串在字符串中出现的次数
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.count(子串, 开始位置下标, 结束位置下标)
 	注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
@@ -175,7 +166,6 @@
 - replace()：替换
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.replace(旧子串, 新子串, 替换次数)
 	注意：替换次数如果查出子串出现次数，则替换次数为该子串出现次数。
@@ -193,7 +183,6 @@
 - split()：按照指定字符分割字符串。
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.split(分割字符, num)
 	注意：num表示的是分割字符出现的次数，即将来返回数据个数为num+1个。
@@ -214,7 +203,6 @@
 - join()：用一个字符或子串合并字符串，即是将多个字符串合并为一个新的字符串。
 
 .. code-block:: python
-	:linenos:
 
 	字符或子串.join(多字符串组成的序列)
 
@@ -228,7 +216,6 @@
 - capitalize()：将字符串第一个字符转换成大写。
 
 .. code-block:: python
-	:linenos:
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -239,7 +226,6 @@
 - title()：将字符串每个单词首字母转换成大写。
 
 .. code-block:: python
-	:linenos:
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -249,7 +235,6 @@
 - lower()：将字符串中大写转小写。
 
 .. code-block:: python
-	:linenos:
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -259,7 +244,6 @@
 - upper()：将字符串中小写转大写。
 
 .. code-block:: python
-	:linenos:
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -281,7 +265,6 @@
 - startswith()：检查字符串是否是以指定子串开头，是则返回 True，否则返回 False。如果设置开始和结束位置下标，则在指定范围内检查。
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.startswith(子串, 开始位置下标, 结束位置下标)
 
@@ -294,7 +277,6 @@
 - endswith()：：检查字符串是否是以指定子串结尾，是则返回 True，否则返回 False。如果设置开始和结束位置下标，则在指定范围内检查。
 
 .. code-block:: python
-	:linenos:
 
 	字符串序列.endswith(子串, 开始位置下标, 结束位置下标)
 
@@ -309,7 +291,6 @@
 - isalpha()：如果字符串至少有一个字符并且所有字符都是字母则返回 True, 否则返回 False。
 
 .. code-block:: python
-	:linenos:
 
 	mystr1 = 'hello'
 	mystr2 = 'hello12345'
@@ -323,7 +304,6 @@
 - isdigit()：如果字符串只包含数字则返回 True 否则返回 False。
 
 .. code-block:: python
-	:linenos:
 
 	mystr1 = 'aaa12345'
 	mystr2 = '12345'
@@ -337,7 +317,6 @@
 - isalnum()：如果字符串至少有一个字符并且所有字符都是字母或数字则返 回 True,否则返回 False。
 
 .. code-block:: python
-	:linenos:
 
 	mystr1 = 'aaa12345'
 	mystr2 = '12345-'
@@ -351,7 +330,6 @@
 - isspace()：如果字符串中只包含空白，则返回 True，否则返回 False。
 
 .. code-block:: python
-	:linenos:
 
 	mystr1 = '1 2 3 4 5'
 	mystr2 = '     '
@@ -390,7 +368,6 @@
 下标
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 
@@ -404,7 +381,6 @@
 - index()：返回指定数据所在位置的下标 。
 
 .. code-block:: python
-	:linenos:
 
 	列表序列.index(数据, 开始位置下标, 结束位置下标)
 
@@ -415,7 +391,6 @@
 - count()：统计指定数据在当前列表中出现的次数。
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	print(name_list.count('Lily'))  # 1
@@ -423,7 +398,6 @@
 - len()：访问列表长度，即列表中数据的个数。
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	print(len(name_list))  # 3
@@ -433,7 +407,6 @@
 - in：判断指定数据在某个列表序列，如果在返回True，否则返回False
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 
@@ -446,7 +419,6 @@
 - not in：判断指定数据不在某个列表序列，如果不在返回True，否则返回False
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 
@@ -459,7 +431,6 @@
 需求：查找用户输入的名字是否已经存在。
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 
@@ -477,7 +448,6 @@
 - append()：列表结尾追加数据。
 
 .. code-block:: python
-	:linenos:
 
 	列表序列.append(数据)
 
@@ -493,7 +463,6 @@
 如果append()追加的数据是一个序列，则追加整个序列到列表
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list.append(['xiaoming', 'xiaohong'])
@@ -503,7 +472,6 @@
 - extend()：列表结尾追加数据，如果数据是一个序列，则将这个序列的数据逐一添加到列表。
 
 .. code-block:: python
-	:linenos:
 
 	列表序列.extend(数据)
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -519,7 +487,6 @@
 - insert()：指定位置新增数据。
 
 .. code-block:: python
-	:linenos:
 
 	列表序列.insert(位置下标, 数据)
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -532,7 +499,6 @@
 - del
 
 .. code-block:: python
-	:linenos:
 
 	语法: del 目标
 	删除列表
@@ -550,7 +516,6 @@
 - pop()：删除指定下标的数据(默认为最后一个)，并返回该数据。
 
 .. code-block:: python
-	:linenos:
 
 	语法: 列表序列.pop(下标)
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -563,7 +528,6 @@
 - remove()：移除列表中某个数据的第一个匹配项。
 
 .. code-block:: python
-	:linenos:
 
 	列表序列.remove(数据)
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -574,7 +538,6 @@
 - clear()：清空列表
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 
@@ -586,7 +549,6 @@
 - 修改指定下标数据
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list[0] = 'aaa'
@@ -596,7 +558,6 @@
 - 逆置：reverse()
 
 .. code-block:: python
-	:linenos:
 
 	num_list = [1, 5, 2, 3, 6, 8]
 	num_list.reverse()
@@ -606,7 +567,6 @@
 - 排序：sort()
 
 .. code-block:: python
-	:linenos:
 
 	语法: 列表序列.sort( key=None, reverse=False)
 	注意：reverse表示排序规则，**reverse = True** 降序， **reverse = False** 升序（默认）
@@ -618,7 +578,6 @@
 * 复制
 
 .. code-block:: python
-	:linenos:
 
 	函数：copy()
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -634,7 +593,6 @@
 * while
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	i = 0
@@ -645,7 +603,6 @@
 * for
 
 .. code-block:: python
-	:linenos:
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	for i in name_list:
@@ -658,7 +615,6 @@
 | 应用场景：要存储班级一、二、三三个班级学生姓名，且每个班级的学生姓名在一个列表。
 
 .. code-block:: python
-	:linenos:
 
 	name_list = [['小明', '小红', '小绿'], ['Tom', 'Lily', 'Rose'], ['张三', '李四', '王五']]
 
@@ -679,7 +635,6 @@
 | 答：列表？列表可以一次性存储多个数据，但是列表中的数据允许更改。
 
 .. code-block:: python
-	:linenos:
 
 	num_list = [10, 20, 30]
 	num_list[0] = 100
@@ -692,7 +647,6 @@
 元组特点：定义元组使用==小括号==，且==逗号==隔开各个数据，数据可以是不同的数据类型。
 
 .. code-block:: python
-	:linenos:
 
 	# 多个数据元组
 	t1 = (10, 20, 30)
@@ -719,7 +673,6 @@
 - 按下标查找数据
 
 .. code-block:: python
-	:linenos:
 
 	tuple1 = ('aa', 'bb', 'cc', 'bb')
 	print(tuple1[0])  # aa
@@ -727,7 +680,6 @@
 - index()：查找某个数据，如果数据存在返回对应的下标，否则报错，语法和列表、字符串的index方法相同。
 
 .. code-block:: python
-	:linenos:
 
 	tuple1 = ('aa', 'bb', 'cc', 'bb')
 	print(tuple1.index('aa'))  # 0
@@ -735,7 +687,6 @@
 - count()：统计某个数据在当前元组出现的次数。
 
 .. code-block:: python
-	:linenos:
 
 	tuple1 = ('aa', 'bb', 'cc', 'bb')
 	print(tuple1.count('bb'))  # 2
@@ -743,7 +694,6 @@
 - len()：统计元组中数据的个数。
 
 .. code-block:: python
-	:linenos:
 
 	tuple1 = ('aa', 'bb', 'cc', 'bb')
 	print(len(tuple1))  # 4
@@ -769,7 +719,6 @@
 思考1： 如果有多个数据，例如：'Tom', '男', 20，如何快速存储？
 
 .. code-block:: python
-	:linenos:
 
 	list1 = ['Tom', '男', 20]
 
@@ -778,14 +727,12 @@
 答：查找到下标为0的数据即可。
 
 .. code-block:: python
-	:linenos:
 
 	list1[0]
 
 思考3：如果将来数据顺序发生变化，如下所示，还能用`list1[0]`访问到数据'Tom'吗？。
 
 .. code-block:: python
-	:linenos:
 
 	list1 = ['男', 20, 'Tom']
 
@@ -808,7 +755,6 @@
 	- 各个键值对之间用==逗号==隔开
 
 .. code-block:: python
-	:linenos:
 
 	# 有数据字典
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
@@ -831,7 +777,6 @@
 | 注意：如果key存在则修改这个key对应的值；如果key不存在则新增此键值对。
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 
@@ -853,7 +798,6 @@
 - del() / del：删除字典或删除字典中指定键值对。
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 
@@ -864,7 +808,6 @@
 - clear()：清空字典
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 
@@ -881,7 +824,6 @@
 key值查找
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	print(dict1['name'])  # Tom
@@ -892,7 +834,6 @@ key值查找
 get()
 
 .. code-block:: python
-	:linenos:
 
 	字典序列.get(key, 默认值)
 	注意：如果当前查找的key不存在则返回第二个参数(默认值)，如果省略第二个参数，则返回None。
@@ -905,7 +846,6 @@ get()
 keys()
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	print(dict1.keys())  # dict_keys(['name', 'age', 'gender'])
@@ -913,7 +853,6 @@ keys()
 values()
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	print(dict1.values())  # dict_values(['Tom', 20, '男'])
@@ -921,7 +860,6 @@ values()
 items()
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	print(dict1.items())  # dict_items([('name', 'Tom'), ('age', 20), ('gender', '男')])
@@ -932,7 +870,6 @@ items()
 * 遍历字典的key
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	for key in dict1.keys():
@@ -941,7 +878,6 @@ items()
 * 遍历字典的value
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	for value in dict1.values():
@@ -950,7 +886,6 @@ items()
 * 遍历字典的元素
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	for item in dict1.items():
@@ -959,7 +894,6 @@ items()
 * 遍历字典的键值对
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'Tom', 'age': 20, 'gender': '男'}
 	for key, value in dict1.items():
@@ -974,7 +908,6 @@ items()
 创建集合使用`{}`或`set()`， 但是如果要创建空集合只能使用`set()`，因为`{}`用来创建空字典。
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20, 30, 40, 50}
 	print(s1)
@@ -1004,7 +937,6 @@ items()
 - add()
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20}
 	s1.add(100)
@@ -1016,7 +948,6 @@ items()
 - update(), 追加的数据是序列。
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20}
 	# s1.update(100)  # 报错
@@ -1029,7 +960,6 @@ items()
 - remove()，删除集合中的指定数据，如果数据不存在则报错。
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20}
 
@@ -1042,7 +972,6 @@ items()
 - discard()，删除集合中的指定数据，如果数据不存在也不会报错。
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20}
 
@@ -1055,7 +984,6 @@ items()
 - pop()，随机删除集合中的某个数据，并返回这个数据。
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20, 30, 40, 50}
 
@@ -1069,7 +997,6 @@ items()
 - not in：判断数据不在集合序列
 
 .. code-block:: python
-	:linenos:
 
 	s1 = {10, 20, 30, 40, 50}
 
@@ -1094,7 +1021,6 @@ items()
 * +
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串 
 	str1 = 'aa'
@@ -1118,7 +1044,6 @@ items()
 * *
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	print('-' * 10)  # ----------
@@ -1134,7 +1059,6 @@ items()
 * in 或 not in
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	print('a' in 'abcd')  # True
@@ -1167,7 +1091,6 @@ items()
 * len()
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	str1 = 'abcdefg'
@@ -1192,7 +1115,6 @@ items()
 * del()
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	str1 = 'abcdefg'
@@ -1207,7 +1129,6 @@ items()
 * max()
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	str1 = 'abcdefg'
@@ -1220,7 +1141,6 @@ items()
 * min()
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 字符串
 	str1 = 'abcdefg'
@@ -1233,7 +1153,6 @@ items()
 * range()
 
 .. code-block:: python
-	:linenos:
 
 	# 1 2 3 4 5 6 7 8 9
 	for i in range(1, 10, 1):
@@ -1252,7 +1171,6 @@ items()
 * enumerate()
 
 .. code-block:: python
-	:linenos:
 
 	enumerate(可遍历对象, start=0)
 	注意：start参数用来设置遍历数据的下标的起始值，默认为0。
@@ -1269,7 +1187,6 @@ items()
 * tuple()
 
 .. code-block:: python
-	:linenos:
 
 	作用：将某个序列转换成元组
 	list1 = [10, 20, 30, 40, 50, 20]
@@ -1281,7 +1198,6 @@ items()
 * list()
 
 .. code-block:: python
-	:linenos:
 
 	作用：将某个序列转换成列表
 	t1 = ('a', 'b', 'c', 'd', 'e')
@@ -1293,7 +1209,6 @@ items()
 * set()
 
 .. code-block:: python
-	:linenos:
 
 	作用：将某个序列转换成集合
 	list1 = [10, 20, 30, 40, 50, 20]
@@ -1323,7 +1238,6 @@ items()
 - while循环实现
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 准备一个空列表
 	list1 = []
@@ -1339,7 +1253,6 @@ items()
 - for循环实现
 
 .. code-block:: python
-	:linenos:
 
 	list1 = []
 	for i in range(10):
@@ -1350,7 +1263,6 @@ items()
 - 列表推导式实现
 
 .. code-block:: python
-	:linenos:
 
 	list1 = [i for i in range(10)]
 	print(list1)
@@ -1360,7 +1272,6 @@ items()
 方法一：range()步长实现
 
 .. code-block:: python
-	:linenos:
 
 	list1 = [i for i in range(0, 10, 2)]
 	print(list1)
@@ -1368,7 +1279,6 @@ items()
 - 方法二：if实现
 
 .. code-block:: python
-	:linenos:
 
 	list1 = [i for i in range(10) if i % 2 == 0]
 	print(list1)
@@ -1378,7 +1288,6 @@ items()
 需求：创建列表如下：
 
 .. code-block:: python
-	:linenos:
 
 	[(1, 0), (1, 1), (1, 2), (2, 0), (2, 1), (2, 2)]
 
@@ -1391,7 +1300,6 @@ items()
 思考：如果有如下两个列表：
 
 .. code-block:: python
-	:linenos:
 
 	list1 = ['name', 'age', 'gender']
 	list2 = ['Tom', 20, 'man']
@@ -1404,7 +1312,6 @@ items()
 1. 创建一个字典：字典key是1-5数字，value是这个数字的2次方。
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {i: i**2 for i in range(1, 5)}
 	print(dict1)  # {1: 1, 2: 4, 3: 9, 4: 16}
@@ -1412,7 +1319,6 @@ items()
 2. 将两个列表合并为一个字典
 
 .. code-block:: python
-	:linenos:
 
 	list1 = ['name', 'age', 'gender']
 	list2 = ['Tom', 20, 'man']
@@ -1423,7 +1329,6 @@ items()
 3. 提取字典中目标数据
 
 .. code-block:: python
-	:linenos:
 
 	counts = {'MBP': 268, 'HP': 125, 'DELL': 201, 'Lenovo': 199, 'acer': 99}
 
@@ -1437,7 +1342,6 @@ items()
 需求：创建一个集合，数据为下方列表的2次方。
 
 .. code-block:: python
-	:linenos:
 
 	list1 = [1, 1, 2]
 

@@ -26,7 +26,6 @@
 * 定义函数
 
 .. code-block:: python
-	:linenos:
 
 	def 函数名(参数):
 	    代码1
@@ -36,7 +35,6 @@
 * 调用函数
 
 .. code-block:: python
-	:linenos:
 
 	函数名(参数)
 
@@ -52,7 +50,6 @@
 1. 搭建整体框架(复现需求)
 
 .. code-block:: python
-	:linenos:
 
 	print('密码正确登录成功')
 	# 显示"选择功能"界面
@@ -64,7 +61,6 @@
 2. 确定“选择功能”界面内容
 
 .. code-block:: python
-	:linenos:
 
 	print('查询余额')
 	print('存款')
@@ -75,7 +71,6 @@
 注意：一定是先定义函数，后调用函数。
 
 .. code-block:: python
-	:linenos:
 
 	# 封装ATM机功能选项 -- 定义函数
 	def select_func():
@@ -90,7 +85,6 @@
 在需要显示“选择功能”函数的位置调用函数。
 
 .. code-block:: python
-	:linenos:
 
 	print('密码正确登录成功')
 	# 显示"选择功能"界面 -- 调用函数
@@ -110,7 +104,6 @@
 思考：完成需求如下：一个函数完成两个数1和2的加法运算，如何书写程序？
 
 .. code-block:: python
-	:linenos:
 
 	# 定义函数
 	def add_num1():
@@ -125,7 +118,6 @@
 | 分析：用户要在调用函数的时候指定具体数字，那么在定义函数的时候就需要接收用户指定的数字。函数调用时候指定的数字和定义函数时候接收的数字即是函数的参数。
 
 .. code-block:: python
-	:linenos:
 
 	# 定义函数时同时定义了接收用户数据的参数a和b，a和b是形参
 	def add_num2(a, b):
@@ -142,7 +134,6 @@
 例如：我们去超市购物，比如买烟，给钱之后，是不是售货员会返回给我们烟这个商品，在函数中，如果需要返回结果给用户需要使用函数返回值。
 
 .. code-block:: python
-	:linenos:
 
 	def buy():
 	    return '烟'
@@ -154,7 +145,6 @@
 需求：制作一个计算器，计算任意两数字之和，并保存结果。
 
 .. code-block:: python
-	:linenos:
 
 	def sum_num(a, b):
 	    return a + b
@@ -178,7 +168,6 @@
 - 定义函数的说明文档
 
 .. code-block:: python
-	:linenos:
 
 	def 函数名(参数):
 	    """ 说明文档的位置 """
@@ -188,14 +177,12 @@
 - 查看函数的说明文档
 
 .. code-block:: python
-	:linenos:
 
 	help(函数名)
 
 代码示例: 
 
 .. code-block:: python
-	:linenos:
 
 	def sum_num(a, b):
 	    """ 求和函数 """
@@ -207,7 +194,6 @@
 所谓函数嵌套调用指的是==一个函数里面又调用了另外一个函数==。
 
 .. code-block:: python
-	:linenos:
 
 	def testB():
 	    print('---- testB start----')
@@ -231,7 +217,6 @@
 1. 打印一条横线
 
 .. code-block:: python
-	:linenos:
 
 	def print_line():
 	    print('-' * 20)
@@ -241,7 +226,6 @@
 2. 打印多条横线
 
 .. code-block:: python
-	:linenos:
 
 	def print_line():
 	    print('-' * 20)
@@ -260,7 +244,6 @@
 1. 求三个数之和
 
 .. code-block:: python
-	:linenos:
 
 	def sum_num(a, b, c):
 	    return a + b + c
@@ -272,7 +255,6 @@
 2. 求三个数平均值
 
 .. code-block:: python
-	:linenos:
 
 	def average_num(a, b, c):
 	    sumResult = sum_num(a, b, c)
@@ -294,7 +276,6 @@
 所谓局部变量是定义在函数体内部的变量，即只在函数体内部生效。
 
 .. code-block:: python
-	:linenos:
 
 	def testA():
 	    a = 100
@@ -317,7 +298,6 @@
 答：将这个数据存储在一个全局变量里面。
 
 .. code-block:: python
-	:linenos:
 
 	# 定义全局变量a
 	a = 100
@@ -334,7 +314,6 @@
 思考：`testB`函数需求修改变量a的值为200，如何修改程序？
 
 .. code-block:: python
-	:linenos:
 
 	a = 100
 
@@ -358,7 +337,6 @@
 思考：如何在函数体内部修改全局变量？
 
 .. code-block:: python
-	:linenos:
 
 	a = 100
 
@@ -383,7 +361,6 @@
 - 共用全局变量
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 定义全局变量
 	glo_num = 0
@@ -405,7 +382,6 @@
 - 返回值作为参数传递
 
 .. code-block:: python
-	:linenos:
 
 	def test1():
 	    return 50
@@ -425,7 +401,6 @@
 思考：如果一个函数如些两个return (如下所示)，程序如何执行？
 
 .. code-block:: python
-	:linenos:
 
 	def return_num():
 	    return 1
@@ -439,7 +414,6 @@
 思考：如果一个函数要有多个返回值，该如何书写代码？
 
 .. code-block:: python
-	:linenos:
 
 	def return_num():
 	    return 1, 2
@@ -460,7 +434,6 @@
 位置参数：调用函数时根据函数定义的参数位置来传递参数。
 
 .. code-block:: python
-	:linenos:
 
 	def user_info(name, age, gender):
 	    print(f'您的名字是{name}, 年龄是{age}, 性别是{gender}')
@@ -476,7 +449,6 @@
 函数调用，通过“键=值”形式加以指定。可以让函数更加清晰、容易使用，同时也清除了参数的顺序需求。
 
 .. code-block:: python
-	:linenos:
 
 	def user_info(name, age, gender):
 	    print(f'您的名字是{name}, 年龄是{age}, 性别是{gender}')
@@ -493,7 +465,6 @@
 缺省参数也叫默认参数，用于定义函数，为参数提供默认值，调用函数时可不传该默认参数的值（注意：所有位置参数必须出现在默认参数前，包括函数定义和调用）。
 
 .. code-block:: python
-	:linenos:
 
 	def user_info(name, age, gender='男'):
 	    print(f'您的名字是{name}, 年龄是{age}, 性别是{gender}')
@@ -512,7 +483,6 @@
 - 包裹位置传递
 
 .. code-block:: python
-	:linenos:
 
 	def user_info(*args):
 	    print(args)
@@ -529,7 +499,6 @@
 - 包裹关键字传递
 
 .. code-block:: python
-	:linenos:
 
 	def user_info(**kwargs):
 	    print(kwargs)
@@ -549,7 +518,6 @@
 - 拆包：元组
 
 .. code-block:: python
-	:linenos:
 
 	def return_num():
 	    return 100, 200
@@ -561,7 +529,6 @@
 - 拆包：字典
 
 .. code-block:: python
-	:linenos:
 
 	dict1 = {'name': 'TOM', 'age': 18}
 	a, b = dict1
@@ -582,7 +549,6 @@
 借助第三变量存储数据。
 
 .. code-block:: python
-	:linenos:
 
 	# 1. 定义中间变量
 	c = 0
@@ -602,7 +568,6 @@
 - 方法二
 
 .. code-block:: python
-	:linenos:
 
 	a, b = 1, 2
 	a, b = b, a
@@ -619,7 +584,6 @@
 **我们可以用`id()`来判断两个变量是否为同一个值的引用。** 我们可以将id值理解为那块内存的地址标识。
 
 .. code-block:: python
-	:linenos:
 
 	# 1. int类型
 	a = 1
@@ -652,7 +616,6 @@
 * 引用当做实参
 
 .. code-block:: python
-	:linenos:
 
 	def test1(a):
 	    print(a)
@@ -711,7 +674,6 @@
 * 应用：3以内数字累加和
 
 .. code-block:: python
-	:linenos:
 
 	# 3 + 2 + 1
 	def sum_numbers(num):
@@ -744,7 +706,6 @@ lambda 表达式
 * 快速入门
 
 .. code-block:: python
-	:linenos:
 
 	# 函数
 	def fn1():
@@ -771,7 +732,6 @@ lambda 表达式
 * 示例：计算a + b
 
 .. code-block:: python
-	:linenos:
 
 	def add(a, b):
 	    return a + b
@@ -782,7 +742,6 @@ lambda 表达式
 lambda实现
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda a, b: a + b
 	print(fn1(1, 2))
@@ -792,7 +751,6 @@ lambda实现
 无参数
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda: 100
 	print(fn1())
@@ -800,7 +758,6 @@ lambda实现
 一个参数
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda a: a
 	print(fn1('hello world'))
@@ -808,7 +765,6 @@ lambda实现
 默认参数
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda a, b, c=100: a + b + c
 	print(fn1(10, 20))
@@ -816,7 +772,6 @@ lambda实现
 可变参数：*args
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda *args: args
 	print(fn1(10, 20, 30))
@@ -828,7 +783,6 @@ lambda实现
 可变参数：**kwargs
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda **kwargs: kwargs
 	print(fn1(name='python', age=20))
@@ -838,7 +792,6 @@ lambda实现
 带判断的lambda
 
 .. code-block:: python
-	:linenos:
 
 	fn1 = lambda a, b: a if a > b else b
 	print(fn1(1000, 500))
@@ -846,7 +799,6 @@ lambda实现
 列表数据按字典key的值排序
 
 .. code-block:: python
-	:linenos:
 
 	students = [
 	    {'name': 'TOM', 'age': 20},
@@ -876,14 +828,12 @@ lambda实现
 在Python中，`abs()`函数可以完成对数字求绝对值计算。
 
 .. code-block:: python
-	:linenos:
 
 	abs(-10)  # 10
 
 `round()`函数可以完成对数字的四舍五入计算。
 
 .. code-block:: python
-	:linenos:
 
 	round(1.2)  # 1
 	round(1.9)  # 2
@@ -895,7 +845,6 @@ lambda实现
 - 方法1
 
 .. code-block:: python
-	:linenos:
 
 	def add_num(a, b):
 	    return abs(a) + abs(b)
@@ -906,7 +855,6 @@ lambda实现
 - 方法2
 
 .. code-block:: python
-	:linenos:
 
 	def sum_num(a, b, f):
 	    return f(a) + f(b)
@@ -925,7 +873,6 @@ lambda实现
 map()
 
 .. code-block:: python
-	:linenos:
 
 	list1 = [1, 2, 3, 4, 5]
 
@@ -940,7 +887,6 @@ map()
 reduce()
 
 .. code-block:: python
-	:linenos:
 
 reduce(func，lst)，其中func必须有两个参数。每次func计算的结果继续和序列的下一个元素做累积计算。
 
@@ -951,7 +897,6 @@ reduce(func，lst)，其中func必须有两个参数。每次func计算的结果
 需求：计算`list1`序列中各个数字的累加和。
 
 .. code-block:: python
-	:linenos:
 
 	import functools
 
@@ -967,7 +912,6 @@ reduce(func，lst)，其中func必须有两个参数。每次func计算的结果
 filter()
 
 .. code-block:: python
-	:linenos:
 
 	filter(func, lst)函数用于过滤序列, 过滤掉不符合条件的元素, 返回一个 filter 对象。如果要转换为列表, 可以使用 list() 来转换。
 
