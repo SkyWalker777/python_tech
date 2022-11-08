@@ -123,8 +123,8 @@
 
 .. code-block:: python
 
-	语法: 字符串序列.find(子串, 开始位置下标, 结束位置下标)
-	注意: 开始和结束位置下标可以省略，表示在整个字符串序列中查找
+	# 语法: 字符串序列.find(子串, 开始位置下标, 结束位置下标)
+	# 注意: 开始和结束位置下标可以省略，表示在整个字符串序列中查找
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -136,18 +136,21 @@
 
 .. code-block:: python
 
-	字符串序列.index(子串, 开始位置下标, 结束位置下标)
-	注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
+	# 字符串序列.index(子串, 开始位置下标, 结束位置下标)
+	# 注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
 
 	mystr = "hello world and itcast and itheima and Python"
 
 	print(mystr.index('and'))  # 12
 	print(mystr.index('and', 15, 30))  # 23
-	print(mystr.index('ands'))  # 报错
+	try:
+	    print(mystr.index('ands'))  # 报错
+	except:
+	    pass
 
-| - rfind()： 和find()功能相同，但查找方向为==右侧==开始。
-| - rindex()：和index()功能相同，但查找方向为==右侧==开始。
-| - count()：返回某个子串在字符串中出现的次数
+- rfind()： 和 find() 功能相同，但查找方向为==右侧==开始。
+- rindex()：和 index() 功能相同，但查找方向为==右侧==开始。
+- count()：返回某个子串在字符串中出现的次数
 
 .. code-block:: python
 
