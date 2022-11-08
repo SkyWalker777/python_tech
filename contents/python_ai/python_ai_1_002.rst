@@ -1,68 +1,6 @@
 数据序列
 ##################################################################################
 
-字符串测试
-**********************************************************************************
-
-认识字符串
-==================================================================================
-
-.. code-block:: python
-
-	a = 'hello world'
-	b = "abcdefg"
-	print(type(a))
-	print(type(b))
-
-.. tip::
-
-	控制台显示结果为`<class 'str'>`， 即数据类型为str(字符串)。
-
-* 字符串特征
-
-.. code-block:: python
-
-	# 一对引号字符串
-
-	name1 = 'Tom'
-	name2 = "Rose"
-
-	# 三引号字符串
-
-	name3 = ''' Tom '''
-	name4 = """ Rose """
-	a = ''' i am Tom,
-	        nice to meet you! '''
-
-	b = """ i am Rose,
-	        nice to meet you! """
-
-.. tip::
-
-	三引号形式的字符串支持换行。
-
-* 字符串输出
-
-.. code-block:: python
-
-	print('hello world')
-
-	name = 'Tom'
-	print('我的名字是%s' % name)
-	print(f'我的名字是{name}')
-
-* 字符串输入
-
-.. code-block:: python
-
-	name = input('请输入您的名字：')
-	print(f'您输入的名字是{name}')
-	print(type(name))
-
-	password = input('请输入您的密码：')
-	print(f'您输入的密码是{password}')
-	print(type(password))
-
 字符串
 **********************************************************************************
 
