@@ -22,19 +22,19 @@
 
 .. code-block:: python
 
-	一对引号字符串
+	# 一对引号字符串
 
 	name1 = 'Tom'
 	name2 = "Rose"
 
-	三引号字符串
+	# 三引号字符串
 
 	name3 = ''' Tom '''
 	name4 = """ Rose """
-	a = ''' i am Tom, 
+	a = ''' i am Tom,
 	        nice to meet you! '''
 
-	b = """ i am Rose, 
+	b = """ i am Rose,
 	        nice to meet you! """
 
 .. tip::
