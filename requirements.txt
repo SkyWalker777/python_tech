@@ -1,5 +1,5 @@
 recommonmark
 sphinxcontrib-httpdomain
 sphinx_rtd_theme
-sphinx-comments
-
+sphinx-tabs
+furo
