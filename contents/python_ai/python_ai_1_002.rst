@@ -371,8 +371,6 @@
 
 * 查找
 
-下标
-
 .. code-block:: python
 
 	name_list = ['Tom', 'Lily', 'Rose']
