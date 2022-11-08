@@ -40,13 +40,6 @@ release = '0.0.1'
 # ones.
 extensions = ['sphinx_tabs.tabs']
 
-comments_config = {
-   "utterances": {
-      "repo": "lilizhaolilizhao/python_learn",
-      "optional": "config"
-   }
-}
-
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -68,7 +61,7 @@ html_logo = "_static/logo.png"
 html_theme_options = {
     'collapse_navigation': False,
     'display_version': False,
-    'navigation_depth': 3,
+    'navigation_depth': 4,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -102,23 +95,11 @@ html_additional_pages = {
 # }
 
 latex_engine = 'xelatex'
+latex_use_xindy = False
 latex_elements = {
-    'papersize': 'a4paper',
-    'pointsize': '11pt',
-    'preamble': r'''
-\usepackage{xeCJK}
-\setCJKmainfont[BoldFont=STZhongsong, ItalicFont=STKaiti]{STSong}
-\setCJKsansfont[BoldFont=STHeiti]{STXihei}
-\setCJKmonofont{STFangsong}
-\XeTeXlinebreaklocale "zh"
-\XeTeXlinebreakskip = 0pt plus 1pt
-\parindent 2em
-\definecolor{VerbatimColor}{rgb}{0.95,0.95,0.95}
-\setcounter{tocdepth}{3}
-\renewcommand\familydefault{\ttdefault}
-\renewcommand\CJKfamilydefault{\CJKrmdefault}
-'''
+    'preamble': '\\usepackage[UTF8]{ctex}\n',
 }
+
 # 设置文档
 latex_documents = [
     (master_doc, 'sphinx.tex', 'Python 工程师',

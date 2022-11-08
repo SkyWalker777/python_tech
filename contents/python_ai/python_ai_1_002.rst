@@ -170,25 +170,8 @@
 
 .. code-block:: python
 
-	字符串序列.replace(旧子串, 新子串, 替换次数)
-	注意：替换次数如果查出子串出现次数，则替换次数为该子串出现次数。
-
-	mystr = "hello world and itcast and itheima and Python"
-	# 结果：hello world he itcast he itheima he Python
-	print(mystr.replace('and', 'he'))
-	# 结果：hello world he itcast he itheima he Python
-	print(mystr.replace('and', 'he', 10))
-	# 结果：hello world and itcast and itheima and Python
-	print(mystr)
-
-	注意：数据按照是否能直接修改分为==可变类型==和==不可变类型==两种。字符串类型的数据修改的时候不能改变原有字符串，属于不能直接修改数据的类型即是不可变类型。
-
-- split()：按照指定字符分割字符串。
-
-.. code-block:: python
-
-	字符串序列.split(分割字符, num)
-	注意：num表示的是分割字符出现的次数，即将来返回数据个数为num+1个。
+	# 字符串序列.split(分割字符, num)
+	# 注意：num表示的是分割字符出现的次数，即将来返回数据个数为 num+1 个。
 
 	mystr = "hello world and itcast and itheima and Python"
 
@@ -201,13 +184,33 @@
 	# 结果：['hello', 'world', 'and itcast and itheima and Python']
 	print(mystr.split(' ', 2))
 
-	注意：如果分割字符是原有字符串中的子串，分割后则丢失该子串。
+	# 注意：如果分割字符是原有字符串中的子串，分割后则丢失该子串。
+
+- split()：按照指定字符分割字符串。
+
+.. code-block:: python
+
+	# 字符串序列.split(分割字符, num)
+	# 注意：num表示的是分割字符出现的次数，即将来返回数据个数为num+1个。
+
+	mystr = "hello world and itcast and itheima and Python"
+
+	# 结果：['hello world ', ' itcast ', ' itheima ', ' Python']
+	print(mystr.split('and'))
+	# 结果：['hello world ', ' itcast ', ' itheima and Python']
+	print(mystr.split('and', 2))
+	# 结果：['hello', 'world', 'and', 'itcast', 'and', 'itheima', 'and', 'Python']
+	print(mystr.split(' '))
+	# 结果：['hello', 'world', 'and itcast and itheima and Python']
+	print(mystr.split(' ', 2))
+
+	# 注意：如果分割字符是原有字符串中的子串，分割后则丢失该子串。
 
 - join()：用一个字符或子串合并字符串，即是将多个字符串合并为一个新的字符串。
 
 .. code-block:: python
 
-	字符或子串.join(多字符串组成的序列)
+# 字符或子串.join(多字符串组成的序列)
 
 	list1 = ['chuan', 'zhi', 'bo', 'ke']
 	t1 = ('aa', 'b', 'cc', 'ddd')
@@ -224,7 +227,7 @@
 
 	# 结果：Hello world and itcast and itheima and python
 	print(mystr.capitalize())
-	注意：capitalize()函数转换后，只字符串第一个字符大写，其他的字符全都小写。
+	# 注意：capitalize()函数转换后，只字符串第一个字符大写，其他的字符全都小写。
 
 - title()：将字符串每个单词首字母转换成大写。
 
