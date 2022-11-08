@@ -25,12 +25,12 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # -- Project information -----------------------------------------------------
-project = 'Python 工程师'
-copyright = '2011-2021'
-author = 'lilizhao'
+project = 'Python 架构师路线'
+copyright = '2011-2021, java_tech'
+author = 'python_tech'
 
 # The full version, including alpha/beta/rc tags
-release = '0.0.1'
+release = ''
 
 
 # -- General configuration ---------------------------------------------------
@@ -102,6 +102,6 @@ latex_elements = {
 
 # 设置文档
 latex_documents = [
-    (master_doc, 'sphinx.tex', 'Python 工程师',
-     '作者：lilizhao', 'manual', True),
+    (master_doc, 'sphinx.tex', 'Python 技术架构',
+     '作者：python_tech', 'manual', True),
 ]
