@@ -371,6 +371,8 @@
 
 * 查找
 
+下标
+
 .. code-block:: python
 
 	name_list = ['Tom', 'Lily', 'Rose']
@@ -378,7 +380,6 @@
 	print(name_list[0])  # Tom
 	print(name_list[1])  # Lily
 	print(name_list[2])  # Rose
-
 
 函数
 
@@ -408,27 +409,23 @@
 
 判断是否存在
 
-- in：判断指定数据在某个列表序列，如果在返回True，否则返回False
+- in：判断指定数据在某个列表序列，如果在返回 True，否则返回 False
+
+.. code-block:: python
+
+	# 列表序列.index(数据, 开始位置下标, 结束位置下标)
+
+	name_list = ['Tom', 'Lily', 'Rose']
+	print(name_list.index('Lily', 0, 2))  # 1
+	# 注意：如果查找的数据不存在则报错。
+
+- not in：判断指定数据不在某个列表序列，如果不在返回 True，否则返回 False
 
 .. code-block:: python
 
 	name_list = ['Tom', 'Lily', 'Rose']
-
-	# 结果：True
-	print('Lily' in name_list)
-
-	# 结果：False
-	print('Lilys' in name_list)
-
-- not in：判断指定数据不在某个列表序列，如果不在返回True，否则返回False
-
-.. code-block:: python
-
-	name_list = ['Tom', 'Lily', 'Rose']
-
 	# 结果：False
 	print('Lily' not in name_list)
-
 	# 结果：True
 	print('Lilys' not in name_list)
 
@@ -437,7 +434,6 @@
 .. code-block:: python
 
 	name_list = ['Tom', 'Lily', 'Rose']
-
 	name = input('请输入您要搜索的名字：')
 
 	if name in name_list:
@@ -453,18 +449,18 @@
 
 .. code-block:: python
 
-	列表序列.append(数据)
+	# 列表序列.append(数据)
 
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list.append('xiaoming')
 	# 结果：['Tom', 'Lily', 'Rose', 'xiaoming']
 	print(name_list)
 
-..tip ::
-	
+.. tip::
+
 	列表追加数据的时候，直接在原列表里面追加了指定数据，即修改了原列表，故列表为可变类型数据。
 
-如果append()追加的数据是一个序列，则追加整个序列到列表
+如果 append() 追加的数据是一个序列，则追加整个序列到列表
 
 .. code-block:: python
 
@@ -477,7 +473,7 @@
 
 .. code-block:: python
 
-	列表序列.extend(数据)
+	# 列表序列.extend(数据)
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list.extend('xiaoming')
 	# 结果：['Tom', 'Lily', 'Rose', 'x', 'i', 'a', 'o', 'm', 'i', 'n', 'g']
@@ -492,7 +488,7 @@
 
 .. code-block:: python
 
-	列表序列.insert(位置下标, 数据)
+	# 列表序列.insert(位置下标, 数据)
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list.insert(1, 'xiaoming')
 	# 结果：['Tom', 'xiaoming', 'Lily', 'Rose']
