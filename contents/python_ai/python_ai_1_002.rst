@@ -154,8 +154,8 @@
 
 .. code-block:: python
 
-	字符串序列.count(子串, 开始位置下标, 结束位置下标)
-	注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
+	# 字符串序列.count(子串, 开始位置下标, 结束位置下标)
+	# 注意：开始和结束位置下标可以省略，表示在整个字符串序列中查找。
 	mystr = "hello world and itcast and itheima and Python"
 
 	print(mystr.count('and'))  # 3
