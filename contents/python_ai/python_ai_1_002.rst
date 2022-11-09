@@ -500,14 +500,14 @@
 
 .. code-block:: python
 
-	语法: del 目标
-	删除列表
+	# 语法: del 目标
+	# 删除列表
 	name_list = ['Tom', 'Lily', 'Rose']
 	# 结果：报错提示：name 'name_list' is not defined
 	del name_list
 	print(name_list)
 
-	删除指定数据
+	# 删除指定数据
 	name_list = ['Tom', 'Lily', 'Rose']
 	del name_list[0]
 	# 结果：['Lily', 'Rose']
@@ -517,7 +517,7 @@
 
 .. code-block:: python
 
-	语法: 列表序列.pop(下标)
+	# 语法: 列表序列.pop(下标)
 	name_list = ['Tom', 'Lily', 'Rose']
 	del_name = name_list.pop(1)
 	# 结果：Lily
@@ -529,7 +529,7 @@
 
 .. code-block:: python
 
-	列表序列.remove(数据)
+	# 列表序列.remove(数据)
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_list.remove('Rose')
 	# 结果：['Tom', 'Lily']
@@ -568,10 +568,10 @@
 
 .. code-block:: python
 
-	语法: 列表序列.sort( key=None, reverse=False)
-	注意：reverse表示排序规则，**reverse = True** 降序， **reverse = False** 升序（默认）
+	# 语法: 列表序列.sort( key=None, reverse=False)
+	# 注意：reverse表示排序规则，**reverse = True** 降序， **reverse = False** 升序（默认）
 	num_list = [1, 5, 2, 3, 6, 8]
-	num_list.sort()
+	num_list.sort(reverse=False)
 	# 结果：[1, 2, 3, 5, 6, 8]
 	print(num_list)
 
@@ -579,7 +579,7 @@
 
 .. code-block:: python
 
-	函数：copy()
+	# 函数：copy()
 	name_list = ['Tom', 'Lily', 'Rose']
 	name_li2 = name_list.copy()
 	# 结果：['Tom', 'Lily', 'Rose']
