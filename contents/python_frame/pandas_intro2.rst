@@ -1,972 +1,1233 @@
 Pandas 篇 2
 ##################################################################################
 
-Pandas 对缺失值的处理
+Pandas 实现数据的合并 concat
 **********************************************************************************
 
 .. code-block:: python
 
-	# Pandas使用这些函数处理缺失值：
-	# * isnull和notnull：检测是否是空值，可用于df和series
-	# * dropna：丢弃、删除缺失值
-	#   - axis : 删除行还是列，{0 or ‘index’, 1 or ‘columns’}, default 0
-	#   - how : 如果等于any则任何值为空都删除，如果等于all则所有值都为空才删除
-	#   - inplace : 如果为True则修改当前df，否则返回新的df
-	# * fillna：填充空值
-	#   - value：用于填充的值，可以是单个值，或者字典（key是列名，value是值）
-	#   - method : 等于ffill使用前一个不为空的值填充forword fill；等于bfill使用后一个不为空的值填充backword fill
-	#   - axis : 按行还是列填充，{0 or ‘index’, 1 or ‘columns’}
-	#   - inplace : 如果为True则修改当前df，否则返回新的df
+	#### 使用场景：
+	批量合并相同格式的Excel、给DataFrame添加行、给DataFrame添加列
+
+	#### 一句话说明concat语法：  
+	* 使用某种合并方式(inner/outer)
+	* 沿着某个轴向(axis=0/1)
+	* 把多个Pandas对象(DataFrame/Series)合并成一个。
+
+	#### concat语法：pandas.concat(objs, axis=0, join='outer', ignore_index=False)
+	* objs：一个列表，内容可以是DataFrame或者Series，可以混合
+	* axis：默认是0代表按行合并，如果等于1代表按列合并
+	* join：合并的时候索引的对齐方式，默认是outer join，也可以是inner join
+	* ignore_index：是否忽略掉原来的数据索引
+
+	#### append语法：DataFrame.append(other, ignore_index=False)
+	append只有按行合并，没有按列合并，相当于concat按行的简写形式  
+	* other：单个dataframe、series、dict，或者列表
+	* ignore_index：是否忽略掉原来的数据索引
+
+	#### 参考文档：
+	* pandas.concat的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
+	* pandas.concat的教程：https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html
+	* pandas.append的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.append.html
 
 	import pandas as pd
 
-	### 实例：特殊Excel的读取、清洗、处理
-	#### 步骤1：读取excel的时候，忽略前几个空行
+	import warnings
+	warnings.filterwarnings('ignore')
 
-	studf = pd.read_excel("./datas/student_excel/student_excel.xlsx", skiprows=2)
-	studf
-	===========>
-	Unnamed: 0	姓名	科目	分数
-	0	NaN	小明	语文	85.0
-	1	NaN	NaN	数学	80.0
-	2	NaN	NaN	英语	90.0
-	3	NaN	NaN	NaN	NaN
-	4	NaN	小王	语文	85.0
-	5	NaN	NaN	数学	NaN
-	6	NaN	NaN	英语	90.0
-	7	NaN	NaN	NaN	NaN
-	8	NaN	小刚	语文	85.0
-	9	NaN	NaN	数学	80.0
-	10	NaN	NaN	英语	90.0
+	### 一、使用pandas.concat合并数据
+	df1 = pd.DataFrame({'A': ['A0', 'A1', 'A2', 'A3'],
+	                    'B': ['B0', 'B1', 'B2', 'B3'],
+	                    'C': ['C0', 'C1', 'C2', 'C3'],
+	                    'D': ['D0', 'D1', 'D2', 'D3'],
+	                    'E': ['E0', 'E1', 'E2', 'E3']
+	                   })
+	df1
+		A	B	C	D	E
+	0	A0	B0	C0	D0	E0
+	1	A1	B1	C1	D1	E1
+	2	A2	B2	C2	D2	E2
+	3	A3	B3	C3	D3	E3
 
-	#### 步骤2：检测空值
-	studf.isnull()
-		Unnamed: 0	姓名	科目	分数
-	0	True	False	False	False
-	1	True	True	False	False
-	2	True	True	False	False
-	3	True	True	True	True
-	4	True	False	False	False
-	5	True	True	False	True
-	6	True	True	False	False
-	7	True	True	True	True
-	8	True	False	False	False
-	9	True	True	False	False
-	10	True	True	False	False
+	df2 = pd.DataFrame({ 'A': ['A4', 'A5', 'A6', 'A7'],
+	                     'B': ['B4', 'B5', 'B6', 'B7'],
+	                     'C': ['C4', 'C5', 'C6', 'C7'],
+	                     'D': ['D4', 'D5', 'D6', 'D7'],
+	                     'F': ['F4', 'F5', 'F6', 'F7']
+	                   })
+	df2
+	A	B	C	D	F
+	0	A4	B4	C4	D4	F4
+	1	A5	B5	C5	D5	F5
+	2	A6	B6	C6	D6	F6
+	3	A7	B7	C7	D7	F7
 
-	studf["分数"].isnull()
-	0     False
-	1     False
-	2     False
-	3      True
-	4     False
-	5      True
-	6     False
-	7      True
-	8     False
-	9     False
-	10    False
-	Name: 分数, dtype: bool
+	***1、默认的concat，参数为axis=0、join=outer、ignore_index=False***
 
-	studf["分数"].notnull()
-	0      True
-	1      True
-	2      True
-	3     False
-	4      True
-	5     False
-	6      True
-	7     False
-	8      True
-	9      True
-	10     True
-	Name: 分数, dtype: bool
+	pd.concat([df1,df2])
+		A	B	C	D	E	F
+	0	A0	B0	C0	D0	E0	NaN
+	1	A1	B1	C1	D1	E1	NaN
+	2	A2	B2	C2	D2	E2	NaN
+	3	A3	B3	C3	D3	E3	NaN
+	0	A4	B4	C4	D4	NaN	F4
+	1	A5	B5	C5	D5	NaN	F5
+	2	A6	B6	C6	D6	NaN	F6
+	3	A7	B7	C7	D7	NaN	F7
 
-	# 筛选没有空分数的所有行
-	studf.loc[studf["分数"].notnull(), :]
-		Unnamed: 0	姓名	科目	分数
-	0	NaN	小明	语文	85.0
-	1	NaN	NaN	数学	80.0
-	2	NaN	NaN	英语	90.0
-	4	NaN	小王	语文	85.0
-	6	NaN	NaN	英语	90.0
-	8	NaN	小刚	语文	85.0
-	9	NaN	NaN	数学	80.0
-	10	NaN	NaN	英语	90.0
+	***2、使用ignore_index=True可以忽略原来的索引***
+	pd.concat([df1,df2], ignore_index=True)
+		A	B	C	D	E	F
+	0	A0	B0	C0	D0	E0	NaN
+	1	A1	B1	C1	D1	E1	NaN
+	2	A2	B2	C2	D2	E2	NaN
+	3	A3	B3	C3	D3	E3	NaN
+	4	A4	B4	C4	D4	NaN	F4
+	5	A5	B5	C5	D5	NaN	F5
+	6	A6	B6	C6	D6	NaN	F6
+	7	A7	B7	C7	D7	NaN	F7
 
-	#### 步骤3：删除掉全是空值的列
-	studf.dropna(axis="columns", how='all', inplace=True)
+	***3、使用join=inner过滤掉不匹配的列***
+	pd.concat([df1,df2], ignore_index=True, join="inner")
+	A	B	C	D
+	0	A0	B0	C0	D0
+	1	A1	B1	C1	D1
+	2	A2	B2	C2	D2
+	3	A3	B3	C3	D3
+	4	A4	B4	C4	D4
+	5	A5	B5	C5	D5
+	6	A6	B6	C6	D6
+	7	A7	B7	C7	D7
 
-	#### 步骤4：删除掉全是空值的行
-	studf.dropna(axis="index", how='all', inplace=True)
+	***4、使用axis=1相当于添加新列***
+	df1
+	A	B	C	D	E
+	0	A0	B0	C0	D0	E0
+	1	A1	B1	C1	D1	E1
+	2	A2	B2	C2	D2	E2
+	3	A3	B3	C3	D3	E3
 
-	studf
-	姓名	科目	分数
-	0	小明	语文	85.0
-	1	NaN	数学	80.0
-	2	NaN	英语	90.0
-	4	小王	语文	85.0
-	5	NaN	数学	NaN
-	6	NaN	英语	90.0
-	8	小刚	语文	85.0
-	9	NaN	数学	80.0
-	10	NaN	英语	90.0
+	***A：添加一列Series***
+	s1 = pd.Series(list(range(4)), name="F")
+	pd.concat([df1,s1], axis=1)
+	A	B	C	D	E	F
+	0	A0	B0	C0	D0	E0	0
+	1	A1	B1	C1	D1	E1	1
+	2	A2	B2	C2	D2	E2	2
+	3	A3	B3	C3	D3	E3	3
 
-	### 步骤5：将分数列为空的填充为0分
-	studf.fillna({"分数":0})
-		姓名	科目	分数
-	0	小明	语文	85.0
-	1	NaN	数学	80.0
-	2	NaN	英语	90.0
-	4	小王	语文	85.0
-	5	NaN	数学	0.0
-	6	NaN	英语	90.0
-	8	小刚	语文	85.0
-	9	NaN	数学	80.0
-	10	NaN	英语	90.0
-
-	# 等同于
-	studf.loc[:, '分数'] = studf['分数'].fillna(0)
-
-	### 步骤6：将姓名的缺失值填充
-	# 使用前面的有效值填充，用ffill：forward fill
-	studf.loc[:, '姓名'] = studf['姓名'].fillna(method="ffill")
-
-	studf
-		姓名	科目	分数
-	0	小明	语文	85.0
-	1	小明	数学	80.0
-	2	小明	英语	90.0
-	4	小王	语文	85.0
-	5	小王	数学	0.0
-	6	小王	英语	90.0
-	8	小刚	语文	85.0
-	9	小刚	数学	80.0
-	10	小刚	英语	90.0
-
-	### 步骤7：将清洗好的excel保存
-	studf.to_excel("./datas/student_excel/student_excel_clean.xlsx", index=False)
-
-Pandas 的 SettingWithCopyWarning 报警
-**********************************************************************************
-
-.. code-block:: python
-
-	## Pandas的SettingWithCopyWarning报警
-
-	### 0、读取数据
-	import pandas as pd
-	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
-	df = pd.read_csv(fpath)
-
-	df.head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	0	2018-01-01	3℃	-6℃	晴~多云	东北风	1-2级	59	良	2
-	1	2018-01-02	2℃	-5℃	阴~多云	东北风	1-2级	49	优	1
-	2	2018-01-03	2℃	-5℃	多云	北风	1-2级	28	优	1
-	3	2018-01-04	0℃	-8℃	阴	东北风	1-2级	28	优	1
-	4	2018-01-05	3℃	-6℃	多云~晴	西北风	1-2级	50	优	1
-
-	# 替换掉温度的后缀℃
-	df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
-	df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
-
-	df.head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2
-	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1
-	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1
-	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1
-	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1
-
-	### 1、复现
-	# 只选出3月份的数据用于分析
-	condition = df["ymd"].str.startswith("2018-03")
-
-	# 设置温差
-	df[condition]["wen_cha"] = df["bWendu"]-df["yWendu"]
-	A value is trying to be set on a copy of a slice from a DataFrame.
-	Try using .loc[row_indexer,col_indexer] = value instead
-
-	# 查看是否修改成功
-	df[condition].head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	59	2018-03-01	8	-3	多云	西南风	1-2级	46	优	1
-	60	2018-03-02	9	-1	晴~多云	北风	1-2级	95	良	2
-	61	2018-03-03	13	3	多云~阴	北风	1-2级	214	重度污染	5
-	62	2018-03-04	7	-2	阴~多云	东南风	1-2级	144	轻度污染	3
-	63	2018-03-05	8	-3	晴	南风	1-2级	94	良	2
-
-	### 2、原因
-	# 发出警告的代码
-	df[condition]["wen_cha"] = df["bWendu"]-df["yWendu"]
-	# 相当于：df.get(condition).set(wen_cha)，第一步骤的get发出了报警
-
-	# ***链式操作其实是两个步骤，先get后set，get得到的dataframe可能是view也可能是copy，pandas发出警告***
-
-	# 官网文档：
-	# https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-a-view-versus-a-copy
-
-	# 核心要诀：pandas的dataframe的修改写操作，只允许在源dataframe上进行，一步到位
-
-	### 3、解决方法1
-	# 将get+set的两步操作，改成set的一步操作
-	df.loc[condition, "wen_cha"] = df["bWendu"]-df["yWendu"]
-
-	df[condition].head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	wen_cha
-	59	2018-03-01	8	-3	多云	西南风	1-2级	46	优	1	11.0
-	60	2018-03-02	9	-1	晴~多云	北风	1-2级	95	良	2	10.0
-	61	2018-03-03	13	3	多云~阴	北风	1-2级	214	重度污染	5	10.0
-	62	2018-03-04	7	-2	阴~多云	东南风	1-2级	144	轻度污染	3	9.0
-	63	2018-03-05	8	-3	晴	南风	1-2级	94	良	2	11.0
-
-	### 4、解决方法2
-	# 如果需要预筛选数据做后续的处理分析，使用copy复制dataframe
-	df_month3 = df[condition].copy()
-
-	df_month3.head()
-		ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	wen_cha
-	59	2018-03-01	8	-3	多云	西南风	1-2级	46	优	1	11.0
-	60	2018-03-02	9	-1	晴~多云	北风	1-2级	95	良	2	10.0
-	61	2018-03-03	13	3	多云~阴	北风	1-2级	214	重度污染	5	10.0
-	62	2018-03-04	7	-2	阴~多云	东南风	1-2级	144	轻度污染	3	9.0
-	63	2018-03-05	8	-3	晴	南风	1-2级	94	良	2	11.0
-
-	df_month3["wen_cha"] = df["bWendu"]-df["yWendu"]
-
-	df_month3.head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	wen_cha
-	59	2018-03-01	8	-3	多云	西南风	1-2级	46	优	1	11
-	60	2018-03-02	9	-1	晴~多云	北风	1-2级	95	良	2	10
-	61	2018-03-03	13	3	多云~阴	北风	1-2级	214	重度污染	5	10
-	62	2018-03-04	7	-2	阴~多云	东南风	1-2级	144	轻度污染	3	9
-	63	2018-03-05	8	-3	晴	南风	1-2级	94	良	2	11
-
-	# ***总之，pandas不允许先筛选子dataframe，再进行修改写入***  
-	# 要么使用.loc实现一个步骤直接修改源dataframe  
-	# 要么先复制一个子dataframe再一个步骤执行修改
-
-Pandas 数据排序
-**********************************************************************************
-
-.. code-block:: python
-
-	## Pandas数据排序
-
-	# Series的排序：  
-	# ***Series.sort_values(ascending=True, inplace=False)***  
-	# 参数说明：
-	# * ascending：默认为True升序排序，为False降序排序
-	# * inplace：是否修改原始Series
-
-	# DataFrame的排序：  
-	# ***DataFrame.sort_values(by, ascending=True, inplace=False)***  
-	# 参数说明：
-	# * by：字符串或者List<字符串>，单列排序或者多列排序
-	# * ascending：bool或者List<bool>，升序还是降序，如果是list对应by的多列
-	# * inplace：是否修改原始DataFrame
-
-	import pandas as pd
-	### 0、读取数据
-	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
-	df = pd.read_csv(fpath)
-
-	# 替换掉温度的后缀℃
-	df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
-	df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
-
-	df.head()
-		ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2
-	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1
-	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1
-	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1
-	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1
-
-	### 1、Series的排序
-	df["aqi"].sort_values()
-	271     21
-	281     21
-	249     22
-	272     22
-	301     22
-	      ... 
-	317    266
-	71     287
-	91     287
-	72     293
-	86     387
-	Name: aqi, Length: 365, dtype: int64
-
-	df["aqi"].sort_values(ascending=False)
-	86     387
-	72     293
-	91     287
-	71     287
-	317    266
-	      ... 
-	301     22
-	272     22
-	249     22
-	281     21
-	271     21
-	Name: aqi, Length: 365, dtype: int64
-
-	df["tianqi"].sort_values()
-	225     中雨~小雨
-	230     中雨~小雨
-	197    中雨~雷阵雨
-	196    中雨~雷阵雨
-	112        多云
-	        ...  
-	191    雷阵雨~大雨
-	219     雷阵雨~阴
-	335      雾~多云
-	353         霾
-	348         霾
-	Name: tianqi, Length: 365, dtype: object
-
-	### 2、DataFrame的排序
-
-	#### 2.1 单列排序
-	df.sort_values(by="aqi")
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	271	2018-09-29	22	11	晴	北风	3-4级	21	优	1
-	281	2018-10-09	15	4	多云~晴	西北风	4-5级	21	优	1
-	249	2018-09-07	27	16	晴	西北风	3-4级	22	优	1
-	272	2018-09-30	19	13	多云	西北风	4-5级	22	优	1
-	301	2018-10-29	15	3	晴	北风	3-4级	22	优	1
-	...	...	...	...	...	...	...	...	...	...
-	317	2018-11-14	13	5	多云	南风	1-2级	266	重度污染	5
-	71	2018-03-13	17	5	晴~多云	南风	1-2级	287	重度污染	5
-	91	2018-04-02	26	11	多云	北风	1-2级	287	重度污染	5
-	72	2018-03-14	15	6	多云~阴	东北风	1-2级	293	重度污染	5
-	86	2018-03-28	25	9	多云~晴	东风	1-2级	387	严重污染	6
-	365 rows × 9 columns
-
-	df.sort_values(by="aqi", ascending=False)
-		ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	86	2018-03-28	25	9	多云~晴	东风	1-2级	387	严重污染	6
-	72	2018-03-14	15	6	多云~阴	东北风	1-2级	293	重度污染	5
-	71	2018-03-13	17	5	晴~多云	南风	1-2级	287	重度污染	5
-	91	2018-04-02	26	11	多云	北风	1-2级	287	重度污染	5
-	317	2018-11-14	13	5	多云	南风	1-2级	266	重度污染	5
-	...	...	...	...	...	...	...	...	...	...
-	249	2018-09-07	27	16	晴	西北风	3-4级	22	优	1
-	301	2018-10-29	15	3	晴	北风	3-4级	22	优	1
-	272	2018-09-30	19	13	多云	西北风	4-5级	22	优	1
-	271	2018-09-29	22	11	晴	北风	3-4级	21	优	1
-	281	2018-10-09	15	4	多云~晴	西北风	4-5级	21	优	1
-	365 rows × 9 columns
-
-	#### 2.2 多列排序
-	# 按空气质量等级、最高温度排序，默认升序
-	df.sort_values(by=["aqiLevel", "bWendu"])
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	360	2018-12-27	-5	-12	多云~晴	西北风	3级	48	优	1
-	22	2018-01-23	-4	-12	晴	西北风	3-4级	31	优	1
-	23	2018-01-24	-4	-11	晴	西南风	1-2级	34	优	1
-	340	2018-12-07	-4	-10	晴	西北风	3级	33	优	1
-	21	2018-01-22	-3	-10	小雪~多云	东风	1-2级	47	优	1
-	...	...	...	...	...	...	...	...	...	...
-	71	2018-03-13	17	5	晴~多云	南风	1-2级	287	重度污染	5
-	90	2018-04-01	25	11	晴~多云	南风	1-2级	218	重度污染	5
-	91	2018-04-02	26	11	多云	北风	1-2级	287	重度污染	5
-	85	2018-03-27	27	11	晴	南风	1-2级	243	重度污染	5
-	86	2018-03-28	25	9	多云~晴	东风	1-2级	387	严重污染	6
-	365 rows × 9 columns
-
-	# 两个字段都是降序
-	df.sort_values(by=["aqiLevel", "bWendu"], ascending=False)
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	86	2018-03-28	25	9	多云~晴	东风	1-2级	387	严重污染	6
-	85	2018-03-27	27	11	晴	南风	1-2级	243	重度污染	5
-	91	2018-04-02	26	11	多云	北风	1-2级	287	重度污染	5
-	90	2018-04-01	25	11	晴~多云	南风	1-2级	218	重度污染	5
-	71	2018-03-13	17	5	晴~多云	南风	1-2级	287	重度污染	5
-	...	...	...	...	...	...	...	...	...	...
-	362	2018-12-29	-3	-12	晴	西北风	2级	29	优	1
-	22	2018-01-23	-4	-12	晴	西北风	3-4级	31	优	1
-	23	2018-01-24	-4	-11	晴	西南风	1-2级	34	优	1
-	340	2018-12-07	-4	-10	晴	西北风	3级	33	优	1
-	360	2018-12-27	-5	-12	多云~晴	西北风	3级	48	优	1
-
-	# 分别指定升序和降序
-	df.sort_values(by=["aqiLevel", "bWendu"], ascending=[True, False])
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	178	2018-06-28	35	24	多云~晴	北风	1-2级	33	优	1
-	149	2018-05-30	33	18	晴	西风	1-2级	46	优	1
-	206	2018-07-26	33	25	多云~雷阵雨	东北风	1-2级	40	优	1
-	158	2018-06-08	32	19	多云~雷阵雨	西南风	1-2级	43	优	1
-	205	2018-07-25	32	25	多云	北风	1-2级	28	优	1
-	...	...	...	...	...	...	...	...	...	...
-	317	2018-11-14	13	5	多云	南风	1-2级	266	重度污染	5
-	329	2018-11-26	10	0	多云	东南风	1级	245	重度污染	5
-	335	2018-12-02	9	2	雾~多云	东北风	1级	234	重度污染	5
-	57	2018-02-27	7	0	阴	东风	1-2级	220	重度污染	5
-	86	2018-03-28	25	9	多云~晴	东风	1-2级	387	严重污染	6
-
-Pandas 字符串处理
-**********************************************************************************
-
-.. code-block:: python
-
-	# 前面我们已经使用了字符串的处理函数：  
-	# df["bWendu"].str.replace("℃", "").astype('int32')
-
-	# ***Pandas的字符串处理：***  
-	# 1. 使用方法：先获取Series的str属性，然后在属性上调用函数；
-	# 2. 只能在字符串列上使用，不能数字列上使用；
-	# 3. Dataframe上没有str属性和处理方法
-	# 4. Series.str并不是Python原生字符串，而是自己的一套方法，不过大部分和原生str很相似；
-
-	# ***Series.str字符串方法列表参考文档:***  
-	# https://pandas.pydata.org/pandas-docs/stable/reference/series.html#string-handling
-	  
-	  
-	# ***本节演示内容：***  
-	# 1. 获取Series的str属性，然后使用各种字符串处理函数
-	# 2. 使用str的startswith、contains等bool类Series可以做条件查询
-	# 3. 需要多次str处理的链式操作
-	# 4. 使用正则表达式的处理
-
-	### 0、读取北京2018年天气数据
-	import pandas as pd
-
-	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
-	df = pd.read_csv(fpath)
-
-	df.head()
-		ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	0	2018-01-01	3℃	-6℃	晴~多云	东北风	1-2级	59	良	2
-	1	2018-01-02	2℃	-5℃	阴~多云	东北风	1-2级	49	优	1
-	2	2018-01-03	2℃	-5℃	多云	北风	1-2级	28	优	1
-	3	2018-01-04	0℃	-8℃	阴	东北风	1-2级	28	优	1
-	4	2018-01-05	3℃	-6℃	多云~晴	西北风	1-2级	50	优	1
-
-	df.dtypes
-	ymd          object
-	bWendu       object
-	yWendu       object
-	tianqi       object
-	fengxiang    object
-	fengli       object
-	aqi           int64
-	aqiInfo      object
-	aqiLevel      int64
+	***B：添加多列Series***
+	s2 = df1.apply(lambda x:x["A"]+"_GG", axis=1)
+	s2
+	0    A0_GG
+	1    A1_GG
+	2    A2_GG
+	3    A3_GG
 	dtype: object
 
-	### 1、获取Series的str属性，使用各种字符串处理函数
-	df["bWendu"].str
-	<pandas.core.strings.StringMethods at 0x1205c5710>
+	s2.name="G"
+	pd.concat([df1,s1,s2], axis=1)
+		A	B	C	D	E	F	G
+	0	A0	B0	C0	D0	E0	0	A0_GG
+	1	A1	B1	C1	D1	E1	1	A1_GG
+	2	A2	B2	C2	D2	E2	2	A2_GG
+	3	A3	B3	C3	D3	E3	3	A3_GG
 
-	# 字符串替换函数
-	df["bWendu"].str.replace("℃", "")
-	0       3
-	1       2
-	2       2
-	3       0
-	4       3
-	       ..
-	360    -5
-	361    -3
-	362    -3
-	363    -2
-	364    -2
-	Name: bWendu, Length: 365, dtype: object
+	# 列表可以只有Series
+	pd.concat([s1,s2], axis=1)
+		F	G
+	0	0	A0_GG
+	1	1	A1_GG
+	2	2	A2_GG
+	3	3	A3_GG
 
-	# 判断是不是数字
-	df["bWendu"].str.isnumeric()
-	0      False
-	1      False
-	2      False
-	3      False
-	4      False
-	       ...  
-	360    False
-	361    False
-	362    False
-	363    False
-	364    False
-	Name: bWendu, Length: 365, dtype: bool
+	# 列表是可以混合顺序的
+	pd.concat([s1,df1,s2], axis=1)
+	F	A	B	C	D	E	G
+	0	0	A0	B0	C0	D0	E0	A0_GG
+	1	1	A1	B1	C1	D1	E1	A1_GG
+	2	2	A2	B2	C2	D2	E2	A2_GG
+	3	3	A3	B3	C3	D3	E3	A3_GG
 
-	df["aqi"].str.len()
+	### 二、使用DataFrame.append按行合并数据
+	df1 = pd.DataFrame([[1, 2], [3, 4]], columns=list('AB'))
+	df1
+		A	B
+	0	1	2
+	1	3	4
 
-	### 2、使用str的startswith、contains等得到bool的Series可以做条件查询
-	condition = df["ymd"].str.startswith("2018-03")
+	df2 = pd.DataFrame([[5, 6], [7, 8]], columns=list('AB'))
+	df2
+	    A	B
+	0	5	6
+	1	7	8
 
-	condition
-	0      False
-	1      False
-	2      False
-	3      False
-	4      False
-	       ...  
-	360    False
-	361    False
-	362    False
-	363    False
-	364    False
-	Name: ymd, Length: 365, dtype: bool
+	***1、给1个dataframe添加另一个dataframe***
+	df1.append(df2)
+		A	B
+	0	1	2
+	1	3	4
+	0	5	6
+	1	7	8
 
-	df[condition].head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
-	59	2018-03-01	8℃	-3℃	多云	西南风	1-2级	46	优	1
-	60	2018-03-02	9℃	-1℃	晴~多云	北风	1-2级	95	良	2
-	61	2018-03-03	13℃	3℃	多云~阴	北风	1-2级	214	重度污染	5
-	62	2018-03-04	7℃	-2℃	阴~多云	东南风	1-2级	144	轻度污染	3
-	63	2018-03-05	8℃	-3℃	晴	南风	1-2级	94	良	2
+	***2、忽略原来的索引ignore_index=True***
+	df1.append(df2, ignore_index=True)
+		A	B
+	0	1	2
+	1	3	4
+	2	5	6
+	3	7	8
 
-	### 3、需要多次str处理的链式操作
-	# 怎样提取201803这样的数字月份？  
-	# 1、先将日期2018-03-31替换成20180331的形式  
-	# 2、提取月份字符串201803  
+	***3、可以一行一行的给DataFrame添加数据***
+	# 一个空的df
+	df = pd.DataFrame(columns=['A'])
+	df
+	A
 
-	df["ymd"].str.replace("-", "")
-	0      20180101
-	1      20180102
-	2      20180103
-	3      20180104
-	4      20180105
-	         ...   
-	360    20181227
-	361    20181228
-	362    20181229
-	363    20181230
-	364    20181231
-	Name: ymd, Length: 365, dtype: object
+	***A：低性能版本***
+	for i in range(5):
+	    # 注意这里每次都在复制
+	    df = df.append({'A': i}, ignore_index=True)
+	df
+		A
+	0	0
+	1	1
+	2	2
+	3	3
+	4	4
 
-	# 每次调用函数，都返回一个新Series
-	df["ymd"].str.replace("-", "").slice(0, 6)
-	df["ymd"].str.replace("-", "").str.slice(0, 6)
-	0      201801
-	1      201801
-	2      201801
-	3      201801
-	4      201801
-	        ...  
-	360    201812
-	361    201812
-	362    201812
-	363    201812
-	364    201812
-	Name: ymd, Length: 365, dtype: object
+	***B：性能好的版本***
+	# 第一个入参是一个列表，避免了多次复制
+	pd.concat(
+	    [pd.DataFrame([i], columns=['A']) for i in range(5)],
+	    ignore_index=True
+	)
+		A
+	0	0
+	1	1
+	2	2
+	3	3
+	4	4
 
-	# slice就是切片语法，可以直接用
-	df["ymd"].str.replace("-", "").str[0:6]
-	0      201801
-	1      201801
-	2      201801
-	3      201801
-	4      201801
-	        ...  
-	360    201812
-	361    201812
-	362    201812
-	363    201812
-	364    201812
-	Name: ymd, Length: 365, dtype: object
-
-Pandas 的 axis 参数怎么理解
+Pandas 批量拆分与合并 Excel
 **********************************************************************************
 
 .. code-block:: python
 
-	# ## Pandas的axis参数怎么理解？
+	## Pandas批量拆分Excel与合并Excel
 
-	# * axis=0或者"index"：  
-	#   - 如果是单行操作，就指的是某一行
-	#   - 如果是聚合操作，指的是跨行cross rows
-	# * axis=1或者"columns"：
-	#   - 如果是单列操作，就指的是某一列
-	#   - 如果是聚合操作，指的是跨列cross columns
+	实例演示：
+	1. 将一个大Excel等份拆成多个Excel
+	2. 将多个小Excel合并成一个大Excel并标记来源
 
-	# ***按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
+	work_dir="./course_datas/c15_excel_split_merge"
+	splits_dir=f"{work_dir}/splits"
 
-	%matplotlib inline
+	import os
+	if not os.path.exists(splits_dir):
+	    os.mkdir(splits_dir)
+
+	### 0、读取源Excel到Pandas
+	import pandas as pd
+	df_source = pd.read_excel(f"{work_dir}/crazyant_blog_articles_source.xlsx")
+
+	df_source.head()
+	     id	title	tags
+	0	2585	Tensorflow怎样接收变长列表特征	python,tensorflow,特征工程
+	1	2583	Pandas实现数据的合并concat	pandas,python,数据分析
+	2	2574	Pandas的Index索引有什么用途？	pandas,python,数据分析
+	3	2564	机器学习常用数据集大全	python,机器学习
+	4	2561	一个数据科学家的修炼路径	数据分析
+
+	df_source.index
+	RangeIndex(start=0, stop=258, step=1)
+
+	df_source.shape
+	(258, 3)
+
+	total_row_count = df_source.shape[0]
+	total_row_count
+	258
+
+	### 一、将一个大Excel等份拆成多个Excel
+
+	1. 使用df.iloc方法，将一个大的dataframe，拆分成多个小dataframe
+	2. 将使用dataframe.to_excel保存每个小Excel
+
+	#### 1、计算拆分后的每个excel的行数
+	# 这个大excel，会拆分给这几个人
+	user_names = ["xiao_shuai", "xiao_wang", "xiao_ming", "xiao_lei", "xiao_bo", "xiao_hong"]
+
+	# 每个人的任务数目
+	split_size = total_row_count // len(user_names)
+	if total_row_count % len(user_names) != 0:
+	    split_size += 1
+
+	split_size
+	43
+
+	#### 2、拆分成多个dataframe
+	df_subs = []
+	for idx, user_name in enumerate(user_names):
+	    # iloc的开始索引
+	    begin = idx*split_size
+	    # iloc的结束索引
+	    end = begin+split_size
+	    # 实现df按照iloc拆分
+	    df_sub = df_source.iloc[begin:end]
+	    # 将每个子df存入列表
+	    df_subs.append((idx, user_name, df_sub))
+
+	#### 3、将每个datafame存入excel
+	for idx, user_name, df_sub in df_subs:
+	    file_name = f"{splits_dir}/crazyant_blog_articles_{idx}_{user_name}.xlsx"
+	    df_sub.to_excel(file_name, index=False)
+
+	### 二、合并多个小Excel到一个大Excel
+	1. 遍历文件夹，得到要合并的Excel文件列表
+	2. 分别读取到dataframe，给每个df添加一列用于标记来源
+	3. 使用pd.concat进行df批量合并
+	4. 将合并后的dataframe输出到excel
+
+	#### 1. 遍历文件夹，得到要合并的Excel名称列表
+	import os
+	excel_names = []
+	for excel_name in os.listdir(splits_dir):
+	    excel_names.append(excel_name)
+	excel_names
+	['crazyant_blog_articles_1_xiao_wang.xlsx',
+	 'crazyant_blog_articles_0_xiao_shuai.xlsx',
+	 'crazyant_blog_articles_5_xiao_hong.xlsx',
+	 'crazyant_blog_articles_4_xiao_bo.xlsx',
+	 'crazyant_blog_articles_3_xiao_lei.xlsx',
+	 'crazyant_blog_articles_2_xiao_ming.xlsx']
+
+	 #### 2. 分别读取到dataframe
+	 df_list = []
+
+	for excel_name in excel_names:
+	    # 读取每个excel到df
+	    excel_path = f"{splits_dir}/{excel_name}"
+	    df_split = pd.read_excel(excel_path)
+	    # 得到username
+	    username = excel_name.replace("crazyant_blog_articles_", "").replace(".xlsx", "")[2:]
+	    print(excel_name, username)
+	    # 给每个df添加1列，即用户名字
+	    df_split["username"] = username
+	    
+	    df_list.append(df_split)
+
+	crazyant_blog_articles_1_xiao_wang.xlsx xiao_wang
+	crazyant_blog_articles_0_xiao_shuai.xlsx xiao_shuai
+	crazyant_blog_articles_5_xiao_hong.xlsx xiao_hong
+	crazyant_blog_articles_4_xiao_bo.xlsx xiao_bo
+	crazyant_blog_articles_3_xiao_lei.xlsx xiao_lei
+	crazyant_blog_articles_2_xiao_ming.xlsx xiao_ming
+
+	#### 3. 使用pd.concat进行合并
+	df_merged = pd.concat(df_list)
+	df_merged.shape
+	(258, 4)
+
+	df_merged.head()
+	id	title	tags	username
+	0	2120	Zookeeper并不保证读取的是最新数据	zookeeper	xiao_wang
+	1	2089	Mybatis源码解读-初始化过程详解	mybatis	xiao_wang
+	2	2076	怎样借助Python爬虫给宝宝起个好名字	python,爬虫	xiao_wang
+	3	2022	Mybatis源码解读-设计模式总结	mybatis,设计模式	xiao_wang
+	4	2012	打工者心态、主人公意识、个人公司品牌	程序人生	xiao_wang
+
+	df_merged["username"].value_counts()
+	xiao_bo       43
+	xiao_ming     43
+	xiao_hong     43
+	xiao_lei      43
+	xiao_wang     43
+	xiao_shuai    43
+	Name: username, dtype: int64
+
+	#### 4. 将合并后的dataframe输出到excel
+	df_merged.to_excel(f"{work_dir}/crazyant_blog_articles_merged.xlsx", index=False)
+
+Pandas 的分组聚合 groupby
+**********************************************************************************
+
+.. code-block:: python
+
+	## Pandas怎样实现groupby分组统计
+
+	类似SQL：  
+	select city,max(temperature) from city_weather group by city;
+
+	groupby：先对数据分组，然后在每个分组上应用聚合函数、转换函数
+
+	本次演示：  
+	一、分组使用聚合函数做数据统计  
+	二、遍历groupby的结果理解执行流程  
+	三、实例分组探索天气数据
+
 	import pandas as pd
 	import numpy as np
+	# 加上这一句，能在jupyter notebook展示matplot图表
+	%matplotlib inline
 
-	df = pd.DataFrame(
-	    np.arange(12).reshape(3,4),
-	    columns=['A', 'B', 'C', 'D']
-	)
-
+	df = pd.DataFrame({'A': ['foo', 'bar', 'foo', 'bar', 'foo', 'bar', 'foo', 'foo'],
+	                   'B': ['one', 'one', 'two', 'three', 'two', 'two', 'one', 'three'],
+	                   'C': np.random.randn(8),
+	                   'D': np.random.randn(8)})
 	df
 	A	B	C	D
-	0	0	1	2	3
-	1	4	5	6	7
-	2	8	9	10	11
+	0	foo	one	-0.265986	-1.612982
+	1	bar	one	-0.615903	0.722317
+	2	foo	two	-0.697261	0.282532
+	3	bar	three	-1.697145	1.104218
+	4	foo	two	0.037168	0.910201
+	5	bar	two	0.718036	-1.350090
+	6	foo	one	-0.276452	-2.225983
+	7	foo	three	-1.213616	-1.927561
 
-	### 1、单列drop，就是删除某一列
-	# 代表的就是删除某列
-	df.drop("A", axis=1)
-	    B	C	D
-	0	1	2	3
-	1	5	6	7
-	2	9	10	11
+	### 一、分组使用聚合函数做数据统计
+	#### 1、单个列groupby，查询所有数据列的统计
+	df.groupby('A').sum()
+		C	D
+	A		
+	bar	-1.595012	0.476444
+	foo	-2.416147	-4.573793
 
-	### 2、单行drop，就是删除某一行
-	df
-		A	B	C	D
-	0	0	1	2	3
-	1	4	5	6	7
-	2	8	9	10	11
+	我们看到：
+	1. groupby中的'A'变成了数据的索引列
+	2. 因为要统计sum，但B列不是数字，所以被自动忽略掉
 
-	# 代表的就是删除某行
-	df.drop(1, axis=0)
-		A	B	C	D
-	0	0	1	2	3
-	2	8	9	10	11
+	#### 2、多个列groupby，查询所有数据列的统计
+	df.groupby(['A','B']).mean()
+			C	D
+	A	B		
+	bar	one	-0.615903	0.722317
+	three	-1.697145	1.104218
+	two	0.718036	-1.350090
+	foo	one	-0.271219	-1.919482
+	three	-1.213616	-1.927561
+	two	-0.330047	0.596366
 
-	### 3、按axis=0/index执行mean聚合操作
-	# 反直觉：输出的不是每行的结果，而是每列的结果
-	df
-	    A	B	C	D
-	0	0	1	2	3
-	1	4	5	6	7
-	2	8	9	10	11
+	我们看到：('A','B')成对变成了二级索引
 
-	# axis=0 or axis=index
-	df.mean(axis=0)
-	A    4.0
-	B    5.0
-	C    6.0
-	D    7.0
-	dtype: float64
-
-	%%html
-	<img src="./other_files/pandas-axis-index.png" width="300" />
-
-	axis=0 或者 axis=index
-
-	不是得到的是每行的结果
-	而是代表按行处理、跨行cross row的意思
-
-	col_data
-	for row in rows:
-	    col_data = row.sum/row.count
-
-	比喻：就像一把梳子往下梳
-
-	|image0|
-
-	# ***指定了按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
-	### 4、按axis=1/columns执行mean聚合操作
-	# 反直觉：输出的不是每行的结果，而是每列的结果
-
-	df
+	df.groupby(['A','B'], as_index=False).mean()
 	A	B	C	D
-	0	0	1	2	3
-	1	4	5	6	7
-	2	8	9	10	11
+	0	bar	one	-0.615903	0.722317
+	1	bar	three	-1.697145	1.104218
+	2	bar	two	0.718036	-1.350090
+	3	foo	one	-0.271219	-1.919482
+	4	foo	three	-1.213616	-1.927561
+	5	foo	two	-0.330047	0.596366
 
-	# axis=1 or axis=columns
-	df.mean(axis=1)
-	0    1.5
-	1    5.5
-	2    9.5
-	dtype: float64
+	#### 3、同时查看多种数据统计
+	df.groupby('A').agg([np.sum, np.mean, np.std])
+	C	D
+	sum	mean	std	sum	mean	std
+	A						
+	bar	-1.595012	-0.531671	1.209792	0.476444	0.158815	1.320628
+	foo	-2.416147	-0.483229	0.484778	-4.573793	-0.914759	1.413911
 
-	%%html
-	<img src="./other_files/pandas-axis-columns.png" width="700" />
+	我们看到：列变成了多级索引
+	#### 4、查看单列的结果数据统计
+	# 方法1：预过滤，性能更好
+	df.groupby('A')['C'].agg([np.sum, np.mean, np.std])
+	sum	mean	std
+	A			
+	bar	-1.595012	-0.531671	1.209792
+	foo	-2.416147	-0.483229	0.484778
 
-	|image1|
+	# 方法2
+	df.groupby('A').agg([np.sum, np.mean, np.std])['C']
+		sum	mean	std
+	A			
+	bar	-1.595012	-0.531671	1.209792
+	foo	-2.416147	-0.483229	0.484778
 
-	# ***指定了按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
-	### 5、再次举例，加深理解
-	def get_sum_value(x):
-	    return x["A"] + x["B"] + x["C"] + x["D"]
+	#### 5、不同列使用不同的聚合函数
+	df.groupby('A').agg({"C":np.sum, "D":np.mean})
+	C	D
+	A		
+	bar	-1.595012	0.158815
+	foo	-2.416147	-0.914759
 
-	df["sum_value"] = df.apply(get_sum_value, axis=1)
+	### 二、遍历groupby的结果理解执行流程
+	for循环可以直接遍历每个group
+	##### 1、遍历单个列聚合的分组
+	g = df.groupby('A')
+	g
+	<pandas.core.groupby.generic.DataFrameGroupBy object at 0x118fa3d50>
 
-	A	B	C	D	sum_value
-	0	0	1	2	3	6
-	1	4	5	6	7	22
-	2	8	9	10	11	38
 
-	# ***指定了按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
+	for name,group in g:
+	    print(name)
+	    print(group)
+	    print()
+	bar
+	     A      B         C         D
+	1  bar    one -0.615903  0.722317
+	3  bar  three -1.697145  1.104218
+	5  bar    two  0.718036 -1.350090
 
-Pandas 的索引 index 的用途
+	foo
+	     A      B         C         D
+	0  foo    one -0.265986 -1.612982
+	2  foo    two -0.697261  0.282532
+	4  foo    two  0.037168  0.910201
+	6  foo    one -0.276452 -2.225983
+	7  foo  three -1.213616 -1.927561
+
+	***可以获取单个分组的数据***
+	g.get_group('bar')
+		A	B	C	D
+	1	bar	one	-0.615903	0.722317
+	3	bar	three	-1.697145	1.104218
+	5	bar	two	0.718036	-1.350090
+
+	##### 2、遍历多个列聚合的分组
+	g = df.groupby(['A', 'B'])
+
+	for name,group in g:
+	    print(name)
+	    print(group)
+	    print()
+	('bar', 'one')
+	     A    B         C         D
+	1  bar  one -0.615903  0.722317
+
+	('bar', 'three')
+	     A      B         C         D
+	3  bar  three -1.697145  1.104218
+
+	('bar', 'two')
+	     A    B         C        D
+	5  bar  two  0.718036 -1.35009
+
+	('foo', 'one')
+	     A    B         C         D
+	0  foo  one -0.265986 -1.612982
+	6  foo  one -0.276452 -2.225983
+
+	('foo', 'three')
+	     A      B         C         D
+	7  foo  three -1.213616 -1.927561
+
+	('foo', 'two')
+	     A    B         C         D
+	2  foo  two -0.697261  0.282532
+	4  foo  two  0.037168  0.910201
+
+	# 可以看到，name是一个2个元素的tuple，代表不同的列
+	g.get_group(('foo', 'one'))
+	A	B	C	D
+	0	foo	one	-0.265986	-1.612982
+	6	foo	one	-0.276452	-2.225983
+
+	***可以直接查询group后的某几列，生成Series或者子DataFrame***
+	g['C']
+	<pandas.core.groupby.generic.SeriesGroupBy object at 0x11912d2d0>
+
+
+	for name, group in g['C']:
+	    print(name)
+	    print(group)
+	    print(type(group))
+	    print()
+	('bar', 'one')
+	1   -0.615903
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	('bar', 'three')
+	3   -1.697145
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	('bar', 'two')
+	5    0.718036
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	('foo', 'one')
+	0   -0.265986
+	6   -0.276452
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	('foo', 'three')
+	7   -1.213616
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	('foo', 'two')
+	2   -0.697261
+	4    0.037168
+	Name: C, dtype: float64
+	<class 'pandas.core.series.Series'>
+
+	其实所有的聚合统计，都是在dataframe和series上进行的；
+
+	### 三、实例分组探索天气数据
+	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
+	df = pd.read_csv(fpath)
+	# 替换掉温度的后缀℃
+	df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
+	df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
+	df.head()
+
+	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel
+	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2
+	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1
+	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1
+	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1
+	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1
+
+	# 新增一列为月份
+	df['month'] = df['ymd'].str[:7]
+	df.head()
+	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	month
+	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2	2018-01
+	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1	2018-01
+	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1	2018-01
+	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1	2018-01
+	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1	2018-01
+
+	#### 1、查看每个月的最高温度
+	data = df.groupby('month')['bWendu'].max()
+	data
+	month
+	2018-01     7
+	2018-02    12
+	2018-03    27
+	2018-04    30
+	2018-05    35
+	2018-06    38
+	2018-07    37
+	2018-08    36
+	2018-09    31
+	2018-10    25
+	2018-11    18
+	2018-12    10
+	Name: bWendu, dtype: int32
+
+	type(data)
+	pandas.core.series.Series
+
+	data.plot()
+	<AxesSubplot:xlabel='month'>
+
+	|image00|
+
+	#### 2、查看每个月的最高温度、最低温度、平均空气质量指数
+	df.head()
+	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	month
+	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2	2018-01
+	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1	2018-01
+	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1	2018-01
+	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1	2018-01
+	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1	2018-01
+
+	group_data = df.groupby('month').agg({"bWendu":np.max, "yWendu":np.min, "aqi":np.mean})
+	group_data
+		bWendu	yWendu	aqi
+	month			
+	2018-01	7	-12	60.677419
+	2018-02	12	-10	78.857143
+	2018-03	27	-4	130.322581
+	2018-04	30	1	102.866667
+	2018-05	35	10	99.064516
+	2018-06	38	17	82.300000
+	2018-07	37	22	72.677419
+	2018-08	36	20	59.516129
+	2018-09	31	11	50.433333
+	2018-10	25	1	67.096774
+	2018-11	18	-4	105.100000
+	2018-12	10	-12	77.354839
+
+	group_data.plot()
+	<AxesSubplot:xlabel='month'>
+
+	|image01|
+
+Pandas 的分层索引 MultiIndex
 **********************************************************************************
 
 .. code-block:: python
 
-	# 把数据存储于普通的column列也能用于数据查询，那使用index有什么好处？
+	为什么要学习分层索引MultiIndex？
+	* 分层索引：在一个轴向上拥有多个索引层级，可以表达更高维度数据的形式；
+	* 可以更方便的进行数据筛选，如果有序则性能更好；
+	* groupby等操作的结果，如果是多KEY，结果是分层索引，需要会使用
+	* 一般不需要自己创建分层索引(MultiIndex有构造函数但一般不用)
 
-	# index的用途总结：  
-	# 1. 更方便的数据查询；
-	# 2. 使用index可以获得性能提升；
-	# 3. 自动的数据对齐功能；
-	# 4. 更多更强大的数据结构支持；
+	演示数据：百度、阿里巴巴、爱奇艺、京东四家公司的10天股票数据  
+	数据来自：英为财经  
+	https://cn.investing.com/
+
+	本次演示提纲：  
+	一、Series的分层索引MultiIndex  
+	二、Series有多层索引怎样筛选数据？  
+	三、DataFrame的多层索引MultiIndex  
+	四、DataFrame有多层索引怎样筛选数据？ 
 
 	import pandas as pd
-	df = pd.read_csv("./datas/ml-latest-small/ratings.csv")
+	%matplotlib inline
 
-	df.head()
-		userId	movieId	rating	timestamp
-	0	1	1	4.0	964982703
-	1	1	3	4.0	964981247
-	2	1	6	4.0	964982224
-	3	1	47	5.0	964983815
-	4	1	50	5.0	964982931
+	stocks = pd.read_excel('./datas/stocks/互联网公司股票.xlsx')
+	stocks.shape
+	(12, 8)
 
-	df.count()
-	userId       100836
-	movieId      100836
-	rating       100836
-	timestamp    100836
-	dtype: int64
+	stocks.head(3)
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01
 
-	## 1、使用index查询数据
+	stocks["公司"].unique()
+	array(['BIDU', 'BABA', 'IQ', 'JD'], dtype=object)
 
-	# drop==False，让索引列还保持在column
-	df.set_index("userId", inplace=True, drop=False)
+	stocks.index
+	RangeIndex(start=0, stop=12, step=1)
 
-	df.head()
-	userId	movieId	rating	timestamp
-	userId				
-	1	1	1	4.0	964982703
-	1	1	3	4.0	964981247
-	1	1	6	4.0	964982224
-	1	1	47	5.0	964983815
-	1	1	50	5.0	964982931
+	stocks.groupby('公司')["收盘"].mean()
+	公司
+	BABA    166.80
+	BIDU    102.98
+	IQ       15.90
+	JD       28.35
+	Name: 收盘, dtype: float64
 
-	df.index
-	Int64Index([  1,   1,   1,   1,   1,   1,   1,   1,   1,   1,
-	            ...
-	            610, 610, 610, 610, 610, 610, 610, 610, 610, 610],
-	           dtype='int64', name='userId', length=100836)
+	### 一、Series的分层索引MultiIndex
+	ser = stocks.groupby(['公司', '日期'])['收盘'].mean()
+	ser
+	公司    日期        
+	BABA  2019-10-01    165.15
+	      2019-10-02    165.77
+	      2019-10-03    169.48
+	BIDU  2019-10-01    102.00
+	      2019-10-02    102.62
+	      2019-10-03    104.32
+	IQ    2019-10-01     15.92
+	      2019-10-02     15.72
+	      2019-10-03     16.06
+	JD    2019-10-01     28.19
+	      2019-10-02     28.06
+	      2019-10-03     28.80
+	Name: 收盘, dtype: float64
 
-	# 使用index的查询方法
-	df.loc[500].head(5)
-		userId	movieId	rating	timestamp
-	userId				
-	500	500	1	4.0	1005527755
-	500	500	11	1.0	1005528017
-	500	500	39	1.0	1005527926
-	500	500	101	1.0	1005527980
-	500	500	104	4.0	1005528065
+	# 多维索引中，空白的意思是：使用上面的值
+	ser.index
+	MultiIndex([('BABA', '2019-10-01'),
+	            ('BABA', '2019-10-02'),
+	            ('BABA', '2019-10-03'),
+	            ('BIDU', '2019-10-01'),
+	            ('BIDU', '2019-10-02'),
+	            ('BIDU', '2019-10-03'),
+	            (  'IQ', '2019-10-01'),
+	            (  'IQ', '2019-10-02'),
+	            (  'IQ', '2019-10-03'),
+	            (  'JD', '2019-10-01'),
+	            (  'JD', '2019-10-02'),
+	            (  'JD', '2019-10-03')],
+	           names=['公司', '日期'])
 
-	# 使用column的condition查询方法
-	df.loc[df["userId"] == 500].head()
-		userId	movieId	rating	timestamp
-	userId				
-	500	500	1	4.0	1005527755
-	500	500	11	1.0	1005528017
-	500	500	39	1.0	1005527926
-	500	500	101	1.0	1005527980
-	500	500	104	4.0	1005528065
+	 # unstack把二级索引变成列
+	ser.unstack()
+	日期	2019-10-01	2019-10-02	2019-10-03
+	公司			
+	BABA	165.15	165.77	169.48
+	BIDU	102.00	102.62	104.32
+	IQ	15.92	15.72	16.06
+	JD	28.19	28.06	28.80
 
-	# ## 2. 使用index会提升查询性能
+	ser
+	公司    日期        
+	BABA  2019-10-01    165.15
+	      2019-10-02    165.77
+	      2019-10-03    169.48
+	BIDU  2019-10-01    102.00
+	      2019-10-02    102.62
+	      2019-10-03    104.32
+	IQ    2019-10-01     15.92
+	      2019-10-02     15.72
+	      2019-10-03     16.06
+	JD    2019-10-01     28.19
+	      2019-10-02     28.06
+	      2019-10-03     28.80
+	Name: 收盘, dtype: float64
 
-	# * 如果index是唯一的，Pandas会使用哈希表优化，查询性能为O(1);
-	# * 如果index不是唯一的，但是有序，Pandas会使用二分查找算法，查询性能为O(logN);
-	# * 如果index是完全随机的，那么每次查询都要扫描全表，查询性能为O(N);
+	ser.reset_index()
+	公司	日期	收盘
+	0	BABA	2019-10-01	165.15
+	1	BABA	2019-10-02	165.77
+	2	BABA	2019-10-03	169.48
+	3	BIDU	2019-10-01	102.00
+	4	BIDU	2019-10-02	102.62
+	5	BIDU	2019-10-03	104.32
+	6	IQ	2019-10-01	15.92
+	7	IQ	2019-10-02	15.72
+	8	IQ	2019-10-03	16.06
+	9	JD	2019-10-01	28.19
+	10	JD	2019-10-02	28.06
+	11	JD	2019-10-03	28.80
 
-	%%html
-	<img src="./other_files/pandas-index-performance.png" width=600/>
+	### 二、Series有多层索引MultiIndex怎样筛选数据
+	ser
+	公司    日期        
+	BABA  2019-10-01    165.15
+	      2019-10-02    165.77
+	      2019-10-03    169.48
+	BIDU  2019-10-01    102.00
+	      2019-10-02    102.62
+	      2019-10-03    104.32
+	IQ    2019-10-01     15.92
+	      2019-10-02     15.72
+	      2019-10-03     16.06
+	JD    2019-10-01     28.19
+	      2019-10-02     28.06
+	      2019-10-03     28.80
+	Name: 收盘, dtype: float64
 
-	|image2|
+	ser.loc['BIDU']
+	日期
+	2019-10-01    102.00
+	2019-10-02    102.62
+	2019-10-03    104.32
+	Name: 收盘, dtype: float64
 
-	### 实验1：完全随机的顺序查询
-	# 将数据随机打散
-	from sklearn.utils import shuffle
-	df_shuffle = shuffle(df)
+	# 多层索引，可以用元组的形式筛选
+	ser.loc[('BIDU', '2019-10-02')]
+	102.62
 
-	df_shuffle.head()
-	userId	movieId	rating	timestamp
-	userId				
-	274	274	5944	1.0	1171759788
-	156	156	6297	4.0	1106882124
-	177	177	3564	1.0	1435525801
-	217	217	1445	1.0	955945503
-	430	430	2396	5.0	962936613
+	ser.loc[:, '2019-10-02']
+	公司
+	BABA    165.77
+	BIDU    102.62
+	IQ       15.72
+	JD       28.06
+	Name: 收盘, dtype: float64
 
-	# 索引是否是递增的
-	df_shuffle.index.is_monotonic_increasing
-	False
+	### 三、DataFrame的多层索引MultiIndex
+	stocks.head()
 
-	df_shuffle.index.is_unique
-	False
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00
 
-	# 计时，查询id==500数据性能
-	%timeit df_shuffle.loc[500]
-	353 µs ± 21.8 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+	stocks.set_index(['公司', '日期'], inplace=True)
+	stocks
+		收盘	开盘	高	低	交易量	涨跌幅
+	公司	日期						
+	BIDU	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	2019-10-01	102.00	102.80	103.26	101.00	1.78	-0.01
+	BABA	2019-10-03	169.48	166.65	170.18	165.00	10.39	0.02
+	2019-10-02	165.77	162.82	166.88	161.90	11.60	0.00
+	2019-10-01	165.15	168.01	168.23	163.64	14.19	-0.01
+	IQ	2019-10-03	16.06	15.71	16.38	15.32	10.08	0.02
+	2019-10-02	15.72	15.85	15.87	15.12	8.10	-0.01
+	2019-10-01	15.92	16.14	16.22	15.50	11.65	-0.01
+	JD	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03
+	2019-10-02	28.06	28.00	28.22	27.53	9.53	0.00
+	2019-10-01	28.19	28.22	28.57	27.97	10.64	0.00
 
-	### 实验2：将index排序后的查询
-	df_sorted = df_shuffle.sort_index()
+	stocks.index
+	MultiIndex([('BIDU', '2019-10-03'),
+	            ('BIDU', '2019-10-02'),
+	            ('BIDU', '2019-10-01'),
+	            ('BABA', '2019-10-03'),
+	            ('BABA', '2019-10-02'),
+	            ('BABA', '2019-10-01'),
+	            (  'IQ', '2019-10-03'),
+	            (  'IQ', '2019-10-02'),
+	            (  'IQ', '2019-10-01'),
+	            (  'JD', '2019-10-03'),
+	            (  'JD', '2019-10-02'),
+	            (  'JD', '2019-10-01')],
+	           names=['公司', '日期'])
 
-	df_sorted.head()
-	userId	movieId	rating	timestamp
-	userId				
-	1	1	1060	4.0	964980924
-	1	1	2389	2.0	964983094
-	1	1	1196	5.0	964981827
-	1	1	2450	4.0	964982620
-	1	1	356	4.0	964980962
+	stocks.sort_index(inplace=True)
+	stocks
+		收盘	开盘	高	低	交易量	涨跌幅
+	公司	日期						
+	BABA	2019-10-01	165.15	168.01	168.23	163.64	14.19	-0.01
+	2019-10-02	165.77	162.82	166.88	161.90	11.60	0.00
+	2019-10-03	169.48	166.65	170.18	165.00	10.39	0.02
+	BIDU	2019-10-01	102.00	102.80	103.26	101.00	1.78	-0.01
+	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	IQ	2019-10-01	15.92	16.14	16.22	15.50	11.65	-0.01
+	2019-10-02	15.72	15.85	15.87	15.12	8.10	-0.01
+	2019-10-03	16.06	15.71	16.38	15.32	10.08	0.02
+	JD	2019-10-01	28.19	28.22	28.57	27.97	10.64	0.00
+	2019-10-02	28.06	28.00	28.22	27.53	9.53	0.00
+	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03
 
-	# 索引是否是递增的
-	df_sorted.index.is_monotonic_increasing
-	True
+	### 四、DataFrame有多层索引MultiIndex怎样筛选数据？
+	【***重要知识***】在选择数据时： 
+	* 元组(key1,key2)代表筛选多层索引，其中key1是索引第一级，key2是第二级，比如key1=JD, key2=2019-10-02
+	* 列表[key1,key2]代表同一层的多个KEY，其中key1和key2是并列的同级索引，比如key1=JD, key2=BIDU
 
-	## 2. 使用index会提升查询性能
+	stocks.loc['BIDU']
+	收盘	开盘	高	低	交易量	涨跌幅
+	日期						
+	2019-10-01	102.00	102.80	103.26	101.00	1.78	-0.01
+	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
 
-	# * 如果index是唯一的，Pandas会使用哈希表优化，查询性能为O(1);
-	# * 如果index不是唯一的，但是有序，Pandas会使用二分查找算法，查询性能为O(logN);
-	# * 如果index是完全随机的，那么每次查询都要扫描全表，查询性能为O(N);
+	stocks.loc[('BIDU', '2019-10-02'), '开盘']
+	100.85
 
-	%%html
-	<img src="./other_files/pandas-index-performance.png" width=600/>
+	stocks.loc[['BIDU', 'JD'], :]
+		收盘	开盘	高	低	交易量	涨跌幅
+	公司	日期						
+	BIDU	2019-10-01	102.00	102.80	103.26	101.00	1.78	-0.01
+	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	JD	2019-10-01	28.19	28.22	28.57	27.97	10.64	0.00
+	2019-10-02	28.06	28.00	28.22	27.53	9.53	0.00
+	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03
 
-	|image2|
+	stocks.loc[(['BIDU', 'JD'], '2019-10-03'), :]
+	收盘	开盘	高	低	交易量	涨跌幅
+	公司	日期						
+	BIDU	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	JD	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03
 
-	### 实验1：完全随机的顺序查询
-	# 将数据随机打散
-	from sklearn.utils import shuffle
-	df_shuffle = shuffle(df)
+	stocks.loc[(['BIDU', 'JD'], '2019-10-03'), '收盘']
+	公司    日期        
+	BIDU  2019-10-03    104.32
+	JD    2019-10-03     28.80
+	Name: 收盘, dtype: float64
 
-	df_shuffle.head()
-		userId	movieId	rating	timestamp
-	userId				
-	352	352	590	5.0	1493932117
-	89	89	122092	5.0	1520409152
-	413	413	5574	5.0	1484440098
-	176	176	161	4.0	840108983
-	64	64	1060	3.5	1161565798
+	stocks.loc[('BIDU', ['2019-10-02', '2019-10-03']), '收盘']
+	公司    日期        
+	BIDU  2019-10-02    102.62
+	      2019-10-03    104.32
+	Name: 收盘, dtype: float64
 
-	# 索引是否是递增的
-	df_shuffle.index.is_monotonic_increasing
-	False
+	# slice(None)代表筛选这一索引的所有内容
+	stocks.loc[(slice(None), ['2019-10-02', '2019-10-03']), :]
+	收盘	开盘	高	低	交易量	涨跌幅
+	公司	日期						
+	BABA	2019-10-02	165.77	162.82	166.88	161.90	11.60	0.00
+	2019-10-03	169.48	166.65	170.18	165.00	10.39	0.02
+	BIDU	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	IQ	2019-10-02	15.72	15.85	15.87	15.12	8.10	-0.01
+	2019-10-03	16.06	15.71	16.38	15.32	10.08	0.02
+	JD	2019-10-02	28.06	28.00	28.22	27.53	9.53	0.00
+	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03
 
-	df_shuffle.index.is_unique
-	False
+	stocks.reset_index()
+	公司	日期	收盘	开盘	高	低	交易量	涨跌幅
+	0	BABA	2019-10-01	165.15	168.01	168.23	163.64	14.19	-0.01
+	1	BABA	2019-10-02	165.77	162.82	166.88	161.90	11.60	0.00
+	2	BABA	2019-10-03	169.48	166.65	170.18	165.00	10.39	0.02
+	3	BIDU	2019-10-01	102.00	102.80	103.26	101.00	1.78	-0.01
+	4	BIDU	2019-10-02	102.62	100.85	103.24	99.50	2.69	0.01
+	5	BIDU	2019-10-03	104.32	102.35	104.73	101.15	2.24	0.02
+	6	IQ	2019-10-01	15.92	16.14	16.22	15.50	11.65	-0.01
+	7	IQ	2019-10-02	15.72	15.85	15.87	15.12	8.10	-0.01
+	8	IQ	2019-10-03	16.06	15.71	16.38	15.32	10.08	0.02
+	9	JD	2019-10-01	28.19	28.22	28.57	27.97	10.64	0.00
+	10	JD	2019-10-02	28.06	28.00	28.22	27.53	9.53	0.00
+	11	JD	2019-10-03	28.80	28.11	28.97	27.82	8.77	0.03 
 
-	# 计时，查询id==500数据性能
-	%timeit df_shuffle.loc[500]
-	397 µs ± 56.5 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-
-	df_sorted = df_shuffle.sort_index()
-	df_sorted.head()
-		userId	movieId	rating	timestamp
-	userId				
-	1	1	1030	3.0	964982903
-	1	1	6	4.0	964982224
-	1	1	2090	5.0	964982838
-	1	1	1625	5.0	964983504
-	1	1	2018	5.0	964980523
-
-	# 索引是否是递增的
-	df_sorted.index.is_monotonic_increasing
-	True
-
-	df_sorted.index.is_unique
-	False
-
-	%timeit df_sorted.loc[500]
-	95 µs ± 31 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
-
-	## 3. 使用index能自动对齐数据
-
-	# 包括series和dataframe
-	s1 = pd.Series([1,2,3], index=list("abc"))
-
-	s1
-	a    1
-	b    2
-	c    3
-	dtype: int64
-
-	s2 = pd.Series([2,3,4], index=list("bcd"))
-	s2
-	b    2
-	c    3
-	d    4
-	dtype: int64
-
-	s1+s2
-	a    NaN
-	b    4.0
-	c    6.0
-	d    NaN
-	dtype: float64
-
-	## 4. 使用index更多更强大的数据结构支持
-
-	# ***很多强大的索引数据结构*** 
-	# * CategoricalIndex，基于分类数据的Index，提升性能；
-	# * MultiIndex，多维索引，用于groupby多维聚合后结果等；
-	# * DatetimeIndex，时间类型索引，强大的日期和时间的方法支持；
-
-Pandas 怎样实现 DataFrame 的 Merge
+Pandas 的数据转换函数 map、apply、applymap
 **********************************************************************************
 
 .. code-block:: python
 
-	# Pandas的Merge，相当于Sql的Join，将不同的表按key关联到一个表
-
-	# ### merge的语法：
-	# pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None,
-	#          left_index=False, right_index=False, sort=True,
-	#          suffixes=('_x', '_y'), copy=True, indicator=False,
-	#          validate=None)  
-	# * left，right：要merge的dataframe或者有name的Series
-	# * how：join类型，'left', 'right', 'outer', 'inner'
-	# * on：join的key，left和right都需要有这个key
-	# * left_on：left的df或者series的key
-	# * right_on：right的df或者seires的key
-	# * left_index，right_index：使用index而不是普通的column做join
-	# * suffixes：两个元素的后缀，如果列有重名，自动添加后缀，默认是('_x', '_y')
-
-	# 文档地址：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.merge.html
-
-	# 本次讲解提纲：
-	# 1. 电影数据集的join实例
-	# 2. 理解merge时一对一、一对多、多对多的数量对齐关系
-	# 3. 理解left join、right join、inner join、outer join的区别
-	# 4. 如果出现非Key的字段重名怎么办
-
-	### 1、电影数据集的join实例
-
-	#### 电影评分数据集
-
-	# 是推荐系统研究的很好的数据集  
-	# 位于本代码目录：./datas/movielens-1m
-
-	# 包含三个文件：  
-	# 1. 用户对电影的评分数据 ratings.dat
-	# 2. 用户本身的信息数据 users.dat
-	# 3. 电影本身的数据 movies.dat
-
-	# 可以关联三个表，得到一个完整的大表
-
-	# 数据集官方地址：https://grouplens.org/datasets/movielens/
+	### 1. map用于Series值的转换
+	实例：将股票代码英文转换成中文名字
+	Series.map(dict) or Series.map(function)均可
 
 	import pandas as pd
-	df_ratings = pd.read_csv(
+	stocks = pd.read_excel('./datas/stocks/互联网公司股票.xlsx')
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00
+
+	stocks["公司"].unique()
+	array(['BIDU', 'BABA', 'IQ', 'JD'], dtype=object)
+
+	# 公司股票代码到中文的映射，注意这里是小写
+	dict_company_names = {
+	    "bidu": "百度",
+	    "baba": "阿里巴巴",
+	    "iq": "爱奇艺", 
+	    "jd": "京东"
+	}
+
+	#### 方法1：Series.map(dict)
+	stocks["公司中文1"] = stocks["公司"].str.lower().map(dict_company_names)
+
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴
+
+	#### 方法2：Series.map(function)
+	function的参数是Series的每个元素的值
+	stocks["公司中文2"] = stocks["公司"].map(lambda x : dict_company_names[x.lower()])
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴
+
+	### 2. apply用于Series和DataFrame的转换
+
+	* Series.apply(function), 函数的参数是每个值
+	* DataFrame.apply(function), 函数的参数是Series
+	#### Series.apply(function)
+	function的参数是Series的每个值
+	stocks["公司中文3"] = stocks["公司"].apply(
+	    lambda x : dict_company_names[x.lower()])
+
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴	阿里巴巴
+
+	#### DataFrame.apply(function)
+	function的参数是对应轴的Series
+	stocks["公司中文4"] = stocks.apply(
+	    lambda x : dict_company_names[x["公司"].lower()], 
+	    axis=1)
+
+	stocks["公司中文4"] = stocks.apply(
+	    lambda x : dict_company_names[x["公司"].lower()], 
+	    axis=1)
+
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3	公司中文4
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+
+	### 3. applymap用于DataFrame所有值的转换
+	sub_df = stocks[['收盘', '开盘', '高', '低', '交易量']]
+	sub_df.head()
+	收盘	开盘	高	低	交易量
+	0	104.32	102.35	104.73	101.15	2.24
+	1	102.62	100.85	103.24	99.50	2.69
+	2	102.00	102.80	103.26	101.00	1.78
+	3	169.48	166.65	170.18	165.00	10.39
+	4	165.77	162.82	166.88	161.90	11.60
+
+	# 将这些数字取整数，应用于所有元素
+	sub_df.applymap(lambda x : int(x))
+		收盘	开盘	高	低	交易量
+	0	104	102	104	101	2
+	1	102	100	103	99	2
+	2	102	102	103	101	1
+	3	169	166	170	165	10
+	4	165	162	166	161	11
+	5	165	168	168	163	14
+	6	16	15	16	15	10
+	7	15	15	15	15	8
+	8	15	16	16	15	11
+	9	28	28	28	27	8
+	10	28	28	28	27	9
+	11	28	28	28	27	10
+
+	# 直接修改原df的这几列
+	stocks.loc[:, ['收盘', '开盘', '高', '低', '交易量']] = sub_df.applymap(lambda x : int(x))
+	stocks.head()
+
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3	公司中文4
+	0	2019-10-03	BIDU	104	102	104	101	2	0.02	百度	百度	百度	百度
+	1	2019-10-02	BIDU	102	100	103	99	2	0.01	百度	百度	百度	百度
+	2	2019-10-01	BIDU	102	102	103	101	1	-0.01	百度	百度	百度	百度
+	3	2019-10-03	BABA	169	166	170	165	10	0.02	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165	162	166	161	11	0.00	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+
+.. |image00| image:: /_static/python/python_222.png
+.. |image01| image:: /_static/python/python_334.png
+
+Pandas 的数据转换函数 map、apply、applymap
+**********************************************************************************
+
+.. code-block:: python
+
+	### 1. map用于Series值的转换
+
+	实例：将股票代码英文转换成中文名字
+
+	Series.map(dict) or Series.map(function)均可
+
+	import pandas as pd
+	stocks = pd.read_excel('./datas/stocks/互联网公司股票.xlsx')
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00
+
+	stocks["公司"].unique()
+	array(['BIDU', 'BABA', 'IQ', 'JD'], dtype=object)
+
+	# 公司股票代码到中文的映射，注意这里是小写
+	dict_company_names = {
+	    "bidu": "百度",
+	    "baba": "阿里巴巴",
+	    "iq": "爱奇艺", 
+	    "jd": "京东"
+	}
+
+	#### 方法1：Series.map(dict)
+	stocks["公司中文1"] = stocks["公司"].str.lower().map(dict_company_names)
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴
+
+	#### 方法2：Series.map(function)
+	function的参数是Series的每个元素的值
+	stocks["公司中文2"] = stocks["公司"].map(lambda x : dict_company_names[x.lower()])
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴
+
+	### 2. apply用于Series和DataFrame的转换
+
+	* Series.apply(function), 函数的参数是每个值
+	* DataFrame.apply(function), 函数的参数是Series
+	#### Series.apply(function)
+	function的参数是Series的每个值
+	stocks["公司中文3"] = stocks["公司"].apply(
+	    lambda x : dict_company_names[x.lower()])
+
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴	阿里巴巴
+
+	#### DataFrame.apply(function)
+	function的参数是对应轴的Series
+	stocks["公司中文4"] = stocks.apply(
+	    lambda x : dict_company_names[x["公司"].lower()], 
+	    axis=1)
+	stocks.head()
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3	公司中文4
+	0	2019-10-03	BIDU	104.32	102.35	104.73	101.15	2.24	0.02	百度	百度	百度	百度
+	1	2019-10-02	BIDU	102.62	100.85	103.24	99.50	2.69	0.01	百度	百度	百度	百度
+	2	2019-10-01	BIDU	102.00	102.80	103.26	101.00	1.78	-0.01	百度	百度	百度	百度
+	3	2019-10-03	BABA	169.48	166.65	170.18	165.00	10.39	0.02	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165.77	162.82	166.88	161.90	11.60	0.00	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+
+	### 3. applymap用于DataFrame所有值的转换
+	sub_df = stocks[['收盘', '开盘', '高', '低', '交易量']]
+	sub_df.head()
+
+	收盘	开盘	高	低	交易量
+	0	104.32	102.35	104.73	101.15	2.24
+	1	102.62	100.85	103.24	99.50	2.69
+	2	102.00	102.80	103.26	101.00	1.78
+	3	169.48	166.65	170.18	165.00	10.39
+	4	165.77	162.82	166.88	161.90	11.60
+
+	# 将这些数字取整数，应用于所有元素
+	sub_df.applymap(lambda x : int(x))
+		收盘	开盘	高	低	交易量
+	0	104	102	104	101	2
+	1	102	100	103	99	2
+	2	102	102	103	101	1
+	3	169	166	170	165	10
+	4	165	162	166	161	11
+	5	165	168	168	163	14
+	6	16	15	16	15	10
+	7	15	15	15	15	8
+	8	15	16	16	15	11
+	9	28	28	28	27	8
+	10	28	28	28	27	9
+	11	28	28	28	27	10
+
+	# 直接修改原df的这几列
+	stocks.loc[:, ['收盘', '开盘', '高', '低', '交易量']] = sub_df.applymap(lambda x : int(x))
+	stocks.head()
+
+	日期	公司	收盘	开盘	高	低	交易量	涨跌幅	公司中文1	公司中文2	公司中文3	公司中文4
+	0	2019-10-03	BIDU	104	102	104	101	2	0.02	百度	百度	百度	百度
+	1	2019-10-02	BIDU	102	100	103	99	2	0.01	百度	百度	百度	百度
+	2	2019-10-01	BIDU	102	102	103	101	1	-0.01	百度	百度	百度	百度
+	3	2019-10-03	BABA	169	166	170	165	10	0.02	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+	4	2019-10-02	BABA	165	162	166	161	11	0.00	阿里巴巴	阿里巴巴	阿里巴巴	阿里巴巴
+
+Pandas 怎样对每个分组应用 apply 函数?
+**********************************************************************************
+
+.. code-block:: python
+
+	## Pandas怎样对每个分组应用apply函数?
+
+	#### 知识：Pandas的GroupBy遵从split、apply、combine模式
+
+	<div style="text-align:left; width:700px;"><img src="./other_files/pandas-split-apply-combine.png" style=""/></div>
+
+	这里的split指的是pandas的groupby，我们自己实现apply函数，apply返回的结果由pandas进行combine得到结果
+
+	#### GroupBy.apply(function)  
+	* function的第一个参数是dataframe
+	* function的返回结果，可是dataframe、series、单个值，甚至和输入dataframe完全没关系
+
+	#### 本次实例演示：
+	1. 怎样对数值列按分组的归一化？
+	2. 怎样取每个分组的TOPN数据？
+
+	### 实例1：怎样对数值列按分组的归一化？
+
+	# 将不同范围的数值列进行归一化，映射到[0,1]区间：
+	# * 更容易做数据横向对比，比如价格字段是几百到几千，增幅字段是0到100
+	# * 机器学习模型学的更快性能更好
+
+	# 归一化的公式：
+
+	%%html
+	<div style="text-align:left; width:500px;"><img src="./other_files/Normalization-Formula.jpg" style=""/></div>
+
+	#### 演示：用户对电影评分的归一化
+
+	# 每个用户的评分不同，有的乐观派评分高，有的悲观派评分低，按用户做归一化
+	import pandas as pd
+	ratings = pd.read_csv(
 	    "./datas/movielens-1m/ratings.dat", 
 	    sep="::",
 	    engine='python', 
 	    names="UserID::MovieID::Rating::Timestamp".split("::")
 	)
-
-	df_ratings
-		UserID	MovieID	Rating	Timestamp
-	0	1	1193	5	978300760
-	1	1	661	3	978302109
-	2	1	914	3	978301968
-	3	1	3408	4	978300275
-	4	1	2355	5	978824291
-	...	...	...	...	...
-	1000204	6040	1091	1	956716541
-	1000205	6040	1094	5	956704887
-	1000206	6040	562	5	956704746
-	1000207	6040	1096	4	956715648
-	1000208	6040	1097	4	956715569
-	1000209 rows × 4 columns
-
-	df_ratings.head()
+	ratings.head()
 	UserID	MovieID	Rating	Timestamp
 	0	1	1193	5	978300760
 	1	1	661	3	978302109
@@ -974,302 +1235,890 @@ Pandas 怎样实现 DataFrame 的 Merge
 	3	1	3408	4	978300275
 	4	1	2355	5	978824291
 
-	df_users = pd.read_csv(
-	    "./datas/movielens-1m/users.dat", 
+	# 实现按照用户ID分组，然后对其中一列归一化
+	def ratings_norm(df):
+	    """
+	    @param df：每个用户分组的dataframe
+	    """
+	    min_value = df["Rating"].min()
+	    max_value = df["Rating"].max()
+	    df["Rating_norm"] = df["Rating"].apply(
+	        lambda x: (x-min_value)/(max_value-min_value))
+	    return df
+
+	ratings = ratings.groupby("UserID").apply(ratings_norm)
+	ratings[ratings["UserID"]==1].head()
+	UserID	MovieID	Rating	Timestamp	Rating_norm
+	0	1	1193	5	978300760	1.0
+	1	1	661	3	978302109	0.0
+	2	1	914	3	978301968	0.0
+	3	1	3408	4	978300275	0.5
+	4	1	2355	5	978824291	1.0
+
+	# 可以看到UserID==1这个用户，Rating==3是他的最低分，是个乐观派，我们归一化到0分；
+	### 实例2：怎样取每个分组的TOPN数据？
+	# 获取2018年每个月温度最高的2天数据
+
+	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
+	df = pd.read_csv(fpath)
+	# 替换掉温度的后缀℃
+	df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
+	df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
+	# 新增一列为月份
+	df['month'] = df['ymd'].str[:7]
+	df.head()
+	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	month
+	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2	2018-01
+	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1	2018-01
+	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1	2018-01
+	3	2018-01-04	0	-8	阴	东北风	1-2级	28	优	1	2018-01
+	4	2018-01-05	3	-6	多云~晴	西北风	1-2级	50	优	1	2018-01
+
+	def getWenduTopN(df, topn):
+	    """
+	    这里的df，是每个月份分组group的df
+	    """
+	    return df.sort_values(by="bWendu")[["ymd", "bWendu"]][-topn:]
+
+	df.groupby("month").apply(getWenduTopN, topn=1).head()
+			ymd	bWendu
+	month			
+	2018-01	18	2018-01-19	7
+	2018-02	56	2018-02-26	12
+	2018-03	85	2018-03-27	27
+	2018-04	118	2018-04-29	30
+	2018-05	150	2018-05-31	35
+
+	# 我们看到，grouby的apply函数返回的dataframe，其实和原来的dataframe其实可以完全不一样
+
+Pandas 的 stack 和 pivot 实现数据透视
+**********************************************************************************
+
+.. code-block:: python
+
+	<img src="./other_files/reshaping_example.png" style="margin-left:0px; width:600px" />
+
+	1. 经过统计得到多维度指标数据
+	2. 使用unstack实现数据二维透视
+	3. 使用pivot简化透视
+	4. stack、unstack、pivot的语法
+
+	#%% md
+
+	###  1. 经过统计得到多维度指标数据
+
+	非常常见的统计场景，指定多个维度，计算聚合后的指标  
+
+	实例：统计得到“电影评分数据集”，每个月份的每个分数被评分多少次：（月份、分数1~5、次数）
+
+	#%%
+
+	import pandas as pd
+	import numpy as np
+	%matplotlib inline
+
+	#%%
+
+	df = pd.read_csv(
+	    "./datas/movielens-1m/ratings.dat",
+	    header=None,
+	    names="UserID::MovieID::Rating::Timestamp".split("::"),
 	    sep="::",
-	    engine='python', 
-	    names="UserID::Gender::Age::Occupation::Zip-code".split("::")
+	    engine="python"
 	)
 
-	df_users.head()
-	UserID	Gender	Age	Occupation	Zip-code
-	0	1	F	1	10	48067
-	1	2	M	56	16	70072
-	2	3	M	25	15	55117
-	3	4	M	45	7	02460
-	4	5	M	25	20	55455
+	#%%
 
-	df_movies = pd.read_csv(
-	    "./datas/movielens-1m/movies.dat", 
-	    sep="::",
-	    engine='python', 
-	    names="MovieID::Title::Genres".split("::")
+	df.head()
+
+	#%%
+
+	df["pdate"] = pd.to_datetime(df["Timestamp"], unit='s')
+
+	#%%
+
+	df.head()
+
+	#%%
+
+	df.dtypes
+
+	#%%
+
+	# 实现数据统计
+	df_group = df.groupby([df["pdate"].dt.month, "Rating"])["UserID"].agg(pv=np.size)
+
+	#%%
+
+	df_group.head(20)
+
+	#%%
+
+
+
+	#%% md
+
+	对这样格式的数据，我想查看按月份，不同评分的次数趋势，是没法实现的
+
+	需要将数据变换成每个评分是一列才可以实现
+
+	#%% md
+
+	### 2. 使用unstack实现数据二维透视
+
+	目的：想要画图对比按照月份的不同评分的数量趋势
+
+	#%%
+
+	df_stack = df_group.unstack()
+	df_stack
+
+	#%%
+
+	df_stack.plot()
+
+	#%%
+
+	# unstack和stack是互逆操作
+	df_stack.stack().head(20)
+
+	#%% md
+
+	### 3. 使用pivot简化透视
+
+	#%%
+
+	df_group.head(20)
+
+	#%%
+
+	df_reset = df_group.reset_index()
+	df_reset.head()
+
+	#%%
+
+	df_pivot = df_reset.pivot("pdate", "Rating", "pv")
+
+	#%%
+
+	df_pivot.head()
+
+	#%%
+
+	df_pivot.plot()
+
+	#%% md
+
+	***pivot方法相当于对df使用set_index创建分层索引，然后调用unstack***
+
+	#%% md
+
+	### 4. stack、unstack、pivot的语法
+
+	#### stack：DataFrame.stack(level=-1, dropna=True)，将column变成index，类似把横放的书籍变成竖放
+
+	level=-1代表多层索引的最内层，可以通过==0、1、2指定多层索引的对应层
+
+	<img src="./other_files/reshaping_stack.png" style="margin-left:0px; width:600px" />
+
+	#### unstack：DataFrame.unstack(level=-1, fill_value=None)，将index变成column，类似把竖放的书籍变成横放
+
+	<img src="./other_files/reshaping_unstack.png" style="margin-left:0px; width:600px" />
+
+	#### pivot：DataFrame.pivot(index=None, columns=None, values=None)，指定index、columns、values实现二维透视
+
+	<img src="./other_files/reshaping_pivot.png" style="margin-left:0px; width:600px" />
+
+Pandas 怎样快捷方便的处理日期数据
+**********************************************************************************
+
+.. code-block:: python
+
+	Pandas日期处理的作用：将2018-01-01、1/1/2018等多种日期格式映射成统一的格式对象，在该对象上提供强大的功能支持
+
+	几个概念：
+	1. pd.to_datetime：pandas的一个函数，能将字符串、列表、series变成日期形式
+	2. Timestamp：pandas表示日期的对象形式
+	3. DatetimeIndex：pandas表示日期的对象列表形式
+
+	其中：
+	* DatetimeIndex是Timestamp的列表形式
+	* pd.to_datetime对单个日期字符串处理会得到Timestamp
+	* pd.to_datetime对日期字符串列表处理会得到DatetimeIndex
+
+	<img src="./other_files/pandas-todatetime-timestamp-datetimeindex.png" style="margin-left:0px"/>
+
+	#%% md
+
+	### 问题：怎样统计每周、每月、每季度的最高温度？
+
+	#%% md
+
+	### 1、读取天气数据到dataframe
+
+	#%%
+
+	import pandas as pd
+	%matplotlib inline
+
+	#%%
+
+	fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
+	df = pd.read_csv(fpath)
+	# 替换掉温度的后缀℃
+	df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
+	df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
+	df.head()
+
+	#%% md
+
+	### 2、将日期列转换成pandas的日期
+
+	#%%
+
+	df.set_index(pd.to_datetime(df["ymd"]), inplace=True)
+
+	#%%
+
+	df.head()
+
+	#%%
+
+	df.index
+
+	#%%
+
+	# DatetimeIndex是Timestamp的列表形式
+	df.index[0]
+
+	#%% md
+
+	### 3、 方便的对DatetimeIndex进行查询
+
+	#%%
+
+	# 筛选固定的某一天
+	df.loc['2018-01-05']
+
+	#%%
+
+	# 日期区间
+	df.loc['2018-01-05':'2018-01-10']
+
+	#%%
+
+	# 按月份前缀筛选
+	df.loc['2018-03']
+
+	#%%
+
+	# 按月份前缀筛选
+	df.loc["2018-07":"2018-09"].index
+
+	#%%
+
+	# 按年份前缀筛选
+	df.loc["2018"].head()
+
+	#%% md
+
+	### 4、方便的获取周、月、季度
+
+	Timestamp、DatetimeIndex支持大量的属性可以获取日期分量：  
+	https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#time-date-components
+
+	#%%
+
+	# 周数字列表
+	df.index.week
+
+	#%%
+
+	# 月数字列表
+	df.index.month
+
+	#%%
+
+	# 季度数字列表
+	df.index.quarter
+
+	#%% md
+
+	### 5、统计每周、每月、每个季度的最高温度
+
+	#%% md
+
+	#### 统计每周的数据
+
+	#%%
+
+	df.groupby(df.index.week)["bWendu"].max().head()
+
+	#%%
+
+	df.groupby(df.index.week)["bWendu"].max().plot()
+
+	#%% md
+
+	#### 统计每个月的数据
+
+	#%%
+
+	df.groupby(df.index.month)["bWendu"].max()
+
+	#%%
+
+	df.groupby(df.index.month)["bWendu"].max().plot()
+
+	#%% md
+
+	#### 统计每个季度的数据
+
+	#%%
+
+	df.groupby(df.index.quarter)["bWendu"].max()
+
+	#%%
+
+	df.groupby(df.index.quarter)["bWendu"].max().plot()
+
+Pandas 怎么处理日期索引的缺失
+**********************************************************************************
+
+.. code-block:: python
+
+	问题：按日期统计的数据，缺失了某天，导致数据不全该怎么补充日期？
+
+	公众号：蚂蚁学Python
+
+	可以用两种方法实现：  
+	1、DataFrame.reindex，调整dataframe的索引以适应新的索引  
+	2、DataFrame.resample，可以对时间序列重采样，支持补充缺失值
+
+	#%% md
+
+	## 问题：如果缺失了索引该怎么填充？
+
+	#%%
+
+	import pandas as pd
+	%matplotlib inline
+
+	#%%
+
+	df = pd.DataFrame({
+	    "pdate": ["2019-12-01", "2019-12-02", "2019-12-04", "2019-12-05"],
+	    "pv": [100, 200, 400, 500],
+	    "uv": [10, 20, 40, 50],
+	})
+
+	df
+
+	#%%
+
+	df.set_index("pdate").plot()
+
+	#%% md
+
+	***问题，这里缺失了2019-12-03的数据，导致数据不全该怎么补充？***
+
+	#%% md
+
+	## 方法1：使用pandas.reindex方法
+
+	#%% md
+
+	### 1、将df的索引变成日期索引
+
+	#%%
+
+	df_date = df.set_index("pdate")
+	df_date
+
+	#%%
+
+	df_date.index
+
+	#%%
+
+	# 将df的索引设置为日期索引
+	df_date = df_date.set_index(pd.to_datetime(df_date.index))
+	df_date
+
+	#%%
+
+	df_date.index
+
+	#%% md
+
+	### 2、使用pandas.reindex填充缺失的索引
+
+	#%%
+
+	# 生成完整的日期序列
+	pdates = pd.date_range(start="2019-12-01", end="2019-12-05")
+	pdates
+
+	#%%
+
+	df_date_new = df_date.reindex(pdates, fill_value=0)
+	df_date_new
+
+	#%%
+
+	df_date_new.plot()
+
+	#%% md
+
+	## 方法2：使用pandas.resample方法
+
+	#%% md
+
+	### 1、先将索引变成日期索引
+
+	#%%
+
+	df
+
+	#%%
+
+	df_new2 = df.set_index(pd.to_datetime(df["pdate"])).drop("pdate", axis=1)
+	df_new2
+
+	#%%
+
+	df_new2.index
+
+	#%% md
+
+	### 2、使用dataframe的resample的方法按照天重采样
+
+	#%% md
+
+	resample的含义：  
+	改变数据的时间频率，比如把天数据变成月份，或者把小时数据变成分钟级别
+
+	resample的语法：    
+	(DataFrame or Series).resample(arguments).(aggregate function)
+
+	resample的采样规则参数：  
+	https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+
+	#%%
+
+	# 由于采样会让区间变成一个值，所以需要指定mean等采样值的设定方法
+	df_new2 = df_new2.resample("D").mean().fillna(0)
+	df_new2
+
+	#%%
+
+	# resample的使用方式
+	df_new2.resample("2D").mean()
+
+Pandas怎样实现Excel的vlookup并且在指定列后面输出？
+**********************************************************************************
+
+.. code-block:: python
+
+	背景：  
+	1. 有两个excel，他们有相同的一个列；  
+	2. 按照这个列合并成一个大的excel，即vlookup功能，要求：  
+	    * 只需要第二个excel的少量的列，比如从40个列中挑选2个列  
+	    * 新增的来自第二个excel的列需要放到第一个excel指定的列后面；  
+	3. 将结果输出到一个新的excel;
+
+	微信公众号：蚂蚁学Python
+
+	#%% md
+
+	### 步骤1：读取两个数据表
+
+	#%%
+
+	import pandas as pd
+
+	#%%
+
+	# 学生成绩表
+	df_grade = pd.read_excel("./course_datas/c23_excel_vlookup/学生成绩表.xlsx") 
+	df_grade.head()
+
+	#%%
+
+	# 学生信息表
+	df_sinfo = pd.read_excel("./course_datas/c23_excel_vlookup/学生信息表.xlsx") 
+	df_sinfo.head()
+
+	#%% md
+
+	***目标：怎样将第二个“学生信息表”的姓名、性别两列，添加到第一个表“学生成绩表”，并且放在第一个表的“学号”列后面？***
+
+	#%% md
+
+	### 步骤2：实现两个表的关联
+
+	即excel的vloopup功能
+
+	#%%
+
+	# 只筛选第二个表的少量的列
+	df_sinfo = df_sinfo[["学号", "姓名", "性别"]]
+	df_sinfo.head()
+
+	#%%
+
+	df_merge = pd.merge(left=df_grade, right=df_sinfo, left_on="学号", right_on="学号")
+	df_merge.head()
+
+	#%% md
+
+	### 步骤3：调整列的顺序
+
+	#%%
+
+	df_merge.columns
+
+	#%% md
+
+	#### 问题：怎样将'姓名', '性别'两列，放到'学号'的后面？
+
+	接下来需要用Python的语法实现列表的处理
+
+	#%%
+
+	# 将columns变成python的列表形式
+	new_columns = df_merge.columns.to_list()
+	new_columns
+
+	#%%
+
+	# 按逆序insert，会将"姓名"，"性别"放到"学号"的后面
+	for name in ["姓名", "性别"][::-1]:
+	    new_columns.remove(name)
+	    new_columns.insert(new_columns.index("学号")+1, name)
+
+	#%%
+
+	new_columns
+
+	#%%
+
+	df_merge = df_merge.reindex(columns=new_columns)
+	df_merge.head()
+
+	#%% md
+
+	### 步骤4：输出最终的Excel文件
+
+	#%%
+
+	df_merge.to_excel("./course_datas/c23_excel_vlookup/合并后的数据表.xlsx", index=False)
+
+Pandas怎样结合Pyecharts绘制交互性折线图？
+**********************************************************************************
+
+.. code-block:: python
+
+	背景：  
+	* Pandas是Python用于数据分析领域的超级牛的库
+	* Echarts是百度开源的非常好用强大的可视化图表库，Pyecharts是它的Python库版本
+
+	#%% md
+
+	## 1、读取数据
+
+	#%%
+
+	import pandas as pd
+
+	#%%
+
+	xlsx_path = "./datas/stocks/baidu_stocks.xlsx"
+	df = pd.read_excel(xlsx_path, index_col="datetime", parse_dates=True)
+	df.head()
+
+	#%%
+
+	df.index
+
+	#%%
+
+	df.sort_index(inplace=True)
+	df.head()
+
+	#%% md
+
+	## 2、使用Pyecharts绘制折线图
+
+	#%%
+
+	# 如果没有安装，使用pip install pyecharts安装
+	from pyecharts.charts import Line
+	from pyecharts import options as opts
+
+	#%%
+
+	# 折线图
+	line = Line()
+
+	# x轴
+	line.add_xaxis(df.index.to_list())
+
+	# 每个y轴
+	line.add_yaxis("开盘价", df["open"].round(2).to_list())
+	line.add_yaxis("收盘价", df["close"].round(2).to_list())
+
+	# 图表配置
+	line.set_global_opts(
+	    title_opts=opts.TitleOpts(title="百度股票2019年"),
+	    tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross")
 	)
 
-	df_movies.head()
-		MovieID	Title	Genres
-	0	1	Toy Story (1995)	Animation|Children's|Comedy
-	1	2	Jumanji (1995)	Adventure|Children's|Fantasy
-	2	3	Grumpier Old Men (1995)	Comedy|Romance
-	3	4	Waiting to Exhale (1995)	Comedy|Drama
-	4	5	Father of the Bride Part II (1995)	Comedy
+	#%%
 
-	df_ratings_users = pd.merge(
-	   df_ratings, df_users, left_on="UserID", right_on="UserID", how="inner"
+	# 渲染数据
+	line.render_notebook()
+
+Pandas结合Sklearn实现泰坦尼克存活率预测
+**********************************************************************************
+
+.. code-block:: python
+
+	### 实例目标：实现泰坦尼克存活预测
+
+	处理步骤：  
+	1、输入数据：使用Pandas读取训练数据(历史数据，特点是已经知道了这个人最后有没有活下来)  
+	2、训练模型：使用Sklearn训练模型  
+	3、使用模型：对于一个新的不知道存活的人，预估他存活的概率   
+
+	#%% md
+
+	### 步骤1：读取训练数据
+
+	#%%
+
+	import pandas as pd
+
+	#%%
+
+	df_train = pd.read_csv("./datas/titanic/titanic_train.csv")
+	df_train.head()
+
+	#%% md
+
+	***其中，Survived==1代表这个人活下来了、==0代表没活下来；其他的都是这个人的信息和当时的仓位、票务情况***
+
+	#%%
+
+	# 我们只挑选两列，作为预测需要的特征
+	feature_cols = ['Pclass', 'Parch']
+	X = df_train.loc[:, feature_cols]
+	X.head()
+
+	#%%
+
+	# 单独提取是否存活的列，作为预测的目标
+	y = df_train.Survived
+	y.head()
+
+	#%% md
+
+	### 步骤2：训练模型
+
+	#%%
+
+	from sklearn.linear_model import LogisticRegression
+	# 创建模型对象
+	logreg = LogisticRegression()
+
+	# 实现模型训练
+	logreg.fit(X, y)
+
+	#%%
+
+	logreg.score(X, y)
+
+	#%% md
+
+	### 步骤3：对于未知数据使用模型
+
+	机器学习的核心目标，是使用模型预测未知的事物
+
+	比如预测股票明天是涨还是跌、一套新的二手房成交价大概多少钱、用户打开APP最可能看那些视频等问题
+
+	#%%
+
+	# 找一个历史数据中不存在的数据
+	X.drop_duplicates().sort_values(by=["Pclass", "Parch"])
+
+	#%%
+
+	# 预测这个数据存活的概率
+	logreg.predict([[2, 4]])
+
+	#%%
+
+	logreg.predict_proba([[2, 4]])
+
+Pandas处理分析网站原始访问日志
+**********************************************************************************
+
+.. code-block:: python
+
+	目标：真实项目的实战，探索Pandas的数据处理与分析
+
+	实例：  
+	数据来源：我自己的wordpress博客http://www.crazyant.net/ 的访问日志    
+
+	实现步骤：  
+	1、读取数据、清理、格式化  
+	2、统计爬虫spider的访问比例，输出柱状图  
+	3、统计http状态码的访问占比，输出饼图  
+	4、统计按小时、按天的PV/UV流量趋势，输出折线图  
+
+	#%% md
+
+	### 1、读取数据并清理格式化
+
+	#%%
+
+	import pandas as pd
+	import numpy as np
+
+	pd.set_option('display.max_colwidth', -1)
+
+	from pyecharts import options as opts
+	from pyecharts.charts import Bar,Pie,Line
+
+	#%%
+
+	# 读取整个目录，将所有的文件合并到一个dataframe
+	data_dir = "./datas/crazyant/blog_access_log"
+
+	df_list = []
+
+	import os
+	for fname in os.listdir(f"{data_dir}"):
+	    df_list.append(pd.read_csv(f"{data_dir}/{fname}", sep=" ", header=None, error_bad_lines=False))
+
+	df = pd.concat(df_list)
+
+	#%%
+
+	df.head()
+
+	#%%
+
+	df = df[[0, 3, 6, 9]].copy()
+	df.head()
+
+	#%%
+
+	df.columns = ["ip", "stime", "status", "client"]
+	df.head()
+
+	#%%
+
+	df.dtypes
+
+	#%% md
+
+	### 2、统计spider的比例
+
+	#%%
+
+	df["is_spider"] = df["client"].str.lower().str.contains("spider")
+	df.head()
+
+	#%%
+
+	df_spider = df["is_spider"].value_counts()
+	df_spider
+
+	#%%
+
+	bar = (
+	        Bar()
+	        .add_xaxis([str(x) for x in df_spider.index])
+	        .add_yaxis("是否Spider", df_spider.values.tolist())
+	        .set_global_opts(title_opts=opts.TitleOpts(title="爬虫访问量占比"))
 	)
+	bar.render_notebook()
 
-	df_ratings_users.head()
-	UserID	MovieID	Rating	Timestamp	Gender	Age	Occupation	Zip-code
-	0	1	1193	5	978300760	F	1	10	48067
-	1	1	661	3	978302109	F	1	10	48067
-	2	1	914	3	978301968	F	1	10	48067
-	3	1	3408	4	978300275	F	1	10	48067
-	4	1	2355	5	978824291	F	1	10	48067
+	#%% md
 
-	df_ratings_users_movies = pd.merge(
-	    df_ratings_users, df_movies, left_on="MovieID", right_on="MovieID", how="inner"
-	)
+	### 3、访问状态码的数量对比
 
-	df_ratings_users_movies.head(10)
-	UserID	MovieID	Rating	Timestamp	Gender	Age	Occupation	Zip-code	Title	Genres
-	0	1	1193	5	978300760	F	1	10	48067	One Flew Over the Cuckoo's Nest (1975)	Drama
-	1	2	1193	5	978298413	M	56	16	70072	One Flew Over the Cuckoo's Nest (1975)	Drama
-	2	12	1193	4	978220179	M	25	12	32793	One Flew Over the Cuckoo's Nest (1975)	Drama
-	3	15	1193	4	978199279	M	25	7	22903	One Flew Over the Cuckoo's Nest (1975)	Drama
-	4	17	1193	5	978158471	M	50	1	95350	One Flew Over the Cuckoo's Nest (1975)	Drama
-	5	18	1193	4	978156168	F	18	3	95825	One Flew Over the Cuckoo's Nest (1975)	Drama
-	6	19	1193	5	982730936	M	1	10	48073	One Flew Over the Cuckoo's Nest (1975)	Drama
-	7	24	1193	5	978136709	F	25	7	10023	One Flew Over the Cuckoo's Nest (1975)	Drama
-	8	28	1193	3	978125194	F	25	1	14607	One Flew Over the Cuckoo's Nest (1975)	Drama
-	9	33	1193	5	978557765	M	45	3	55421	One Flew Over the Cuckoo's Nest (1975)	Drama
+	#%%
 
-	# ### 2、理解merge时数量的对齐关系
+	df_status = df.groupby("status").size()
+	df_status
 
-	# 以下关系要正确理解：
-	# * one-to-one：一对一关系，关联的key都是唯一的
-	#   - 比如(学号，姓名) merge (学号，年龄)
-	#   - 结果条数为：1*1
-	# * one-to-many：一对多关系，左边唯一key，右边不唯一key
-	#   - 比如(学号，姓名) merge (学号，[语文成绩、数学成绩、英语成绩])
-	#   - 结果条数为：1*N
-	# * many-to-many：多对多关系，左边右边都不是唯一的
-	#   - 比如（学号，[语文成绩、数学成绩、英语成绩]） merge (学号，[篮球、足球、乒乓球])
-	#   - 结果条数为：M*N
+	#%%
 
-	#### 2.1 one-to-one 一对一关系的merge
-	%%html
-	<img src="./other_files/pandas-merge-one-to-one.png" />
+	list(zip(df_status.index, df_status))
 
-	|image3|
+	#%%
 
-	left = pd.DataFrame({'sno': [11, 12, 13, 14],
-	                      'name': ['name_a', 'name_b', 'name_c', 'name_d']
-	                    })
-	left
-		sno	name
-	0	11	name_a
-	1	12	name_b
-	2	13	name_c
-	3	14	name_d
+	pie = (
+	        Pie()
+	        .add("状态码比例", list(zip(df_status.index, df_status)))
+	        .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+	    )
+	pie.render_notebook()
 
-	right = pd.DataFrame({'sno': [11, 12, 13, 14],
-	                      'age': ['21', '22', '23', '24']
-	                    })
-	right
-		sno	age
-	0	11	21
-	1	12	22
-	2	13	23
-	3	14	24
+	#%% md
 
-	# 一对一关系，结果中有4条
-	pd.merge(left, right, on='sno')
-	sno	name	age
-	0	11	name_a	21
-	1	12	name_b	22
-	2	13	name_c	23
-	3	14	name_d	24
+	### 4、实现按小时、按天粒度的流量统计
 
-	%%html
-	<img src="./other_files/pandas-merge-one-to-many.png" />
+	#%%
 
-	|image4|
+	df.head()
 
-	left = pd.DataFrame({'sno': [11, 12, 13, 14],
-	                      'name': ['name_a', 'name_b', 'name_c', 'name_d']
-	                    })
-	left
-		sno	name
-	0	11	name_a
-	1	12	name_b
-	2	13	name_c
-	3	14	name_d
+	#%%
 
-	right = pd.DataFrame({'sno': [11, 11, 11, 12, 12, 13],
-	                       'grade': ['语文88', '数学90', '英语75','语文66', '数学55', '英语29']
-	                     })
-	right
-	    sno	grade
-	0	11	语文88
-	1	11	数学90
-	2	11	英语75
-	3	12	语文66
-	4	12	数学55
-	5	13	英语29
+	df["stime"] = pd.to_datetime(df["stime"].str[1:], format="%d/%b/%Y:%H:%M:%S")
+	df.head()
 
-	# 数目以多的一边为准
-	pd.merge(left, right, on='sno')
-		sno	name	grade
-	0	11	name_a	语文88
-	1	11	name_a	数学90
-	2	11	name_a	英语75
-	3	12	name_b	语文66
-	4	12	name_b	数学55
-	5	13	name_c	英语29
+	#%%
 
-	#### 2.3 many-to-many 多对多关系的merge
+	df.set_index("stime", inplace=True)
+	df.sort_index(inplace=True)
+	df.head()
 
-	# 注意：结果数量会出现乘法
+	#%%
 
-	%%html
-	<img src="./other_files/pandas-merge-many-to-many.png" />
+	df.index
 
-	|image5|
+	#%%
 
-	left = pd.DataFrame({'sno': [11, 11, 12, 12,12],
-	                      '爱好': ['篮球', '羽毛球', '乒乓球', '篮球', "足球"]
-	                    })
-	left
-		sno	爱好
-	0	11	篮球
-	1	11	羽毛球
-	2	12	乒乓球
-	3	12	篮球
-	4	12	足球
+	# 按小时统计
+	#df_pvuv = df.resample("H")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
 
-	right = pd.DataFrame({'sno': [11, 11, 11, 12, 12, 13],
-	                       'grade': ['语文88', '数学90', '英语75','语文66', '数学55', '英语29']
-	                     })
-	right
-		sno	grade
-	0	11	语文88
-	1	11	数学90
-	2	11	英语75
-	3	12	语文66
-	4	12	数学55
-	5	13	英语29
+	# 按每6个小时统计
+	#df_pvuv = df.resample("6H")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
 
-	pd.merge(left, right, on='sno')
-		sno	爱好	grade
-	0	11	篮球	语文88
-	1	11	篮球	数学90
-	2	11	篮球	英语75
-	3	11	羽毛球	语文88
-	4	11	羽毛球	数学90
-	5	11	羽毛球	英语75
-	6	12	乒乓球	语文66
-	7	12	乒乓球	数学55
-	8	12	篮球	语文66
-	9	12	篮球	数学55
-	10	12	足球	语文66
-	11	12	足球	数学55
+	# 按天统计
+	df_pvuv = df.resample("D")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
 
-	### 3、理解left join、right join、inner join、outer join的区别
-	%%html
-	<img src="./other_files/pandas-leftjoin-rightjoin-outerjoin.png" />
+	df_pvuv.head()
 
-	|image6|
+	#%%
 
-	left = pd.DataFrame({'key': ['K0', 'K1', 'K2', 'K3'],
-	                      'A': ['A0', 'A1', 'A2', 'A3'],
-	                      'B': ['B0', 'B1', 'B2', 'B3']})
+	line = (
+	        Line()
+	        .add_xaxis(df_pvuv.index.to_list())
+	        .add_yaxis("PV", df_pvuv["pv"].to_list())
+	        .add_yaxis("UV", df_pvuv["uv"].to_list())
+	        .set_global_opts(
+	            title_opts=opts.TitleOpts(title="PVUV数据对比"),
+	            tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross")
+	        )
+	    )
+	line.render_notebook()
 
-	right = pd.DataFrame({'key': ['K0', 'K1', 'K4', 'K5'],
-	                      'C': ['C0', 'C1', 'C4', 'C5'],
-	                      'D': ['D0', 'D1', 'D4', 'D5']})
-
-	left
-		key	A	B
-	0	K0	A0	B0
-	1	K1	A1	B1
-	2	K2	A2	B2
-	3	K3	A3	B3
-
-	right
-		key	C	D
-	0	K0	C0	D0
-	1	K1	C1	D1
-	2	K4	C4	D4
-	3	K5	C5	D5
-
-	#### 3.1 inner join，默认
-	# 左边和右边的key都有，才会出现在结果里
-
-	pd.merge(left, right, how='inner')
-		key	A	B	C	D
-	0	K0	A0	B0	C0	D0
-	1	K1	A1	B1	C1	D1
-
-	#### 3.2 left join
-	# 左边的都会出现在结果里，右边的如果无法匹配则为Null
-	pd.merge(left, right, how='left')
-
-	key	A	B	C	D
-	0	K0	A0	B0	C0	D0
-	1	K1	A1	B1	C1	D1
-	2	K2	A2	B2	NaN	NaN
-	3	K3	A3	B3	NaN	NaN
-
-	#### 3.3 right join
-	# 右边的都会出现在结果里，左边的如果无法匹配则为Null
-	pd.merge(left, right, how='right')
-	key	A	B	C	D
-	0	K0	A0	B0	C0	D0
-	1	K1	A1	B1	C1	D1
-	2	K4	NaN	NaN	C4	D4
-	3	K5	NaN	NaN	C5	D5
-
-	#### 3.4 outer join
-	# 左边、右边的都会出现在结果里，如果无法匹配则为Null
-	pd.merge(left, right, how='outer')
-		key	A	B	C	D
-	0	K0	A0	B0	C0	D0
-	1	K1	A1	B1	C1	D1
-	2	K2	A2	B2	NaN	NaN
-	3	K3	A3	B3	NaN	NaN
-	4	K4	NaN	NaN	C4	D4
-	5	K5	NaN	NaN	C5	D5
-
-	### 4、如果出现非Key的字段重名怎么办
-	left = pd.DataFrame({'key': ['K0', 'K1', 'K2', 'K3'],
-	                      'A': ['A0', 'A1', 'A2', 'A3'],
-	                      'B': ['B0', 'B1', 'B2', 'B3']})
-
-	right = pd.DataFrame({'key': ['K0', 'K1', 'K4', 'K5'],
-	                      'A': ['A10', 'A11', 'A12', 'A13'],
-	                      'D': ['D0', 'D1', 'D4', 'D5']})
-
-	left
-		key	A	B
-	0	K0	A0	B0
-	1	K1	A1	B1
-	2	K2	A2	B2
-	3	K3	A3	B3
-
-	right
-		key	A	D
-	0	K0	A10	D0
-	1	K1	A11	D1
-	2	K4	A12	D4
-	3	K5	A13	D5
-
-	pd.merge(left, right, on='key')
-		key	A_x	B	A_y	D
-	0	K0	A0	B0	A10	D0
-	1	K1	A1	B1	A11	D1
-
-	pd.merge(left, right, on='key', suffixes=('_left', '_right'))
-	key	A_left	B	A_right	D
-	0	K0	A0	B0	A10	D0
-	1	K1	A1	B1	A11	D1
-
-.. |image0| image:: /_static/python/pandas-axis-index.png
-.. |image1| image:: /_static/python/pandas-axis-columns.png
-.. |image2| image:: /_static/python/pandas-index-performance.png
-.. |image3| image:: /_static/python/pandas-merge-one-to-one.png
-.. |image4| image:: /_static/python/pandas-merge-one-to-many.png
-.. |image5| image:: /_static/python/pandas-merge-many-to-many.png
-.. |image6| image:: /_static/python/pandas-leftjoin-rightjoin-outerjoin.png
+.. |image0| image:: /_static/python/python_222.png
+.. |image1| image:: /_static/python/python_334.png
 
 
 
