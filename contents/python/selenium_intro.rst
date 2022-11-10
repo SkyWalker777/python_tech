@@ -78,7 +78,6 @@ Selenium环境的安装主要就是安装两样东西： 客户端库 和 浏览
 下面的代码, 可以自动化的 打开Chrome浏览器，并且自动化打开百度网站，可以大家可以运行一下看看。
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -91,14 +90,12 @@ Selenium环境的安装主要就是安装两样东西： 客户端库 和 浏览
 其中，下面这行代码，就会运行浏览器驱动，并且运行Chrome浏览器
 
 .. code-block:: python
-	:linenos:
 
 	wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 
 注意，等号右边 返回的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器，比如 打开网址、选择界面元素等。而下面这行代码，就是使用 WebDriver 的 get 方法 打开网址 百度
 
 .. code-block:: python
-	:linenos:
 
 	wd.get('https://www.baidu.com')
 
@@ -112,14 +109,12 @@ Selenium环境的安装主要就是安装两样东西： 客户端库 和 浏览
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 
 如果，我们把浏览器驱动 所在目录 加入环境变量 Path， 再写代码时，就可以无需指定浏览器驱动路径了，像下面这样
 
 .. code-block:: python
-	:linenos:
 
 	wd = webdriver.Chrome()
 
@@ -177,7 +172,6 @@ web界面自动化，要操控元素，首先需要 选择 界面元素 ，或�
 这里，百度搜索框 元素的 id值为 kw, 下面的代码，可以自动化在浏览器中 访问百度，并且在输入框中搜索 白月黑羽。大家可以运行一下看看。
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -197,14 +191,12 @@ web界面自动化，要操控元素，首先需要 选择 界面元素 ，或�
 其中
 
 .. code-block:: python
-	:linenos:
 
 	wd = webdriver.Chrome(r'd:\webdrivers\chromedriver.exe')
 
 前面讲过，driver赋值的是 WebDriver 类型的对象，我们可以通过这个对象来操控浏览器，比如 打开网址、选择界面元素等。下面的代码
 
 .. code-block:: python
-	:linenos:
 
 	wd.find_element_by_id('kw')
 
@@ -227,7 +219,6 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 请大家 点击打开这个网址 ``http://cdn1.python3.vip/files/selenium/sample1.html``. 这个网址对应的html内容 有如下的部分
 
 .. code-block:: html
-	:linenos:
 
 	<body>
 	    
@@ -246,7 +237,6 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 如果我们要选择 所有的 动物， 就可以使用方法 find_elements_by_class_name 。注意element后面多了个s.
 
 .. code-block:: python
-	:linenos:
 
 	wd.find_elements_by_class_name('animal')
 
@@ -258,7 +248,6 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 大家可以运行如下代码看看。
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -280,14 +269,12 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 首先，大家要注意： 通过 WebElement 对象的 text属性 可以获取该元素 在网页中的文本内容。所以 下面的代码，可以打印出 element 对应 网页元素的 文本
 
 .. code-block:: python
-	:linenos:
 
 	print(element.text)
 
 如果我们把 ``elements = wd.find_elements_by_class_name('animal')``, 去掉一个s ，改为
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_class_name('animal')
 	print(element.text)
@@ -295,14 +282,12 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 那么返回的就是第一个class 属性为 animal的元素， 也就是这个元素
 
 .. code-block:: html
-	:linenos:
 
 	<div class="animal"><span>狮子</span></div>
 
 就像一个 学生张三 可以定义有 多个 类型： 中国人 和 学生 ， 中国人 和 学生 都是 张三 的 类型。元素也可以有 多个class类型 ，多个class类型的值之间用 空格 隔开，比如
 
 .. code-block:: html
-	:linenos:
 
 	<span class="chinese student">张三</span>
 
@@ -311,21 +296,18 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 我们要用代码选择这个元素，可以指定任意一个class 属性值，都可以选择到这个元素，如下
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_elements_by_class_name('chinese')
 
 或者
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_elements_by_class_name('student')
 
 而不能这样写
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_elements_by_class_name('chinese student')
 
@@ -335,7 +317,6 @@ web自动化的难点和重点之一，就是如何 选择 我们想要操作的
 类似的，我们可以通过方法 find_elements_by_tag_name ，选择所有的tag名为 div的元素，如下所示
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -365,7 +346,6 @@ find_element 和 find_elements 的区别
 | WebDriver 对象 选择元素的范围是 整个 web页面， 而 WebElement 对象 选择元素的范围是 该元素的内部。
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -402,7 +382,6 @@ find_element 和 find_elements 的区别
 那么我们可以试试用如下代码 来将 第一个搜索结果里面的文本内容 打印出来
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -431,7 +410,6 @@ find_element 和 find_elements 的区别
 | 为什么呢？因为我们的代码执行的速度比 百度服务器响应的速度 快。百度还没有来得及 返回搜索结果，我们就执行了如下代码
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_id('1')
 
@@ -439,7 +417,6 @@ find_element 和 find_elements 的区别
 | 那么怎么解决这个问题呢？很多聪明的读者可以想到， 点击搜索后， 用sleep 来 等待几秒钟， 等百度服务器返回结果后，再去选择 id 为1 的元素， 就像下面这样
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -475,7 +452,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 如果我们 加入如下代码
 
 .. code-block:: python
-	:linenos:
 
 	wd.implicitly_wait(10)
 
@@ -484,7 +460,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 这样，我们的百度搜索的例子的最终代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -539,7 +514,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 代码应该如下:
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_id("input1")
 
@@ -555,7 +529,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 通过WebElement对象的 text 属性，可以获取元素 展示在界面上的 文本内容。
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_id('animal')
 	print(element.text)
@@ -566,7 +539,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 通过WebElement对象的 get_attribute 方法来获取元素的属性值，比如要获取元素属性class的值，就可以使用 element.get_attribute('class')
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_id('input_name')
 	print(element.get_attribute('class'))
@@ -585,7 +557,6 @@ Selenium提供了一个更合理的解决方案，是这样的：
 对于input输入框的元素，要获取里面的输入文本，用text属性是不行的，这时可以使用 element.get_attribute('value')
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_id("input1")
 	print(element.get_attribute('value')) # 获取输入框中的文本
@@ -619,14 +590,12 @@ CSS Selector 语法选择元素原理
 通过 CSS Selector 选择单个元素的方法是
 
 .. code-block:: python
-	:linenos:
 
 	find_element_by_css_selector(CSS Selector参数)
 
 选择所有元素的方法是
 
 .. code-block:: python
-	:linenos:
 
 	find_elements_by_css_selector(CSS Selector参数)
 
@@ -640,7 +609,6 @@ CSS Selector 同样可以根据tag名、id 属性和 class属性 来 选择元�
 比如 要选择 所有的tag名为div的元素，就可以是这样
 
 .. code-block:: python
-	:linenos:
 
 	elements = wd.find_elements_by_css_selector('div')
 	等价于
@@ -651,14 +619,12 @@ CSS Selector 同样可以根据tag名、id 属性和 class属性 来 选择元�
 有下面这样的元素：
 
 .. code-block:: python
-	:linenos:
 
 	<input  type="text" id='searchtext' />
 
 就可以使用 #searchtext 这样的 CSS Selector 来选择它。比如，我们想在 id 为 searchtext 的输入框中输入文本 你好 ，完整的Python代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -674,14 +640,12 @@ CSS Selector 同样可以根据tag名、id 属性和 class属性 来 选择元�
 要选择所有 class 属性值为 animal的元素 动物 除了这样写
 
 .. code-block:: python
-	:linenos:
 
 	elements = wd.find_elements_by_class_name('animal')
 
 还可以这样写
 
 .. code-block:: python
-	:linenos:
 
 	elements = wd.find_elements_by_css_selector('.animal')
 
@@ -693,7 +657,6 @@ CSS Selector 同样可以根据tag名、id 属性和 class属性 来 选择元�
 HTML中， 元素 内部可以 包含其他元素， 比如 下面的 HTML片段
 
 .. code-block:: html
-	:linenos:
 
 	<div id='container'>  
 	    <div id='layer1'>
@@ -773,7 +736,6 @@ id、class 都是web元素的 ```属性``` ，因为它们是很常用的属性�
 完整代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -804,7 +766,6 @@ id、class 都是web元素的 ```属性``` ，因为它们是很常用的属性�
 | 当然可以像下面这样，写出Python代码，运行看看，能否操作成功
 
 .. code-block:: python
-	:linenos:
 
 	element = wd.find_element_by_css_selector('#searchtext')
 	element.input('输入的文本')
@@ -835,7 +796,6 @@ css表达式-下篇
 | 比如， 我们要选择 网页 html 中的元素 <span class='copyright'>版权</span>
 
 .. code-block:: html
-	:linenos:
 
 	<div id='bottom'>
 	    <div class='footer1'>
@@ -887,7 +847,6 @@ CSS selector 表达式 可以这样写：
 对应的selenium代码如下
 
 .. code-block:: python
-	:linenos:
 
 	elements = wd.find_elements_by_css_selector('div,#BYHY')
 	for element in elements:
@@ -905,7 +864,6 @@ CSS selector 表达式 可以这样写：
 示例地址: http://cdn1.python3.vip/files/selenium/sample1b.html, 对应的html如下，关键信息如下
 
 .. code-block:: html
-	:linenos:
 
 	<body>  
 	   <div id='t1'>
@@ -989,7 +947,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 大家可能会照旧写出如下代码：
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1039,7 +996,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 然后，就可以进行后续操作frame里面的元素了。上面的例子的正确代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1069,7 +1025,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 | 例如，在上面 代码 操作完 frame里面的元素后， 需要 点击 主html 里面的按钮，就可以这样写
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1103,7 +1058,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 | 问题就在于，即使新窗口打开了， 这时候，我们的 WebDriver对象对应的 还是老窗口，自动化操作也还是在老窗口进行，我们可以运行如下代码验证一下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1131,7 +1085,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 | 所谓句柄，大家可以想象成对应网页窗口的一个ID，那么我们就可以通过 类似下面的代码，
 
 .. code-block:: python
-	:linenos:
 
 	for handle in wd.window_handles:
 	    # 先切换到该窗口
@@ -1147,7 +1100,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 | 还有更省事的方法。因为我们一开始就在 原来的窗口里面，我们知道 进入新窗口操作完后，还要回来，可以事先 保存该老窗口的 句柄，使用如下方法
 
 .. code-block:: python
-	:linenos:
 
 	# mainWindow变量保存当前窗口的句柄
 	mainWindow = wd.current_window_handle
@@ -1155,7 +1107,6 @@ demo 地址: http://cdn1.python3.vip/files/selenium/sample2.html
 切换到新窗口操作完后，就可以直接像下面这样，将driver对应的对象返回到原来的窗口
 
 .. code-block:: python
-	:linenos:
 
 	#通过前面保存的老窗口的句柄，自己切换到老窗口
 	wd.switch_to.window(mainWindow)
@@ -1176,7 +1127,6 @@ radio框选择选项，直接用WebElement的click方法，模拟用户点击就
 * 再选择 小雷老师
 
 .. code-block:: html
-	:linenos:
 
 	<div id="s_radio">
 	  <input type="radio" name="teacher" value="小江老师">小江老师<br>
@@ -1187,7 +1137,6 @@ radio框选择选项，直接用WebElement的click方法，模拟用户点击就
 对应的代码如下
 
 .. code-block:: python
-	:linenos:
 
 	# 获取当前选中的元素
 	element = wd.find_element_by_css_selector(
@@ -1208,7 +1157,6 @@ checkbox 框
 比如, 我们要在下面的html中：选中 小雷老师
 
 .. code-block:: html
-	:linenos:
 
 	<div id="s_checkbox">
 	  <input type="checkbox" name="teacher" value="小江老师">小江老师<br>
@@ -1226,7 +1174,6 @@ checkbox 框
 示例代码
 
 .. code-block:: python
-	:linenos:
 
 	# 先把 已经选中的选项全部点击一下
 	elements = wd.find_elements_by_css_selector(
@@ -1264,7 +1211,6 @@ Select 单选框
 | 例如，选择示例里面的小雷老师，示例代码如下
 
 .. code-block:: python
-	:linenos:
 
 	# 导入Select类
 	from selenium.webdriver.support.ui import Select
@@ -1284,7 +1230,6 @@ Select 多选框
 示例代码如下：
 
 .. code-block:: python
-	:linenos:
 
 	# 导入Select类
 	from selenium.webdriver.support.ui import Select
@@ -1318,7 +1263,6 @@ Select 多选框
 如果我们把鼠标放在上边，就会弹出 下面的 糯米、音乐、图片 等图标。使用 ActionChains 来 模拟鼠标移动 操作的代码如下：
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1342,7 +1286,6 @@ Select 多选框
 我们可以直接让浏览器运行一段javascript代码，并且得到返回值，如下
 
 .. code-block:: python
-	:linenos:
 
 	# 直接执行 javascript，里面可以直接用return返回我们需要的数据
 	nextPageButtonDisabled = driver.execute_script(
@@ -1397,7 +1340,6 @@ Alert
 示例代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	driver = webdriver.Chrome()
@@ -1428,7 +1370,6 @@ Confirm
 示例代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	driver = webdriver.Chrome()
@@ -1460,7 +1401,6 @@ Prompt
 示例代码如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	driver = webdriver.Chrome()
@@ -1513,7 +1453,6 @@ Prompt
 例如，访问网易，并获取当前窗口的标题和URL
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import  webdriver
 
@@ -1538,7 +1477,6 @@ Prompt
 | 可以使用 WebDriver 的 get_screenshot_as_file方法来截屏并保存为图片。
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import  webdriver
 
@@ -1557,7 +1495,6 @@ Prompt
 我们可以通过 desired_capabilities 参数，指定以手机模式打开chrome浏览器. 参考代码，如下
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1586,7 +1523,6 @@ Prompt
 如下所示：
 
 .. code-block:: python
-	:linenos:
 
 	# 先定位到上传文件的 input 元素
 	ele = wd.find_element_by_css_selector('input[type=file]')
@@ -1597,7 +1533,6 @@ Prompt
 如果需要上传多个文件，可以多次调用send_keys，如下
 
 .. code-block:: python
-	:linenos:
 
 	ele = wd.find_element_by_css_selector('input[type=file]')
 	ele.send_keys(r'h:\g01.png')
@@ -1613,7 +1548,6 @@ Prompt
 | 在自动化代码中，指定使用Edge Webdriver类，并且指定 Edge 驱动路径，如下所示
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 
@@ -1637,7 +1571,6 @@ Prompt
 如下所示
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	from selenium.webdriver.chrome.options import Options
@@ -1707,7 +1640,6 @@ Xpath 语法简介
 | 代码如下：
 
 .. code-block:: python
-	:linenos:
 
 	elements = driver.find_elements_by_xpath("//div/*")
 	for element in elements:
@@ -1734,7 +1666,6 @@ Xpath 可以根据属性来选择元素。根据属性来选择元素 是通过 
 选择所有 select 元素中 class为 single_choice 的元素，可以这样 //select[@class='single_choice'], 如果一个元素class 有多个，比如
 
 .. code-block:: python
-	:linenos:
 
 	<p id="beijing" class='capital huge-city'>
 	    北京    
@@ -1842,7 +1773,6 @@ selenium 注意点
 * 然后通过这个元素的WebElement对象，使用find_elements_by_xpath，选择里面的p元素，
 
 .. code-block:: python
-	:linenos:
 
 	# 先寻找id是china的元素
 	china = wd.find_element_by_id('china')
@@ -1867,7 +1797,6 @@ Selenium 完整案例
 以下为完成案例, 供以后参考使用 
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	from selenium.webdriver.support.ui import Select
@@ -2216,7 +2145,6 @@ python/爬虫：用 selenium 控制已打开的浏览器
 启动selenium程序
 
 .. code-block:: python
-	:linenos:
 
 	from selenium import webdriver
 	from selenium.webdriver.chrome.options import Options

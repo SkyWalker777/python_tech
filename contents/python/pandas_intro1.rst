@@ -76,7 +76,6 @@ Pandas 需要先读取表格类型的数据，然后进行分析
 	3. pandas读取mysql数据表
 
 .. code-block:: python
-	:linenos:
 
 	import pandas as pd
 
@@ -191,7 +190,6 @@ DataFrame：二维数据，整个表格，多行多列
 |image0|
 
 .. code-block:: python
-	:linenos:
 
 	## 03. Pandas数据结构
 	# 1. Series
@@ -393,7 +391,6 @@ Pandas 数据查询
 按数值、列表、区间、条件、函数五种方法
 
 .. code-block:: python
-	:linenos:
 
 	## Pandas查询数据的几种方法
 	# 1. df.loc方法，根据行、列的标签值查询
@@ -660,7 +657,6 @@ Pandas 新增数据列
 直接赋值、apply、assign、分条件赋值
 
 .. code-block:: python
-	:linenos:
 
 	## Pandas怎样新增数据列？
 	# 在进行数据分析时，经常需要按照一定条件创建新的数据列，然后进行进一步分析。
@@ -797,7 +793,6 @@ Pandas 数据统计函数
 平均值、最大值、最小值、去重数、协方差、相关系数
 
 .. code-block:: python
-	:linenos:
 
 	## Pandas数据统计函数
 

@@ -188,7 +188,6 @@ requests 介绍
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	#- 需求：爬取搜狗首页的页面数据
 	import requests
@@ -210,7 +209,6 @@ requests 介绍
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	#!/usr/bin/env python 
 	# -*- coding:utf-8 -*-
@@ -250,7 +248,6 @@ requests 介绍
 XHR，全称为XMLHttpRequest，用于与服务器交互数据，是ajax功能实现所依赖的对象，jquery中的ajax就是对 xhr的封装。
 
 .. code-block:: python
-	:linenos:
 
 	#!/usr/bin/env python 
 	# -*- coding:utf-8 -*-
@@ -285,7 +282,6 @@ requests 实战之豆瓣电影爬取
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	import json
@@ -314,7 +310,6 @@ requests 实战之药监总局相关数据爬取
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import  requests
 	import json
@@ -476,7 +471,6 @@ xpath解析：最常用且最便捷高效的一种解析方式。通用性。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	if __name__ == "__main__":
@@ -493,7 +487,6 @@ xpath解析：最常用且最便捷高效的一种解析方式。通用性。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	import re
@@ -533,7 +526,6 @@ xpath解析：最常用且最便捷高效的一种解析方式。通用性。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	import re
@@ -580,7 +572,6 @@ bs4解析基础
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	from bs4 import BeautifulSoup
 	if __name__ == "__main__":
@@ -601,7 +592,6 @@ bs4案例
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	from bs4 import BeautifulSoup
@@ -637,7 +627,6 @@ xpath解析基础
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	from lxml import etree
 	if __name__ == "__main__":
@@ -658,7 +647,6 @@ xpath解析案例-58二手房
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	from lxml import etree
@@ -686,7 +674,6 @@ xpath解析案例-4k图片解析爬取
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	# -*- coding:utf-8 -*-
 	#需求：解析下载图片数据 http://pic.netbian.com/4kmeinv/
@@ -730,7 +717,6 @@ xpath解析案例-全国城市名称爬取
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import requests
 	from lxml import etree
@@ -814,7 +800,6 @@ xpath解析案例-全国城市名称爬取
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	CodeClass ====>
 	class YDMHttp:
@@ -1049,7 +1034,6 @@ cookie：用来让服务器端记录客户端的相关状态。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	import http.client, mimetypes, urllib, json, time, requests
 
@@ -1148,7 +1132,6 @@ cookie：用来让服务器端记录客户端的相关状态。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	#编码流程：
 	#1.验证码的识别，获取验证码图片的文字数据
@@ -1244,7 +1227,6 @@ cookie：用来让服务器端记录客户端的相关状态。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	#编码流程：
 	#1.验证码的识别，获取验证码图片的文字数据
@@ -1347,7 +1329,6 @@ cookie：用来让服务器端记录客户端的相关状态。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	#需求：
 	import requests
@@ -1368,7 +1349,6 @@ cookie：用来让服务器端记录客户端的相关状态。
 ==================================================================================
 
 .. code-block:: python
-	:linenos:
 
 	from CodeClass import YDMHttp
 	import requests

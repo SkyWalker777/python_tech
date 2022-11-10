@@ -13,7 +13,6 @@ Python 异步编程
 协程（Coroutine），也可以被称为微线程，是一种用户态内的上下文切换技术。简而言之，其实就是通过一个线程实现代码块相互切换执行。例如：
 
 .. code-block:: python
-	:linenos:
 
 	def func1():
 	    print(1)
@@ -43,7 +42,6 @@ greenlet
 greentlet是一个第三方模块，需要提前安装 pip3 install greenlet才能使用。
 
 .. code-block:: python
-	:linenos:
 
 	from greenlet import greenlet
 
@@ -70,7 +68,6 @@ yield
 基于Python的生成器的yield和yield form关键字实现协程代码。
 
 .. code-block:: python
-	:linenos:
 
 	def func1():
 	    yield 1
@@ -93,7 +90,6 @@ asyncio
 在Python3.4之前官方未提供协程的类库，一般大家都是使用greenlet等其他来实现。在Python3.4发布后官方正式支持协程，即：asyncio模块。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -127,7 +123,6 @@ async & awit 关键字在Python3.5版本中正式引入，基于他编写的协�
 Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async & awit 关键字实现协程代码。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -175,7 +170,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 方式一：同步编程实现
 
 .. code-block:: python
-	:linenos:
 
 	"""
 	下载图片使用第三方模块requests，请提前安装：pip3 install requests
@@ -203,7 +197,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 方式二：基于协程的异步编程实现
 
 .. code-block:: python
-	:linenos:
 
 	"""
 	下载图片使用第三方模块aiohttp，请提前安装：pip3 install aiohttp
@@ -258,7 +251,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 事件循环，可以把他当做是一个while循环，这个while循环在周期性的运行并执行一些任务，在特定条件下终止循环。
 
 .. code-block:: python
-	:linenos:
 
 	# 伪代码
 	任务列表 = [ 任务1, 任务2, 任务3,... ]
@@ -273,7 +265,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 在编写程序时候可以通过如下代码来获取和创建事件循环。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	loop = asyncio.get_event_loop()
@@ -286,7 +277,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 协程对象，调用 协程函数 所返回的对象。
 
 .. code-block:: python
-	:linenos:
 
 	# 定义一个协程函数
 	async def func():
@@ -302,7 +292,6 @@ Python3.8之后 @asyncio.coroutine 装饰器就会被移除，推荐使用async 
 程序中，如果想要执行协程函数的内部代码，需要 事件循环 和 协程对象 配合才能实现，如：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -330,7 +319,6 @@ await是一个只能在协程函数中使用的关键字，用于遇到IO操作�
 示例1：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -347,7 +335,6 @@ await是一个只能在协程函数中使用的关键字，用于遇到IO操作�
 示例2：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -368,7 +355,6 @@ await是一个只能在协程函数中使用的关键字，用于遇到IO操作�
 示例3：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -410,7 +396,6 @@ Tasks用于并发调度协程，通过asyncio.create_task(协程对象)的方式
 示例1：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -442,7 +427,6 @@ Tasks用于并发调度协程，通过asyncio.create_task(协程对象)的方式
 示例2：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -477,7 +461,6 @@ Tasks用于并发调度协程，通过asyncio.create_task(协程对象)的方式
 示例3：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 
@@ -512,7 +495,6 @@ Future为我们提供了异步编程中的 最终结果 的处理（Task类也�
 示例1：
 
 .. code-block:: python
-	:linenos:
 
 	async def main():
 	    # 获取当前事件循环
@@ -526,7 +508,6 @@ Future为我们提供了异步编程中的 最终结果 的处理（Task类也�
 示例2：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	async def set_after(fut):
@@ -557,7 +538,6 @@ futures.Future对象
 在Python的concurrent.futures模块中也有一个Future对象，这个对象是基于线程池和进程池实现异步操作时使用的对象。
 
 .. code-block:: python
-	:linenos:
 
 	import time
 
@@ -596,7 +576,6 @@ futures.Future对象
 其实，一般在程序开发中我们要么统一使用 asycio 的协程实现异步操作、要么都使用进程池和线程池实现异步操作。但如果 协程的异步和 进程池/线程池的异步 混搭时，那么就会用到此功能了。
 
 .. code-block:: python
-	:linenos:
 
 	import time
 	import asyncio
@@ -634,7 +613,6 @@ futures.Future对象
 应用场景：当项目以协程式的异步编程开发时，如果要使用一个第三方模块，而第三方模块不支持协程方式异步编程时，就需要用到这个功能，例如：
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	import requests
@@ -667,7 +645,6 @@ futures.Future对象
 | 什么是异步可迭代对象？ 可在 async for 语句中被使用的对象。必须通过它的 __aiter__() 方法返回一个 asynchronous iterator。由 PEP 492 引入。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	class Reader(object):
@@ -721,7 +698,6 @@ uvloop是 asyncio 中的事件循环的替代方案，替换后可以使得async
 在项目中想要使用uvloop替换asyncio的事件循环也非常简单，只要在代码中这么做就行。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	import uvloop
@@ -747,7 +723,6 @@ uvloop是 asyncio 中的事件循环的替代方案，替换后可以使得async
 示例1：异步操作redis。
 
 .. code-block:: python
-	:linenos:
 
 	#!/usr/bin/env python
 	# -*- coding:utf-8 -*-
@@ -777,7 +752,6 @@ uvloop是 asyncio 中的事件循环的替代方案，替换后可以使得async
 示例2：连接多个redis做操作（遇到IO会切换其他任务，提供了性能）。
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	import aioredis
@@ -820,7 +794,6 @@ uvloop是 asyncio 中的事件循环的替代方案，替换后可以使得async
 示例1：
 
 .. code-block:: python
-	:linenos:
 
     import asyncio
     import aiomysql
@@ -848,7 +821,6 @@ uvloop是 asyncio 中的事件循环的替代方案，替换后可以使得async
 示例2：
 
 .. code-block:: python
-	:linenos:
 
     #!/usr/bin/env python
     # -*- coding:utf-8 -*-
@@ -896,7 +868,6 @@ FastAPI是一款用于构建API的高性能web框架，框架基于Python3.6+的
 示例：
 
 .. code-block:: python
-	:linenos:
 
     #!/usr/bin/env python
     # -*- coding:utf-8 -*-
@@ -948,7 +919,6 @@ FastAPI是一款用于构建API的高性能web框架，框架基于Python3.6+的
 示例1: redis
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	import uvicorn
@@ -987,7 +957,6 @@ FastAPI是一款用于构建API的高性能web框架，框架基于Python3.6+的
 示例2：mysql
 
 .. code-block:: python
-	:linenos:
 
 	import asyncio
 	import uvicorn
@@ -1030,7 +999,6 @@ FastAPI是一款用于构建API的高性能web框架，框架基于Python3.6+的
 示例：
 
 .. code-block:: python
-	:linenos:
 
 	import aiohttp
 	import asyncio
