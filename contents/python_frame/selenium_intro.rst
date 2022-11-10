@@ -1886,7 +1886,7 @@ Selenium 完整案例
 	event_list = []  ## 空列表
 
 	# 打开运营服务台，查看分配的工单, 跳转到登录页面, 输入用户名和密码
-	wd.get('http://web.itsv.xxx.com/')
+	wd.get('http://web.xxx.xxx.com/')
 
 	# 获得应用服务台页面句柄
 	yyfwtWin = wd.current_window_handle

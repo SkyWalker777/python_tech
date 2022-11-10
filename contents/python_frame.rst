@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Python 框架 
+Python 框架篇
 =========================================
 
 |image0|
@@ -13,15 +13,15 @@ Python 框架
    :numbered:
    :glob:
 
-   python/selenium_intro
-   python/python_crawler1
-   python/python_crawler2
-   python/python_asynio
-   python/pandas_intro1
-   python/pandas_intro2
-   python/pandas_intro3
-   python/pandas_intro4
-   python/pandas_intro5
-   python/pandas_intro6
+   python_frame/selenium_intro
+   python_frame/python_crawler1
+   python_frame/python_crawler2
+   python_frame/python_asynio
+   python_frame/pandas_intro1
+   python_frame/pandas_intro2
+   python_frame/pandas_intro3
+   python_frame/pandas_intro4
+   python_frame/pandas_intro5
+   python_frame/pandas_intro6
 
 .. |image0| image:: /_static/python/WechatIMG15.jpeg

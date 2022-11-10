@@ -10,8 +10,8 @@ Python 技术梳理
    :maxdepth: 3
    :glob:
 
-   contents/machine_learn_intro
-   contents/python
+   contents/python_base_intro
+   contents/python_frame
    contents/python_ai
    contents/python_faq
 
