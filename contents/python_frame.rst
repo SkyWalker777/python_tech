@@ -20,5 +20,6 @@ Python 框架篇
    python_frame/pandas_intro1
    python_frame/pandas_intro2
    python_frame/pandas_intro3
+   python_frame/practice_demo
 
 .. |image0| image:: /_static/python/WechatIMG15.jpeg
