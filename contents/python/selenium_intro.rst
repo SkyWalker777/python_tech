@@ -1811,7 +1811,7 @@ Selenium 完整案例
 	            assign_name_element = gongdan_element.find_element_by_class_name('assignName')
 	            # print(id_element.text + '==> ' + assign_name_element.text)
 
-	            if (assign_name_element.text == '李立召'):
+	            if (assign_name_element.text == 'xxx'):
 	                # print(id_element.text + '==> ' + assign_name_element.text)
 	                event_list.append(id_element.text)
 	        except Exception as ex:
@@ -1854,7 +1854,7 @@ Selenium 完整案例
 	            # 拼购返现扣款查询接口调用异常
 	            try:
 	                if '拼购返现扣款查询接口调用异常' in detail_text:
-	                    result_dict[(event_orderid, orderid_extract, customerName, customerErp)] = ' =====> 分析结果: 全球购退款订单, 拆单后, 从子单上取消订单。由 宗超 协助解决。'
+	                    result_dict[(event_orderid, orderid_extract, customerName, customerErp)] = ' =====> 分析结果: xxx 订单, 拆单后, 从子单上取消订单。由 xxx 协助解决。'
 	                else:
 	                    event_order_list.append((event_orderid, match_obj[0], customerName, customerErp))
 	            except:
@@ -1865,7 +1865,7 @@ Selenium 完整案例
 	                desc_text = wd.find_element_by_id('desc').get_attribute('value')
 	                title_text = wd.find_element_by_id('title').get_attribute('value')
 	                if '运费券' in detail_text or '运费券' in desc_text or '运费券' in title_text:
-	                    result_dict[(event_orderid, orderid_extract, customerName, customerErp)] = ' =====> 分析结果: 运费券没退, 找 徐海涛 解决.'
+	                    result_dict[(event_orderid, orderid_extract, customerName, customerErp)] = ' =====> 分析结果: 运费券没退, 找 xxx 解决.'
 	            except:
 	                pass
 
@@ -1931,18 +1931,18 @@ Selenium 完整案例
 
 	# 测试数据
 	# event_order_list.clear()
-	# event_order_list.append(('INC000003014364', '127603313880', '陈宇', 'chenyu792'))
+	# event_order_list.append(('xxx', 'xxx3880', 'xx', 'xx'))
 
 	# 如果找到则标记为 True
 	success_flag = False
 
-	# 全球购 与 退款完成 诊断
+	# 全球购 与 ...完成 诊断
 	# 全球购枚举值
 	quanqiugou_enums = {'8138', '8137', '8136', '8135', '1904', '1903', '1902', '1901', '1900', '1899', '1898', '1897',
 	                    '1896',
 	                    '1764', '1763', '1762', '1761', '1760', '1759', '1758', '1757', '1756', '1755', '1754'}
 
-	# 支付方式 实付枚举值[6-在线支付,8-支票,10-公司转账,7-现金,9-POS,30-电汇,11-邮局退款,56-和包支付,86-钱包余额,89-活动金,90-礼金优惠,91-门店现金]
+	# 支付方式 实付枚举值[xxxxxx]
 	shifu_enums = {'[6]', '[8]', '[10]', '[7]', '[9]', '[30]', '[11]', '[56]', '[86]', '[89]', '[90]', '[91]'}
 
 	# 常见问题诊断
@@ -1955,31 +1955,31 @@ Selenium 完整案例
 	    for pay_enum_ele in pay_enum_eles:
 	        if pay_enum_ele.text in quanqiugou_enums:
 	            success_flag = True
-	            result_dict[event_order] = ' =====> 分析结果: 全球购退款订单, 拆单后, 从子单上取消订单。由 宗超 协助解决。'
+	            result_dict[event_order] = ' =====> 分析结果: 全球购...订单, 拆单后, 从子单上取消订单。由 xx 协助解决。'
 	            return
 
-	    # 已支付的信息 分支一: 已支付和已完成退款值相同
+	    # 已支付的信息 分支一: 已支付和已完成...值相同
 	    have_pay_info_ele = wd.find_element_by_xpath('/html/body/div[1]/div/div[3]/div[2]/table/tbody/tr[last()]/td/label')
-	    # 已退款信息
+	    # 已...信息
 	    sucess_refund_ele = wd.find_element_by_xpath('/html/body/div[1]/div/div[4]/div/table/tbody[2]/tr/td/label[2]')
 
 	    match_obj = re.findall('已支付：([0-9.]{2,20})', have_pay_info_ele.text)
 	    if match_obj and sucess_refund_ele.text == match_obj[0]:
 	        success_flag = True
-	        result_dict[event_order] = ' =====> 分析结果: 已退款完成，请核实(已支付和已完成退款值相同)。'
+	        result_dict[event_order] = ' =====> 分析结果: 已...完成，请核实(已支付和已完成...值相同)。'
 	        return
 
-	    # 已支付的信息 分支一: 实付部分和已完成退款值相同
+	    # 已支付的信息 分支一: 实付部分和已完成...值相同
 	    pay_enum_eles = wd.find_elements_by_xpath('/html/body/div[1]/div/div[3]/div[2]/table/tbody/tr[*]/td[2]')
 
 	    have_pay_info_ele = wd.find_element_by_xpath('/html/body/div[1]/div/div[3]/div[2]/table/tbody/tr[last()]/td/label')
-	    # 已退款信息
+	    # 已...信息
 	    sucess_refund_ele = wd.find_element_by_xpath('/html/body/div[1]/div/div[4]/div/table/tbody[2]/tr/td/label[2]')
 
 	    match_obj = re.findall('已支付：([0-9.]{2,20})', have_pay_info_ele.text)
 	    if match_obj and sucess_refund_ele.text == match_obj[0]:
 	        success_flag = True
-	        result_dict[event_order] = ' =====> 分析结果: 已退款完成，请核实(已支付和已完成退款值相同)。'
+	        result_dict[event_order] = ' =====> 分析结果: 已...完成，请核实(已支付和已完成...值相同)。'
 	        return
 
 	    # 已支付的信息 分支二: 实付部分已全退
@@ -1999,7 +1999,7 @@ Selenium 完整案例
 
 	    if total_shifu_cost <= float(sucess_refund_ele.text):
 	        success_flag = True
-	        result_dict[event_order] = ' =====> 分析结果: 已退款完成，请核实(已完成实付部分退款)。'
+	        result_dict[event_order] = ' =====> 分析结果: 已...完成，请核实(已完成实付部分...)。'
 	        return
 
 	    # 预售订单(未付尾款)不退定金 1. 对账应收 -- 对账实收(0.00 -- 0.00) 2. 订单详细信息 有预售信息
@@ -2025,9 +2025,8 @@ Selenium 完整案例
 	        if match_obj and total_shifu_cost < float(match_obj[0]):
 	            success_flag = True
 	            result_dict[event_order] = '''
-	             =====> 分析结果:您好，经查，订单有赔付，且赔付金额超出了客服现金支付的金额，因为如果删单后，系统会自动返还虚拟资产，而产生资损，故系统限制无法线上退款；
-	            建议客服扣除之前赔付金额，人为把控资金风险，然后,需要客服留言备注：“订单留言如下：此订单使用虚拟资产支付，客服赔付金额大于实际支付导致线上取消失败，并且因商品破损无法退库，申请IT协助直接删单退虚拟资产，如后续产	生风险客服侧自行承担”；
-	            备注后联系咚咚“IT服务”强制删单，退还虚拟资产部分的金额，现金支付的部分可以采取赔付的方式退款；把控资金不要多退或者少退
+	             =====> 分析结果:您好，经查，订单有赔付，且赔付金额超出了客服现金支付的金额，因为如果删单后，系统会自动返还虚拟资产，而产生资损，故系统限制无法线上...；
+	            备注后联系咚咚“IT服务”强制删单，退还虚拟资产部分的金额，现金支付的部分可以采取赔付的方式...；把控资金不要多退或者少退
 	            '''
 	            return
 	    except:
@@ -2048,7 +2047,7 @@ Selenium 完整案例
 
 	    # 冲销诊断, 需要手动改数
 	    try:
-	        # 退款状态
+	        # ...状态
 	        refund_status_ele = wd.find_element_by_xpath(
 	            '/html/body/div/div/div[2]/div[2]/div/div/div[4]/div[2]/div/div/div/div[1]/div[2]/table/tbody/tr/td[9]/div/span')
 	        if '待冲销' in refund_status_ele.text:
@@ -2057,13 +2056,13 @@ Selenium 完整案例
 	    except:
 	        pass
 
-	    # 流程未到退款侧
+	    # 流程未到...侧
 	    try:
 	        nodata_info = wd.find_element_by_xpath('/html/body/div[1]/div/div[2]/div[2]/div/div/div[1]/div[2]/div/div/div/div[1]/div[3]/table/tbody/tr/td/span').text
 	        if nodata_info == '暂无数据':
 	            # success_flag = True
 	            # 后续的诊断可覆盖此项 非最终诊断结果
-	            result_dict[event_order] = ' =====> 分析结果: 退款控制无数据,流程未到退款侧。'
+	            result_dict[event_order] = ' =====> 分析结果: ...控制无数据,流程未到...侧。'
 	    except:
 	        pass
 
@@ -2079,18 +2078,18 @@ Selenium 完整案例
 	        except:
 	            pass
 
-	    # pop 虚拟退款0元问题诊断
+	    # 0元问题诊断
 	    if not success_flag:
 	        try:
 	            wd.get('http://rcweb-fm.xxx.com/rest/sys/queryAfterSaleDBTable')
 	            wd.find_element_by_xpath('/html/body/form/table/tbody/tr/td[4]/input').send_keys(event_order[1])
 	            wd.find_element_by_xpath('/html/body/form/div[2]/div[2]/div[12]/div[1]').click()
-	            # 业务类型 + 退款金额
+	            # 业务类型 + ...金额
 	            buss_type = wd.find_element_by_xpath('/html/body/form/div[2]/div[2]/div[12]/div[2]/table/tbody[1]/tr/td[29]').text
 	            refund_mount = wd.find_element_by_xpath('/html/body/form/div[2]/div[2]/div[12]/div[2]/table/tbody[1]/tr/td[16]').text
 	            if buss_type == '54' and refund_mount == '0':
 	                success_flag = True
-	                result_dict[event_order] = ' =====> pop 虚拟退款 0 元。 由 王景照, 郑桃桃 负责解决.'
+	                result_dict[event_order] = ' =====> 0 元问题。 由 ...... 负责解决.'
 	        except:
 	            pass
 
@@ -2142,7 +2141,7 @@ python/爬虫：用 selenium 控制已打开的浏览器
 	--user-data-dir: 指定创建新chrome配置文件的目录。它确保在单独的配置文件中启动chrome，不会污染你的默认配置文件。
 	--headless: 无头模式
 
-启动selenium程序
+启动 selenium 程序
 
 .. code-block:: python
 
