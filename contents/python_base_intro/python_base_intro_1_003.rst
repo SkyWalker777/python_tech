@@ -886,13 +886,11 @@ map()
 
 reduce()
 
-.. code-block:: python
-
-reduce(func，lst)，其中func必须有两个参数。每次func计算的结果继续和序列的下一个元素做累积计算。
+reduce(func，lst)，其中 func 必须有两个参数。每次 func 计算的结果继续和序列的下一个元素做累积计算。
 
 .. note::
 	
-	注意：reduce()传入的参数func必须接收2个参数。
+	注意：reduce() 传入的参数 func 必须接收 2 个参数。
 
 需求：计算`list1`序列中各个数字的累加和。
 
@@ -911,9 +909,9 @@ reduce(func，lst)，其中func必须有两个参数。每次func计算的结果
 
 filter()
 
-.. code-block:: python
+filter(func, lst) 函数用于过滤序列, 过滤掉不符合条件的元素, 返回一个 filter 对象。如果要转换为列表, 可以使用 list() 来转换。
 
-	filter(func, lst)函数用于过滤序列, 过滤掉不符合条件的元素, 返回一个 filter 对象。如果要转换为列表, 可以使用 list() 来转换。
+.. code-block:: python
 
 	list1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
