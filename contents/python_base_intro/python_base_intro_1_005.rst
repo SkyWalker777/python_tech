@@ -19,9 +19,7 @@
 
 当检测到一个错误时，解释器就无法继续执行了，反而出现了一些错误的提示，这就是所谓的"异常"。
 
-例如：以`r`方式打开一个不存在的文件。
-
-``open('test.txt', 'r')``
+例如：以`r`方式打开一个不存在的文件。``open('test.txt', 'r')``
 
 * 异常的写法
 
@@ -47,15 +45,13 @@
 
 3 捕获指定异常
 
+	| try:
+	|     可能发生错误的代码
+	| except 异常类型:
+	|     如果捕获到该异常类型执行的代码
+
 .. code-block:: python
 
-	语法
-	try:
-	    可能发生错误的代码
-	except 异常类型:
-	    如果捕获到该异常类型执行的代码
-
-	代码示例
 	try:
 	    print(num)
 	except NameError:
@@ -64,17 +60,16 @@
 .. tip::
 
 	| 如果尝试执行的代码的异常类型和要捕获的异常类型不一致，则无法捕获异常。
-	| 一般try下方只放一行尝试执行的代码。
+	| 一般 try 下方只放一行尝试执行的代码。
 
 4 捕获多个指定异常
 
-当捕获多个异常时，可以把要捕获的异常类型的名字，放到except 后，并使用元组的方式进行书写。
+当捕获多个异常时，可以把要捕获的异常类型的名字，放到 except 后，并使用元组的方式进行书写。
 
 .. code-block:: python
 
 	try:
 	    print(1/0)
-
 	except (NameError, ZeroDivisionError):
 	    print('有错误')
 
@@ -89,7 +84,7 @@
 
 6 捕获所有异常
 
-Exception是所有程序异常类的父类。
+Exception 是所有程序异常类的父类。
 
 .. code-block:: python
 
@@ -98,9 +93,9 @@ Exception是所有程序异常类的父类。
 	except Exception as result:
 	    print(result)
 
-7 异常的else
+7 异常的 else
 
-else表示的是如果没有异常要执行的代码。
+else 表示的是如果没有异常要执行的代码。
 
 .. code-block:: python
 
@@ -109,11 +104,11 @@ else表示的是如果没有异常要执行的代码。
 	except Exception as result:
 	    print(result)
 	else:
-	    print('我是else，是没有异常的时候执行的代码')
+	    print('我是 else，是没有异常的时候执行的代码')
 
-8 异常的finally
+8 异常的 finally
 
-finally表示的是无论是否异常都要执行的代码，例如关闭文件。
+finally 表示的是无论是否异常都要执行的代码，例如关闭文件。
 
 .. code-block:: python
 
@@ -130,10 +125,8 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 
 需求：
 
-::
-
-​	尝试只读方式打开test.txt文件，如果文件存在则读取文件内容，文件不存在则提示用户即可。
-	读取内容要求：尝试循环读取内容，读取过程中如果检测到用户意外终止程序，则`except`捕获异常并提示用户。
+	| 尝试只读方式打开 test.txt 文件，如果文件存在则读取文件内容，文件不存在则提示用户即可。
+	| 读取内容要求：尝试循环读取内容，读取过程中如果检测到用户意外终止程序，则 except 捕获异常并提示用户。
 
 .. code-block:: python
 
@@ -159,13 +152,13 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 
 * 自定义异常
 
-在Python中，抛出自定义异常的语法为` raise 异常类对象`。
+在 Python 中，抛出自定义异常的语法为 `raise 异常类对象`。
 
-需求：密码长度不足，则报异常（用户输入密码，如果输入的长度不足3位，则报错，即抛出自定义异常，并捕获该异常）。
+需求：密码长度不足，则报异常（用户输入密码，如果输入的长度不足 3 位，则报错，即抛出自定义异常，并捕获该异常）。
 
 .. code-block:: python
 
-	# 自定义异常类，继承Exception
+	# 自定义异常类，继承 Exception
 	class ShortInputError(Exception):
 	    def __init__(self, length, min_len):
 	        self.length = length
@@ -189,7 +182,7 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 
 * 总结
 
-- 异常语法
+- 1. 异常语法
 
 .. code-block:: python
 
@@ -202,17 +195,16 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 	finally:
 	  	无论是否异常都要执行的代码
 
-- 捕获异常
+- 2. 捕获异常
 
 .. code-block:: python
 
 	except 异常类型:
 	  	代码
-
 	except 异常类型 as xx:
-			代码
+		代码
 
-- 自定义异常
+- 3. 自定义异常
 
 .. code-block:: python
 
@@ -236,16 +228,16 @@ finally表示的是无论是否异常都要执行的代码，例如关闭文件�
 目标
 ==================================================================================
 
-| - 了解模块
-| - 导入模块
-| - 制作模块
-| - `__all__`
-| - 包的使用方法
+	| 了解模块
+	| 导入模块
+	| 制作模块
+	| __all__
+	| 包的使用方法
 
 模块
 ==================================================================================
 
-Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和Python语句。
+Python 模块 Module，是一个 Python 文件，以 .py 结尾，包含了 Python 对象定义和 Python 语句。
 
 模块能定义函数，类和变量，模块里也能包含可执行的代码。
 
@@ -253,13 +245,13 @@ Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Pyt
 
 1 导入模块的方式
 
-::
+.. code-block:: python
 
-	- import 模块名
-	- from 模块名 import 功能名
-	- from 模块名 import *
-	- import 模块名 as 别名
-	- from 模块名 import 功能名 as 别名
+	import 模块名
+	from 模块名 import 功能名
+	from 模块名 import *
+	import 模块名 as 别名
+	from 模块名 import 功能名 as 别名
 
 2 导入方式详解
 
@@ -289,7 +281,7 @@ Python 模块(Module)，是一个 Python 文件，以 .py 结尾，包含了 Pyt
 
 .. code-block:: python
 
-from 模块名 import 功能1, 功能2, 功能3...
+	from 模块名 import 功能1, 功能2, 功能3...
 
 - 体验
 
