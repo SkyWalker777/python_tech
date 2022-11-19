@@ -22,7 +22,6 @@ Python 基础篇
 	python_base_intro/python_base_intro_1_002
 	python_base_intro/python_base_intro_1_003
 	python_base_intro/python_base_intro_1_004
-	python_base_intro/python_base_intro_1_005
 	python_base_intro/python_base_intro_2_001
 	python_base_intro/python_base_intro_2_002
 	python_base_intro/python_base_intro_2_003
