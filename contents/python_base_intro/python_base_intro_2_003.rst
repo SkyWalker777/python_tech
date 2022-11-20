@@ -289,8 +289,7 @@ TCP 客户端程序开发
 * TCP 客户端程序开发示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 
 	if __name__ == '__main__':
@@ -382,8 +381,7 @@ TCP服务端程序开发
 * TCP 服务端程序开发示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 
 	if __name__ == '__main__':
@@ -479,8 +477,7 @@ TCP网络应用程序的注意点
 * 多任务版TCP服务端程序的示例代码:
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 	import threading
 
@@ -945,8 +942,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 * 静态 Web 服务器-返回固定页面数据的示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 
 	if __name__ == '__main__':
@@ -1032,8 +1028,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 * 静态 Web 服务器-返回指定页面数据的示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 
 	def main():
@@ -1152,8 +1147,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 * 静态Web服务器-多任务版的示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 	import threading
 
@@ -1275,8 +1269,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 * 静态Web服务器-面向对象开发的示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 	import threading
 
@@ -1413,8 +1406,7 @@ HTTP 状态码是用于表示web服务器响应状态的3位数字代码。
 * 静态Web服务器-命令行启动动态绑定端口号的示例代码
 
 .. code-block:: python
-    :linenos:
-
+ 
 	import socket
 	import threading
 	import sys
