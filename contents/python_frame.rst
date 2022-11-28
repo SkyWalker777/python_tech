@@ -13,6 +13,7 @@ Python 框架篇
    :numbered:
    :glob:
 
+   python_frame/matplotlib
    python_frame/pandas
    python_frame/advance
    python_frame/crawler
