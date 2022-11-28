@@ -13,13 +13,9 @@ Python 框架篇
    :numbered:
    :glob:
 
-   python_frame/selenium_intro
-   python_frame/python_crawler1
-   python_frame/python_crawler2
-   python_frame/python_asynio
-   python_frame/pandas_intro1
-   python_frame/pandas_intro2
-   python_frame/pandas_intro3
-   python_frame/practice_demo
+   python_frame/pandas
+   python_frame/advance
+   python_frame/crawler
+   python_frame/db
 
 .. |image0| image:: /_static/python/WechatIMG15.jpeg
