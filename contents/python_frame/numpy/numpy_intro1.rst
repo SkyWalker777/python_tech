@@ -4,8 +4,6 @@ numpy 入门篇
 什么是 numpy
 **********************************************************************************
 
-github 地址: DataAnalysis
-
 为什么要学习 numpy
 ==================================================================================
 
@@ -790,6 +788,11 @@ t 中存在 nan 值，如何操作把其中的 nan 填充为每一列的均值
 	| a = b[:],视图的操作，一种切片，会创建新的对象a，但是a的数据完全由b保管，他们两个的数据变化是一致的，
 	| a = b.copy(),复制，a和b互不影响
 
+其他资料
+**********************************************************************************
+
+| github 地址: DataAnalysis
+| Python 之 Numpy 详细教程: ``https://blog.csdn.net/a373595475/article/details/79580734?ops_request_misc=&request_id=&biz_id=102&utm_term=numpy&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-79580734``
 
 
 
