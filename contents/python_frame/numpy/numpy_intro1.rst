@@ -313,9 +313,13 @@ numpy 中常见的更多数据类型
 
 * 二维数组的轴
 
+.. figure:: image/axis_001.webp
+   :alt: axis_001.webp
+
 * 三维数组的轴
 
-
+.. figure:: image/axis_002.webp
+   :alt: axis_002.webp
 
 numpy 常用方法
 **********************************************************************************
@@ -329,9 +333,129 @@ numpy 读取数据
 
 由于 csv 便于展示,读取和写入,所以很多地方也是用 csv 的格式存储和传输中小型的数据, 会经常操作 csv 格式的文件,但是操作数据库中的数据也是很容易的实现的
 
+	| np.loadtxt(fname,dtype=np.float,delimiter=None,skiprows=0,usecols=None,unpack=False)
+
+参数说明
+
+	| 参数         解释
+	| frame       文件、字符串或产生器，可以是.gz或bz2压缩文件
+	| dtype       数据类型，可选，CSV的字符串以什么数据类型读入数组中，默认np. float
+	| delimiter   分隔字符串，默认是任何空格,改为逗号
+	| skiprows    跳过前x行，- -般跳过第-行表头
+	| usecols     读取指定的列，索引，元组类型。.
+	| unpack      如果True,读入属性将分别写入不同数组变量，False 读入数据只写入一个数. 组变量，默认False
+
+读取和存储数据
+==================================================================================
+
+现在这里有一个英国和美国各自youtube1000多个视频的点击,喜欢,不喜欢,评论数量(["views","likes","dislikes","comment_total"])的csv,运用刚刚所学习的只是,我们尝试来对其进行操作
+
+数据来源: ``https://www.kaggle.com/datasnaek/youtube/data``
+
+	| np.loadtxt(US_video_data_numbers_path,delimiter=",",dtype=int,unpack=1)
+
+注意其中添加 delimiter 和 dtype 以及 unpack 的效果
+
+	| delimiter :指定边界符号是什么，不指定会导致每行数据为一个整体的字符串而报错
+	| dtype :默认情况下对于较大的数据会将其变为科学计数的方式
+	| upack :默认是Flase(0),默认情况下，有多少条数据,就会有多少行为True(1)的情况下,每-列的数据会组成-行,原始数据有多少列,加载出来的数据就会有多少行,相当于转置的效果
+
+* 结合之前的所学的 matplotlib 把英国和美国的数据呈现出来
+
 .. code-block:: python
 
-	np.loadtxt(fname,dtype=np.float,delimiter=None,skiprows=0,usecols=None,unpack=False)
+	us_file_path = "./youtube_video_data/US_video_data_numbers.csv"
+	uk_file_path = "./youtube_video_data/GB_video_data_numbers.csv"
+
+	# t1 = np.loadtxt(us_file_path,delimiter=",",dtype="int",unpack=True)
+	t2 = np.loadtxt(us_file_path,delimiter=",",dtype="int")
+
+	# print(t1)
+	print(t2)
+
+转置
+==================================================================================
+
+转置是一种变换,对于 numpy 中的数组来说,就是在对角线方向交换数据,目的也是为了更方便的去处理数据
+
+.. code-block:: python
+
+	t = np.array([[0,1,2,3,4,5],[6,7,8,9,10,11],[12,13,14,15,16,17]])
+	print(t)
+	# [[ 0  1  2  3  4  5]
+	#  [ 6  7  8  9 10 11]
+	#  [12 13 14 15 16 17]]
+
+	t1 = t.transpose()
+	print(t1)
+	# [[ 0  6 12]
+	#  [ 1  7 13]
+	#  [ 2  8 14]
+	#  [ 3  9 15]
+	#  [ 4 10 16]
+	#  [ 5 11 17]]
+
+	t2 = t.swapaxes(1,0)
+	print(t2)
+	# [[ 0  6 12]
+	#  [ 1  7 13]
+	#  [ 2  8 14]
+	#  [ 3  9 15]
+	#  [ 4 10 16]
+	#  [ 5 11 17]]
+
+	t3 = t.T
+	print(t3)
+	# [[ 0  6 12]
+	#  [ 1  7 13]
+	#  [ 2  8 14]
+	#  [ 3  9 15]
+	#  [ 4 10 16]
+	#  [ 5 11 17]]
+
+以上的三种方法都可以实现二维数组的转置的效果,转置和交换轴的效果一样
+
+索引和切片
+==================================================================================
+
+对于刚刚加载出来的数据,我如果只想选择其中的某一列(行), 应该怎么做呢? 其实操作很简单,和 python 中列表的操作一样
+
+.. code-block:: python
+
+	import numpy as np
+
+	a = np.array([[0,1,2,3],[4,5,6,7],[8,9,10,11]])
+	print(a)
+	# [[ 0  1  2  3]
+	#  [ 4  5  6  7]
+	#  [ 8  9 10 11]]
+
+	print(a[1]) # 取一行
+	# [4 5 6 7]
+
+	print(a[:,2]) # 取一列
+	# [ 2  6 10]
+
+	print(a[1:3]) # 取多行
+	# [[ 4  5  6  7]
+	#  [ 8  9 10 11]]
+
+	print(a[:, 2:4]) # 取多列
+	# [[ 2  3]
+	#  [ 6  7]
+	#  [10 11]]
+
+	print(a[[1,2],:])
+	# [[ 4  5  6  7]
+	#  [ 8  9 10 11]]
+
+	print(a[:,[2,3]])
+	# [[ 2  3]
+	#  [ 6  7]
+	#  [10 11]]
+
+数值的修改
+==================================================================================
 
 
 
