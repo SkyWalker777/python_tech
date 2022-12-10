@@ -791,8 +791,8 @@ t 中存在 nan 值，如何操作把其中的 nan 填充为每一列的均值
 其他资料
 **********************************************************************************
 
-| github 地址: DataAnalysis
-| Python 之 Numpy 详细教程: ``https://blog.csdn.net/a373595475/article/details/79580734?ops_request_misc=&request_id=&biz_id=102&utm_term=numpy&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-79580734``
+	| github 地址: DataAnalysis
+	| `Python 之 Numpy 详细教程 <https://blog.csdn.net/a373595475/article/details/79580734?ops_request_misc=&request_id=&biz_id=102&utm_term=numpy&utm_medium=distribute.pc_search_result.none-task-blog-2~all~sobaiduweb~default-0-79580734>`_
 
 
 
