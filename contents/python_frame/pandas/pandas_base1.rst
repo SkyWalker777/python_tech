@@ -217,10 +217,71 @@ DataFrame
 pandas 之 DataFrame
 ==================================================================================
 
+.. code-block:: python
 
+	t = pd.DataFrame(np.arange(12).reshape((3,4)))
+	print(t)
+	   # 0  1   2   3
+	# 0  0  1   2   3
+	# 1  4  5   6   7
+	# 2  8  9  10  11
 
+	t = pd.DataFrame(np.arange(12).reshape((3,4)),index=list(string.ascii_uppercase[:3]),columns=list(string.ascii_uppercase[-4:]))
+	print(t)
+	   # W  X   Y   Z
+	# A  0  1   2   3
+	# B  4  5   6   7
+	# C  8  9  10  11
 
+| DataFrame 对象既有行索引，又有列索引
+| 行索引，表明不同行，横向索引，叫index，0轴，axis=0
+| 列索引，表名不同列，纵向索引，叫columns，1轴，axis=1
 
+那么问题来了：
+
+| DataFrame和Series有什么关系呢？
+| Series能够传入字典，那么DataFrame能够传入字典作为数据么？那么mongodb的数据是不是也可以这样传入呢？
+| 对于一个dataframe类型，既有行索引，又有列索引，我们能够对他做什么操作呢
+
+和一个 ndarray 一样，我们通过 shape，ndim，dtype 了解这个ndarray的基本信息，那么对于DataFrame我们有什么方法了解呢
+
+* DataFrame 的基础属性
+
+	| df.shape #行数列数
+	| df.dtypes #列数据类型
+	| df.ndim #数据维度
+	| df.index #行索引
+	| df.columns #列索引
+	| df.values #对象值，二维ndarray数组
+
+* DataFrame 整体情况查询
+
+	| df.head(3) #显示头部几行，默认5行
+	| df.tail(3) #显示末尾几行，默认5行
+	| df.info() #相关信息概览:行数，列数，列索引，列非空值个数，列类型，列类型，内存占用
+	| df.describe() #快速综合统计结果:计数，均值，标准差，最大值，四分位数，最小值
+
+* 实战案例
+
+| 那么回到之前我们读取的狗名字统计的数据上，我们尝试一下刚刚的方法
+| 那么问题来了：很多同学肯定想知道使用次数最高的前几个名字是什么呢？
+
+	| df.sort_values(by="Count_AnimalName",ascending=False)
+
+那么问题又来了：如果我的数据有10列，我想按照其中的第1，第3，第8列排序，怎么办？(看ipythpn的帮助文档)
+
+取行或者列
+==================================================================================
+
+刚刚知道了如何给数据按照某一行或者列排序，那么现在我们想单独研究使用次数前100的数据，应该如何做？
+
+	| df_sorted = df.sort_values(by="Count_AnimalName")
+	| df_sorted[:100]
+
+那么问题来了：
+
+| 具体要选择某一列该怎么选择呢？df["Count_AnimalName"]
+| 要同时选择行和列改怎么办？df[:100]["Count_AnimalName "]
 
 
 
