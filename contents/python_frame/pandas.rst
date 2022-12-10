@@ -5,6 +5,7 @@ Pandas 篇
   :maxdepth: 2
   :glob:
 
+  pandas/pandas_base1
   pandas/pandas_intro1
   pandas/pandas_intro2
   pandas/pandas_intro3
