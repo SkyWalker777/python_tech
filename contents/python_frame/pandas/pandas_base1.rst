@@ -194,18 +194,24 @@ DataFrame
 
 .. code-block:: python
 
-	info = pd.read_csv(filepath_or_buffer="/Users/lilizhao/my_source/DataAnalysis/day05/code/starbucks_store_worldwide.csv")
-	print(info)
-	           # Brand  Store Number        Store Name Ownership Type  \
-	# 0      Starbucks  47370-257954     Meritxell, 96       Licensed   
-	# 1      Starbucks  22331-212325  Ajman Drive Thru       Licensed   
-	# 2      Starbucks  47089-256771         Dana Mall       Licensed   
-	# 3      Starbucks  22126-218024        Twofour 54       Licensed   
-	# 4      Starbucks  17127-178586      Al Ain Tower       Licensed   
-	# ...          ...           ...               ...            ...   
-	# 25595  Starbucks  21401-212072               Rex       Licensed   
-	# 25596  Starbucks  24010-226985          Panorama       Licensed 
-	print(type(info))
+	dog = pd.read_csv(filepath_or_buffer="/Users/lilizhao/Downloads/dogs.csv")
+	print(dog)
+	#    AnimalName  Count_AnimalName
+	# 0           1                 1
+	# 1           2                 2
+	# 2       40804                 1
+	# 3       90201                 1
+	# 4       90203                 1
+	# 5      102201                 1
+	# 6     3010271                 1
+	# 7       MARCH                 2
+	# 8       APRIL                51
+	# 9      AUGUST                14
+	# 10   DECEMBER                 4
+	# 11     SUNDAY                13
+	# 12     MONDAY                 4
+
+	print(type(dog))
 	# <class 'pandas.core.frame.DataFrame'>
 
 但是，还有一个问题：对于数据库比如mysql或者mongodb中数据我们如何使用呢？
@@ -239,9 +245,9 @@ pandas 之 DataFrame
 
 那么问题来了：
 
-| DataFrame和Series有什么关系呢？
-| Series能够传入字典，那么DataFrame能够传入字典作为数据么？那么mongodb的数据是不是也可以这样传入呢？
-| 对于一个dataframe类型，既有行索引，又有列索引，我们能够对他做什么操作呢
+| DataFrame 和 Series有什么关系呢？
+| Series 能够传入字典，那么 DataFrame 能够传入字典作为数据么？那么 mongodb 的数据是不是也可以这样传入呢？
+| 对于一个 dataframe 类型，既有行索引，又有列索引，我们能够对他做什么操作呢
 
 和一个 ndarray 一样，我们通过 shape，ndim，dtype 了解这个ndarray的基本信息，那么对于DataFrame我们有什么方法了解呢
 
@@ -261,7 +267,8 @@ pandas 之 DataFrame
 	| df.info() #相关信息概览:行数，列数，列索引，列非空值个数，列类型，列类型，内存占用
 	| df.describe() #快速综合统计结果:计数，均值，标准差，最大值，四分位数，最小值
 
-* 实战案例
+排序
+==================================================================================
 
 | 那么回到之前我们读取的狗名字统计的数据上，我们尝试一下刚刚的方法
 | 那么问题来了：很多同学肯定想知道使用次数最高的前几个名字是什么呢？
@@ -269,6 +276,25 @@ pandas 之 DataFrame
 	| df.sort_values(by="Count_AnimalName",ascending=False)
 
 那么问题又来了：如果我的数据有10列，我想按照其中的第1，第3，第8列排序，怎么办？(看ipythpn的帮助文档)
+
+.. code-block:: python
+
+	dog_sorted = dog.sort_values(by="Count_AnimalName",ascending=False)
+	print(dog_sorted)
+	   # AnimalName  Count_AnimalName
+	# 8       APRIL                51
+	# 9      AUGUST                14
+	# 11     SUNDAY                13
+	# 10   DECEMBER                 4
+	# 12     MONDAY                 4
+	# 1           2                 2
+	# 7       MARCH                 2
+	# 0           1                 1
+	# 2       40804                 1
+	# 3       90201                 1
+	# 4       90203                 1
+	# 5      102201                 1
+	# 6     3010271                 1
 
 取行或者列
 ==================================================================================
@@ -283,10 +309,129 @@ pandas 之 DataFrame
 | 具体要选择某一列该怎么选择呢？df["Count_AnimalName"]
 | 要同时选择行和列改怎么办？df[:100]["Count_AnimalName "]
 
+.. code-block:: python
 
+	dog_sorted = dog.sort_values(by="Count_AnimalName",ascending=False)
+	print(dog_sorted[:5])
+	   # AnimalName  Count_AnimalName
+	# 8       APRIL                51
+	# 9      AUGUST                14
+	# 11     SUNDAY                13
+	# 10   DECEMBER                 4
+	# 12     MONDAY                 4
 
+	# 选择某一列
+	print(dog["AnimalName"])
+	# 0            1
+	# 1            2
+	# 2        40804
+	# 3        90201
+	# 4        90203
+	# 5       102201
+	# 6      3010271
+	# 7        MARCH
+	# 8        APRIL
+	# 9       AUGUST
+	# 10    DECEMBER
+	# 11      SUNDAY
+	# 12      MONDAY
+	# Name: AnimalName, dtype: ob
 
+	# 同时选择行和列
+	print(dog_sorted[:100]["AnimalName"])
+	# 8        APRIL
+	# 9       AUGUST
+	# 11      SUNDAY
+	# 10    DECEMBER
+	# 12      MONDAY
+	# 1            2
+	# 7        MARCH
+	# 0            1
+	# 2        40804
+	# 3        90201
+	# 4        90203
+	# 5       102201
+	# 6      3010271
+	# Name: AnimalName, dtype: object
 
+pandas 之 loc, iloc
+==================================================================================
+
+还有更多的经过 pandas 优化过的选择方式：
+
+	| df.loc 通过标签索引行数据
+	| df.iloc 通过位置获取行数据
+
+冒号在 loc 里面是闭合的,即会选择到冒号后面的数据
+
+.. code-block:: python
+
+	t = pd.DataFrame(np.arange(12).reshape((3,4)),index=list(string.ascii_uppercase[:3]),columns=list(string.ascii_uppercase[-4:]))
+	print(t)
+	   # W  X   Y   Z
+	# A  0  1   2   3
+	# B  4  5   6   7
+	# C  8  9  10  11
+
+	v = t.loc["A",'W']
+	print(v)
+	# 0
+
+	v = t.loc["A",["W","Z"]]
+	print(v)
+	# W    0
+	# Z    3
+	# Name: A, dtype: int64
+	print(type(v))
+	# <class 'pandas.core.series.Series'>
+
+	# 选择间隔的多行多列
+	v = t.loc[["A","C"],["W","Z"]]
+	print(v)
+	print(type(v))
+	print(type(v))
+	   # W   Z
+	# A  0   3
+	# C  8  11
+	# <class 'pandas.core.frame.DataFrame'>
+
+	# 冒号在loc里面是闭合的, 即会选择到冒号后面的数据
+	v = t.loc["A":"C",["W","Z"]]
+	print(v)
+	   # W   Z
+	# A  0   3
+	# B  4   7
+	# C  8  11
+
+	v = t.iloc[1:3,[2,3]]
+	print(v)
+	    # Y   Z
+	# B   6   7
+	# C  10  11
+
+	# 赋值更改数据的过程
+	t.loc["A","Y"] = 100
+	print(t)
+	   # W  X    Y   Z
+	# A  0  1  100   3
+	# B  4  5    6   7
+	# C  8  9   10  11
+
+	v = t.iloc[1:3,1:3]
+	print(v)
+	   # X   Y
+	# B  5   6
+	# C  9  10
+
+	t.iloc[1:2,0:2] = 200
+	print(t)
+	     # W    X    Y   Z
+	# A    0    1  100   3
+	# B  200  200    6   7
+	# C    8    9   10  11
+
+布尔索引
+==================================================================================
 
 
 
