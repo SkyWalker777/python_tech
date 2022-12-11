@@ -433,14 +433,78 @@ pandas 之 loc, iloc
 布尔索引
 ==================================================================================
 
+回到之前狗的名字的问题上，假如我们想找到所有的使用次数超过 10 的狗的名字，应该怎么选择？
 
+.. code-block:: python
 
+	dog_filter = dog["Count_AnimalName"] > 10
+	print(dog_filter)
+	# 0     False
+	# 1     False
+	# 2     False
+	# 3     False
+	# 4     False
+	# 5     False
+	# 6     False
+	# 7     False
+	# 8      True
+	# 9      True
+	# 10    False
+	# 11     True
+	# 12    False
+	# Name: Count_AnimalName, dtype: bool
+	print(type(dog_filter))
+	# <class 'pandas.core.series.Series'>
 
+	dog_bgt_10 = dog[dog["Count_AnimalName"] > 10]
+	print(dog_bgt_10)
+	   # AnimalName  Count_AnimalName
+	# 8       APRIL                51
+	# 9      AUGUST                14
+	# 11     SUNDAY                13
 
+回到之前狗的名字的问题上，假如我们想找到所有的使用次数超过 10 并且名字的字符串的长度大于 5 的狗的名字，应该怎么选择？
 
+.. code-block:: python
 
+	dog_filter = dog[(dog["AnimalName"].str.len() > 5) & (dog["Count_AnimalName"] > 10)]
+	print(dog_filter)
+	# AnimalName  Count_AnimalName
+	# 9      AUGUST                14
+	# 11     SUNDAY                13
 
+两个问题:
 
+	| 1. & 符号表示什么? 哪有其他的连接符号可以使用么?
+	| 2. .str 是什么方法?
+	| 注意点:不同的条件之间需要用括号括起来
+
+字符串方法
+**********************************************************************************
+
+	| 方法            说明
+	| cat.           实现元素级的字符串连接操作，可指定分隔符
+	| contains       返回表示各字符串是否含有指定模式的布尔型数组.
+	| count          模式的出现次数
+	| endswith、startswith.     相当于对各个元素执行x.endswith(pattern)或x.startswith(pattern)
+	| findall        计算各字符串的模式列表
+	| get            获取各元素的第i个字符
+	| join           根据指定的分隔符将Series中各元素的字符串连接起来
+	| len.           计算各字符串的长度
+	| lower、upper.  转换大小写。相当于对各个元素执行x.lower()或x.upper()
+	| match          根据指定的正则表达式对各个元素执行re.match
+	| pad            在字符串的左边、右边或左右两边添加空白符
+	| center         相当于pad(side='both')
+	| repeat         重复值。例如，s.str.repeat(3)相当 于对各个字符串执行x*3 
+	| replace        用指定字符串替换找到的模式
+	| slice          对Series中的各个字符串进行子串截取
+	| split          根据分隔符或正则表达式对字符串进行拆分
+	| strip、rstrip、 lstrip   去除空白符，包括换行符。相当于对各个元素执行x.strip(). x.rstrip()、x.Istrip()
+
+缺失数据的处理
+**********************************************************************************
+
+观察下面这组数据
 
 
 
