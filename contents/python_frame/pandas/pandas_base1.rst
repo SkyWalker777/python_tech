@@ -703,11 +703,211 @@ merge: 按照指定的列把数据按照一定的方式合并到一起
 | 思路：遍历一遍，每次加1 ？？？
 | 数据来源：https://www.kaggle.com/starbucks/store-locations/data
 
+在pandas中类似的分组的操作我们有很简单的方式来完成
 
+	| df.groupby(by="columns_name")
 
+那么问题来了，调用groupby方法之后返回的是什么内容？
 
+	| grouped = df.groupby(by="columns_name")
 
+grouped 是一个DataFrameGroupBy对象，是可迭代的 grouped 中的每一个元素是一个元组. 元组里面是（索引(分组的值)，分组之后的DataFrame）
 
+那么，回到之前的问题：
+
+	| 要统计美国和中国的星巴克的数量，我们应该怎么做？分组之后的每个DataFrame的长度？
+	| 长度是一个思路，但是我们有更多的方法(聚合方法)来解决这个问题
+
+要统计美国和中国的星巴克的数量，我们应该怎么做？DataFrameGroupBy 对象有很多经过优化的方法
+
+	| 函数名.        说明
+	| count.        分组中非NA值的数量
+	| sum           非NA值的和
+	| mean          非NA值的平均值
+	| median        非NA值的算术中位数
+	| std、var      无偏(分母为n-1)标准差和方差
+	| min、max.     非NA值的最小值和最大值
+
+如果我们需要对国家和省份进行分组统计，应该怎么操作呢？
+
+	| grouped = df.groupby(by=[df["Country"],df["State/Province"]])
+
+很多时候我们只希望对获取分组之后的某一部分数据，或者说我们只希望对某几列数据进行分组，这个时候我们应该怎么办呢？
+
+获取分组之后的某一部分数据：
+
+	| df.groupby(by=["Country","State/Province"])["Country"].count()
+
+对某几列数据进行分组：
+
+	| df["Country"].groupby(by=[df["Country"],df["State/Province"]]).count()
+
+观察结果，由于只选择了一列数据，所以结果是一个Series类型. 如果我想返回一个DataFrame类型呢？
+
+	| t1 = df[["Country"]].groupby(by=[df["Country"],df["State/Province"]]).count()
+	| t2 = df.groupby(by=["Country","State/Province"])[["Country"]].count()
+
+以上的两条命令结果一样. 和之前的结果的区别在于当前返回的是一个DataFrame类型
+
+.. code-block:: python
+
+	df = pd.read_csv(filepath_or_buffer="/Users/lilizhao/Downloads/directory.csv")
+	# print(df)
+
+	grouped = df.groupby(by="Brand")
+	t1 = df[["Country"]].groupby(by=[df["Country"],df["State/Province"]]).count()
+	print(t1)
+	t2 = df.groupby(by=["Country","State/Province"])[["Country"]].count()
+	print(t2)
+	                        # Country
+	# Country State/Province
+	# AD      7                     1
+	# AE      AJ                    2
+	#         AZ                   48
+	#         DU                   82
+	#         FU                    2
+	# ...                         ...
+	# US      WV                   25
+	#         WY                   23
+	# VN      HN                    6
+	#         SG                   19
+	# ZA      GT                    3
+	# [545 rows x 1 columns]
+
+索引和复合索引
+**********************************************************************************
+
+简单的索引操作：
+
+	| 获取 index: df.index
+	| 指定 index: df.index = ['x','y']
+	| 重新设置 index: df.reindex(list("abcedf"))
+	| 指定某一列作为 index: df.set_index("Country",drop=False)
+	| 返回index的唯一值: df.set_index("Country").index.unique()
+
+假设 a 为一个 DataFrame, 那么当 a.set_index(["c","d"]) 即设置两个索引的时候是什么样子的结果呢？
+
+.. code-block:: python
+
+	a = pd.DataFrame({'a': range(7), 'b': range(7, 0, -1), 'c': ['one', 'one', 'one', 'two', 'two', 'two', 'two'],
+	                  'd': list("hjklmno")})
+	print(a)
+	   # a  b    c  d
+	# 0  0  7  one  h
+	# 1  1  6  one  j
+	# 2  2  5  one  k
+	# 3  3  4  two  l
+	# 4  4  3  two  m
+	# 5  5  2  two  n
+	# 6  6  1  two  o
+
+Series 复合索引
+==================================================================================
+
+.. code-block:: python
+
+	a = pd.DataFrame({'a': range(7), 'b': range(7, 0, -1), 'c': ['one', 'one', 'one', 'two', 'two', 'two', 'two'],
+	                  'd': list("hjklmno")})
+	# print(a)
+	   # a  b    c  d
+	# 0  0  7  one  h
+	# 1  1  6  one  j
+	# 2  2  5  one  k
+	# 3  3  4  two  l
+	# 4  4  3  two  m
+	# 5  5  2  two  n
+	# 6  6  1  two  o
+
+	X = a.set_index(["c","d"])["a"]
+	# print(X)
+	# one  h    0
+	#      j    1
+	#      k    2
+	# two  l    3
+	#      m    4
+	#      n    5
+	#      o    6
+	# Name: a, dtype: int64
+
+	# print(X["one", "h"])
+	# 0
+
+	# 只取索引 h 对应值怎么办？
+	x2 = X.swaplevel()
+	# print(x2)
+	# d  c
+	# h  one    0
+	# j  one    1
+	# k  one    2
+	# l  two    3
+	# m  two    4
+	# n  two    5
+	# o  two    6
+	# Name: a, dtype: int64
+
+	# level相当于就是复合索引的里外层，交换了level之后，里外交换所以能够直接从h开始取值
+	x3 = X.swaplevel()["h"]
+	print(x3)
+	# c
+	# one    0
+	# Name: a, dtype: int64
+
+	X.index.levels
+	# FrozenList([['one', 'two'], ['h', 'j', 'k', 'l', 'm', 'n', 'o']])
+
+DataFrame 复合索引
+==================================================================================
+
+.. code-block:: python
+
+	a = pd.DataFrame({'a': range(7), 'b': range(7, 0, -1), 'c': ['one', 'one', 'one', 'two', 'two', 'two', 'two'],
+	                  'd': list("hjklmno")})
+	# print(a)
+	   # a  b    c  d
+	# 0  0  7  one  h
+	# 1  1  6  one  j
+	# 2  2  5  one  k
+	# 3  3  4  two  l
+	# 4  4  3  two  m
+	# 5  5  2  two  n
+	# 6  6  1  two  o
+
+	x = a.set_index(["c","d"])[["a"]]
+	print(x)
+	       # a
+	# c   d
+	# one h  0
+	#     j  1
+	#     k  2
+	# two l  3
+	#     m  4
+	#     n  5
+	#     o  6
+
+	x1 = x.loc["one"]
+	print(x1)
+	  # a
+	# d
+	# h  0
+	# j  1
+	# k  2
+
+	x2 = x.loc["one"].loc["h"]
+	print(x2)
+	# a    0
+	# Name: h, dtype: int64
+
+	x2 = x.swaplevel().loc["h"]
+	print(x2)
+	     # a
+	# c
+	# one  0
+
+时间序列
+**********************************************************************************
+
+| 不管在什么行业，时间序列都是一种非常重要的数据形式，很多统计数据以及数据的规律也都和时间序列有着非常重要的联系
+| 而且在 pandas 中处理时间序列是非常简单的
 
 
 
