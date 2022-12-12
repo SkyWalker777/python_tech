@@ -609,11 +609,99 @@ pandas 常用统计方法
 数据合并
 **********************************************************************************
 
+数据合并之 join
+==================================================================================
+
 join: 默认情况下他是把行索引相同的数据合并到一起
 
+.. code-block:: python
 
+	t1 = pd.DataFrame(np.ones((3,4)),index=list(string.ascii_uppercase[:3]),columns=list('1234'))
+	print(t1)
+	     # 1    2    3    4
+	# A  1.0  1.0  1.0  1.0
+	# B  1.0  1.0  1.0  1.0
+	# C  1.0  1.0  1.0  1.0
+	t2 = pd.DataFrame(np.zeros((2,5)),index=list(string.ascii_uppercase[:2]),columns=list(string.ascii_uppercase[-5:]))
+	print(t2)
+	     # V    W    X    Y    Z
+	# A  0.0  0.0  0.0  0.0  0.0
+	# B  0.0  0.0  0.0  0.0  0.0
 
+	t3 = t1.join(t2)
+	print(t3)
+	     # 1    2    3    4    V    W    X    Y    Z
+	# A  1.0  1.0  1.0  1.0  0.0  0.0  0.0  0.0  0.0
+	# B  1.0  1.0  1.0  1.0  0.0  0.0  0.0  0.0  0.0
+	# C  1.0  1.0  1.0  1.0  NaN  NaN  NaN  NaN  NaN
 
+数据合并之 merge
+==================================================================================
+
+merge: 按照指定的列把数据按照一定的方式合并到一起
+
+.. code-block:: python
+
+	t1 = pd.DataFrame(np.ones((3,4)),index=list('ABC'),columns=list('MNOP'))
+	t1.loc["A","O"] = 'a'
+	t1.loc["B","O"] = 'b'
+	t1.loc["C","O"] = 'c'
+	print(t1)
+	     # M    N  O    P
+	# A  1.0  1.0  a  1.0
+	# B  1.0  1.0  b  1.0
+	# C  1.0  1.0  c  1.0
+
+	t2 = pd.DataFrame(np.zeros((2,5)),index=list('AB'),columns=list('VWXYZ'))
+	t2.loc["A","X"] = 'c'
+	t2.loc["B","X"] = 'd'
+	print(t2)
+	     # V    W  X    Y    Z
+	# A  0.0  0.0  c  0.0  0.0
+	# B  0.0  0.0  d  0.0  0.0
+
+	# 默认的合并方式inner，并集
+	t3 = t1.merge(t2,left_on='O',right_on='X')
+	print(t3)
+	     # M    N  O    P    V    W  X    Y    Z
+	# 0  1.0  1.0  c  1.0  0.0  0.0  c  0.0  0.0
+
+	t3 = t1.merge(t2,left_on='O',right_on='X',how="inner")
+	print(t3)
+	     # M    N  O    P    V    W  X    Y    Z
+	# 0  1.0  1.0  c  1.0  0.0  0.0  c  0.0  0.0
+
+	# merge outer，交集，NaN补全
+	t3 = t1.merge(t2,left_on='O',right_on='X',how="outer")
+	print(t3)
+	     # M    N    O    P    V    W    X    Y    Z
+	# 0  1.0  1.0    a  1.0  NaN  NaN  NaN  NaN  NaN
+	# 1  1.0  1.0    b  1.0  NaN  NaN  NaN  NaN  NaN
+	# 2  1.0  1.0    c  1.0  0.0  0.0    c  0.0  0.0
+	# 3  NaN  NaN  NaN  NaN  0.0  0.0    d  0.0  0.0
+
+	# merge left，左边为准，NaN补全
+	t3 = t1.merge(t2,left_on='O',right_on='X',how="left")
+	print(t3)
+	     # M    N  O    P    V    W    X    Y    Z
+	# 0  1.0  1.0  a  1.0  NaN  NaN  NaN  NaN  NaN
+	# 1  1.0  1.0  b  1.0  NaN  NaN  NaN  NaN  NaN
+	# 2  1.0  1.0  c  1.0  0.0  0.0    c  0.0  0.0
+
+	# merge right，右边为准，NaN补全
+	t3 = t1.merge(t2,left_on='O',right_on='X',how="right")
+	print(t3)
+	     # M    N    O    P    V    W  X    Y    Z
+	# 0  1.0  1.0    c  1.0  0.0  0.0  c  0.0  0.0
+	# 1  NaN  NaN  NaN  NaN  0.0  0.0  d  0.0  0.0
+
+分组和聚合
+**********************************************************************************
+
+现在我们有一组关于全球星巴克店铺的统计数据，如果我想知道美国的星巴克数量和中国的哪个多，或者我想知道中国每个省份星巴克的数量的情况，那么应该怎么办？
+
+| 思路：遍历一遍，每次加1 ？？？
+| 数据来源：https://www.kaggle.com/starbucks/store-locations/data
 
 
 
