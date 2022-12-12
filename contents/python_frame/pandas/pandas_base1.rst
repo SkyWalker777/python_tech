@@ -506,14 +506,108 @@ pandas 之 loc, iloc
 
 观察下面这组数据
 
+.. code-block:: python
 
+	t = pd.DataFrame(np.arange(24).reshape((4,6)),index=list(string.ascii_uppercase[:4]),columns=list(string.ascii_uppercase[-6:]))
+	print(t)
+	    # U   V   W   X   Y   Z
+	# A   0   1   2   3   4   5
+	# B   6   7   8   9  10  11
+	# C  12  13  14  15  16  17
+	# D  18  19  20  21  22  23
 
+	t.loc["A","U"] = np.nan
+	t.loc["A","Z"] = np.nan
+	t.loc["B","Y"] = 0
+	t.loc["D","W"] = np.nan
+	print(t)
+	      # U   V     W   X   Y     Z
+	# A   NaN   1   2.0   3   4   NaN
+	# B   6.0   7   8.0   9   0  11.0
+	# C  12.0  13  14.0  15  16  17.0
+	# D  18.0  19   NaN  21  22  23.0
 
+数据缺失通常有两种情况：
 
+	| 一种就是空，None 等，在 pandas 是 NaN(和 np.nan 一样)
+	| 另一种是我们让其为0，蓝色框中
 
+对于 NaN 的数据，在 numpy 中是如何处理的？在 pandas 中我们处理起来非常容易. 判断数据是否为 NaN：pd.isnull(df),pd.notnull(df)
 
+	| 处理方式 1：删除 NaN 所在的行列 dropna (axis=0, how='any', inplace=False)
+	| 处理方式 2：填充数据，t.fillna(t.mean()),t.fiallna(t.median()),t.fillna(0)
 
+.. code-block:: python
 
+	t1 = t.dropna(axis=0, how='any', inplace=False)
+	print(t1)
+	      # U   V     W   X   Y     Z
+	# B   6.0   7   8.0   9   0  11.0
+	# C  12.0  13  14.0  15  16  17.0
+
+	t2 = t.fillna(t.mean());
+	print(t2)
+	      # U   V     W   X   Y     Z
+	# A  12.0   1   2.0   3   4  17.0
+	# B   6.0   7   8.0   9   0  11.0
+	# C  12.0  13  14.0  15  16  17.0
+	# D  18.0  19   8.0  21  22  23.0
+
+| 处理为 0 的数据：t[t==0]=np.nan
+| 当然并不是每次为0的数据都需要处理. 计算平均值等情况，nan是不参与计算的，但是 0 会
+
+.. code-block:: python
+
+	t[t==0]=np.nan
+	print(t)
+	      # U   V     W   X     Y     Z
+	# A   NaN   1   2.0   3   4.0   NaN
+	# B   6.0   7   8.0   9   NaN  11.0
+	# C  12.0  13  14.0  15  16.0  17.0
+	# D  18.0  19   NaN  21  22.0  23.0
+
+pandas 常用统计方法
+**********************************************************************************
+
+| 假设现在我们有一组从 2006 年到 2016 年 1000 部最流行的电影数据，我们想知道这些电影数据中评分的平均分，导演的人数等信息，我们应该怎么获取？
+| 
+| 数据来源：https://www.kaggle.com/damianpanek/sunday-eda/data
+
+.. code-block:: python
+
+	df = pd.read_csv(filepath_or_buffer="/Users/lilizhao/Downloads/IMDB-Movie-Data.csv")
+	# print(df)
+
+	# 评分的平均分
+	rating_mean = df["Rating"].mean()
+	print(rating_mean)
+	# 6.723200000000003
+
+	# 导演的人员
+	temp_list = df["Actors"].str.split(",").tolist()
+	nums = set([i for j in temp_list for i in j])
+	print(len(nums))
+	# 2394
+
+	# 电影时长的最大最小值
+	max_runtime = df["Runtime (Minutes)"].max()
+	print(max_runtime)
+	# 191
+	max_runtime_index = df["Runtime (Minutes)"].argmax()
+	print(max_runtime_index)
+	# 828
+	min_runtime = df["Runtime (Minutes)"].min()
+	print(min_runtime)
+	# 66
+	min_runtime_index = df["Runtime (Minutes)"].argmin()
+	print(min_runtime_index)
+	# 793
+	min_runtime_median = df["Runtime (Minutes)"].median()
+	print(min_runtime_median)
+	# 111.0
+
+数据合并
+**********************************************************************************
 
 
 
