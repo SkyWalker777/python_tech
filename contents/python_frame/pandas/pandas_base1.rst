@@ -718,6 +718,62 @@ grouped 是一个DataFrameGroupBy对象，是可迭代的 grouped 中的每一�
 	| 要统计美国和中国的星巴克的数量，我们应该怎么做？分组之后的每个DataFrame的长度？
 	| 长度是一个思路，但是我们有更多的方法(聚合方法)来解决这个问题
 
+.. code-block:: python
+
+	# coding=utf-8
+	import pandas as pd
+	import numpy as np
+
+	file_path = "./starbucks_store_worldwide.csv"
+
+	df = pd.read_csv(file_path)
+	# print(df.head(1))
+	# print(df.info())
+	# grouped = df.groupby(by="Country")
+	# print(grouped)
+
+	#DataFrameGroupBy
+	#可以进行遍历
+	# for i,j in grouped:
+	#     print(i)
+	#     print("-"*100)
+	#     print(j,type(j))
+	#     print("*"*100)
+	# df[df["Country"]="US"]
+	#调用聚合方法
+
+
+	# country_count = grouped["Brand"].count()
+	# print(country_count["US"])
+	# print(country_count["CN"])
+
+	#统计中国每个省店铺的数量
+	# china_data = df[df["Country"] =="CN"]
+	#
+	# grouped = china_data.groupby(by="State/Province").count()["Brand"]
+	#
+	# print(grouped)
+
+	#数据按照多个条件进行分组,返回Series
+	# grouped = df["Brand"].groupby(by=[df["Country"],df["State/Province"]]).count()
+	# print(grouped)
+	# print(type(grouped))
+
+	#数据按照多个条件进行分组,返回DataFrame
+	grouped1 = df[["Brand"]].groupby(by=[df["Country"],df["State/Province"]]).count()
+	# grouped2= df.groupby(by=[df["Country"],df["State/Province"]])[["Brand"]].count()
+	# grouped3 = df.groupby(by=[df["Country"],df["State/Province"]]).count()[["Brand"]]
+
+	print(grouped1,type(grouped1))
+	# print("*"*100)
+	# print(grouped2,type(grouped2))
+	# print("*"*100)
+	#
+	# print(grouped3,type(grouped3))
+
+	#索引的方法和属性
+	print(grouped1.index)
+
 要统计美国和中国的星巴克的数量，我们应该怎么做？DataFrameGroupBy 对象有很多经过优化的方法
 
 	| 函数名.        说明
@@ -980,6 +1036,62 @@ pandas 重采样
 
 pandas 提供了一个 resample 的方法来帮助实现频率转化
 
+.. code-block:: python
+
+	t = pd.DataFrame(np.random.uniform(10,50,(100,1)), index=pd.date_range("20170101", periods=100))
+	print(t)
+	                    # 0
+	# 2017-01-01  10.090324
+	# 2017-01-02  23.513825
+	# 2017-01-03  48.455461
+	# 2017-01-04  30.263594
+	# 2017-01-05  44.193033
+	# ...               ...
+	# 2017-04-06  25.433594
+	# 2017-04-07  37.596630
+	# 2017-04-08  45.284358
+	# 2017-04-09  10.691855
+	# 2017-04-10  38.436495
+	# [100 rows x 1 columns]
+
+	t1 = t.resample("M").mean()
+	print(t1)
+	                    # 0
+	# 2017-01-31  29.120454
+	# 2017-02-28  28.973526
+	# 2017-03-31  29.057836
+	# 2017-04-30  31.717965
+
+	t2 = t.resample("10D").count()
+	print(t2)
+	             # 0
+	# 2017-01-01  10
+	# 2017-01-11  10
+	# 2017-01-21  10
+	# 2017-01-31  10
+	# 2017-02-10  10
+	# 2017-02-20  10
+	# 2017-03-02  10
+	# 2017-03-12  10
+	# 2017-03-22  10
+	# 2017-04-01  10
+
+	t3 = t.resample("QS-JAN").count()
+	print(t3)
+	             # 0
+	# 2017-01-01  90
+	# 2017-04-01  10
+
+PeriodIndex
+==================================================================================
+
+之前所学习的DatetimeIndex可以理解为时间戳. 那么现在我们要学习的 PeriodIndex 可以理解为时间段
+
+	| periods = pd.PeriodIndex(year=data["year"],month=data["month"],day=data["day"],hour=data["hour"],freq="H")
+
+那么如果给这个时间段降采样呢？
+
+	| data = df.set_index(periods).resample("10D").mean()
 
 
 
