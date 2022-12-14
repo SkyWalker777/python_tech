@@ -63,7 +63,6 @@ Pandas 实现数据的合并 concat
 	3	A7	B7	C7	D7	F7
 
 	***1、默认的concat，参数为axis=0、join=outer、ignore_index=False***
-
 	pd.concat([df1,df2])
 		A	B	C	D	E	F
 	0	A0	B0	C0	D0	E0	NaN
@@ -89,7 +88,7 @@ Pandas 实现数据的合并 concat
 
 	***3、使用join=inner过滤掉不匹配的列***
 	pd.concat([df1,df2], ignore_index=True, join="inner")
-	A	B	C	D
+		A	B	C	D
 	0	A0	B0	C0	D0
 	1	A1	B1	C1	D1
 	2	A2	B2	C2	D2
@@ -110,7 +109,7 @@ Pandas 实现数据的合并 concat
 	***A：添加一列Series***
 	s1 = pd.Series(list(range(4)), name="F")
 	pd.concat([df1,s1], axis=1)
-	A	B	C	D	E	F
+		A	B	C	D	E	F
 	0	A0	B0	C0	D0	E0	0
 	1	A1	B1	C1	D1	E1	1
 	2	A2	B2	C2	D2	E2	2
@@ -376,7 +375,7 @@ Pandas 的分组聚合 groupby
 	                   'C': np.random.randn(8),
 	                   'D': np.random.randn(8)})
 	df
-	A	B	C	D
+		A	B	C	D
 	0	foo	one	-0.265986	-1.612982
 	1	bar	one	-0.615903	0.722317
 	2	foo	two	-0.697261	0.282532
@@ -412,7 +411,7 @@ Pandas 的分组聚合 groupby
 	我们看到：('A','B')成对变成了二级索引
 
 	df.groupby(['A','B'], as_index=False).mean()
-	A	B	C	D
+		A	B	C	D
 	0	bar	one	-0.615903	0.722317
 	1	bar	three	-1.697145	1.104218
 	2	bar	two	0.718036	-1.350090
@@ -422,8 +421,8 @@ Pandas 的分组聚合 groupby
 
 	#### 3、同时查看多种数据统计
 	df.groupby('A').agg([np.sum, np.mean, np.std])
-	C	D
-	sum	mean	std	sum	mean	std
+		C				D
+		sum	mean	std	sum	mean	std
 	A						
 	bar	-1.595012	-0.531671	1.209792	0.476444	0.158815	1.320628
 	foo	-2.416147	-0.483229	0.484778	-4.573793	-0.914759	1.413911
@@ -432,7 +431,7 @@ Pandas 的分组聚合 groupby
 	#### 4、查看单列的结果数据统计
 	# 方法1：预过滤，性能更好
 	df.groupby('A')['C'].agg([np.sum, np.mean, np.std])
-	sum	mean	std
+		sum	mean	std
 	A			
 	bar	-1.595012	-0.531671	1.209792
 	foo	-2.416147	-0.483229	0.484778
@@ -446,7 +445,7 @@ Pandas 的分组聚合 groupby
 
 	#### 5、不同列使用不同的聚合函数
 	df.groupby('A').agg({"C":np.sum, "D":np.mean})
-	C	D
+		C	D
 	A		
 	bar	-1.595012	0.158815
 	foo	-2.416147	-0.914759
@@ -457,7 +456,6 @@ Pandas 的分组聚合 groupby
 	g = df.groupby('A')
 	g
 	<pandas.core.groupby.generic.DataFrameGroupBy object at 0x118fa3d50>
-
 
 	for name,group in g:
 	    print(name)
@@ -519,14 +517,13 @@ Pandas 的分组聚合 groupby
 
 	# 可以看到，name是一个2个元素的tuple，代表不同的列
 	g.get_group(('foo', 'one'))
-	A	B	C	D
+		A	B	C	D
 	0	foo	one	-0.265986	-1.612982
 	6	foo	one	-0.276452	-2.225983
 
 	***可以直接查询group后的某几列，生成Series或者子DataFrame***
 	g['C']
 	<pandas.core.groupby.generic.SeriesGroupBy object at 0x11912d2d0>
-
 
 	for name, group in g['C']:
 	    print(name)
@@ -595,6 +592,8 @@ Pandas 的分组聚合 groupby
 	#### 1、查看每个月的最高温度
 	data = df.groupby('month')['bWendu'].max()
 	data
+
+		bWendu
 	month
 	2018-01     7
 	2018-02    12
@@ -616,7 +615,9 @@ Pandas 的分组聚合 groupby
 	data.plot()
 	<AxesSubplot:xlabel='month'>
 
-	|image00|
+|image00|
+
+.. code-block:: python
 
 	#### 2、查看每个月的最高温度、最低温度、平均空气质量指数
 	df.head()
@@ -647,7 +648,7 @@ Pandas 的分组聚合 groupby
 	group_data.plot()
 	<AxesSubplot:xlabel='month'>
 
-	|image01|
+|image01|
 
 Pandas 的分层索引 MultiIndex
 **********************************************************************************
