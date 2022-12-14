@@ -6,6 +6,6 @@ Pandas 篇
   :glob:
 
   pandas/pandas_base1
-  pandas/pandas_intro1
-  pandas/pandas_intro2
-  pandas/pandas_intro3
+  pandas/pandas_advance1
+  pandas/pandas_advance2
+  pandas/pandas_advance3

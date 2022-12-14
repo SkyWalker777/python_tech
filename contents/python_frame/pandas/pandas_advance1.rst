@@ -2121,7 +2121,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 	1	K1	A1	B1	C1	D1
 
 	#### 3.2 left join
-	# 左边的都会出现在结果里，右边的如果无法匹配则为Null
+	# 左边的都会出现在结果里，右边的如果无法匹配则为 Null
 	pd.merge(left, right, how='left')
 
 	key	A	B	C	D
@@ -2131,7 +2131,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 	3	K3	A3	B3	NaN	NaN
 
 	#### 3.3 right join
-	# 右边的都会出现在结果里，左边的如果无法匹配则为Null
+	# 右边的都会出现在结果里，左边的如果无法匹配则为 Null
 	pd.merge(left, right, how='right')
 	key	A	B	C	D
 	0	K0	A0	B0	C0	D0
@@ -2140,7 +2140,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 	3	K5	NaN	NaN	C5	D5
 
 	#### 3.4 outer join
-	# 左边、右边的都会出现在结果里，如果无法匹配则为Null
+	# 左边、右边的都会出现在结果里，如果无法匹配则为 Null
 	pd.merge(left, right, how='outer')
 		key	A	B	C	D
 	0	K0	A0	B0	C0	D0
@@ -2150,7 +2150,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 	4	K4	NaN	NaN	C4	D4
 	5	K5	NaN	NaN	C5	D5
 
-	### 4、如果出现非Key的字段重名怎么办
+	### 4、如果出现非 Key 的字段重名怎么办
 	left = pd.DataFrame({'key': ['K0', 'K1', 'K2', 'K3'],
 	                      'A': ['A0', 'A1', 'A2', 'A3'],
 	                      'B': ['B0', 'B1', 'B2', 'B3']})
