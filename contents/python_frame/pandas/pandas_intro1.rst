@@ -1609,7 +1609,7 @@ Pandas 的 axis 参数怎么理解
 	# 反直觉：输出的不是每行的结果，而是每列的结果
 
 	df
-	A	B	C	D
+	    A	B	C	D
 	0	0	1	2	3
 	1	4	5	6	7
 	2	8	9	10	11
@@ -1632,7 +1632,7 @@ Pandas 的 axis 参数怎么理解
 
 	df["sum_value"] = df.apply(get_sum_value, axis=1)
 
-	A	B	C	D	sum_value
+	    A	B	C	D	sum_value
 	0	0	1	2	3	6
 	1	4	5	6	7	22
 	2	8	9	10	11	38
@@ -1646,9 +1646,9 @@ Pandas 的索引 index 的用途
 
 	# 把数据存储于普通的column列也能用于数据查询，那使用index有什么好处？
 
-	# index的用途总结：  
+	# index 的用途总结：  
 	# 1. 更方便的数据查询；
-	# 2. 使用index可以获得性能提升；
+	# 2. 使用 index 可以获得性能提升；
 	# 3. 自动的数据对齐功能；
 	# 4. 更多更强大的数据结构支持；
 
@@ -1676,8 +1676,7 @@ Pandas 的索引 index 的用途
 	df.set_index("userId", inplace=True, drop=False)
 
 	df.head()
-	userId	movieId	rating	timestamp
-	userId				
+	userId userId movieId rating timestamp			
 	1	1	1	4.0	964982703
 	1	1	3	4.0	964981247
 	1	1	6	4.0	964982224
@@ -1690,7 +1689,7 @@ Pandas 的索引 index 的用途
 	            610, 610, 610, 610, 610, 610, 610, 610, 610, 610],
 	           dtype='int64', name='userId', length=100836)
 
-	# 使用index的查询方法
+	# 使用 index 的查询方法
 	df.loc[500].head(5)
 		userId	movieId	rating	timestamp
 	userId				
@@ -1700,7 +1699,7 @@ Pandas 的索引 index 的用途
 	500	500	101	1.0	1005527980
 	500	500	104	4.0	1005528065
 
-	# 使用column的condition查询方法
+	# 使用 column 的 condition 查询方法
 	df.loc[df["userId"] == 500].head()
 		userId	movieId	rating	timestamp
 	userId				
@@ -1712,14 +1711,9 @@ Pandas 的索引 index 的用途
 
 	# ## 2. 使用index会提升查询性能
 
-	# * 如果index是唯一的，Pandas会使用哈希表优化，查询性能为O(1);
-	# * 如果index不是唯一的，但是有序，Pandas会使用二分查找算法，查询性能为O(logN);
-	# * 如果index是完全随机的，那么每次查询都要扫描全表，查询性能为O(N);
-
-	%%html
-	<img src="./other_files/pandas-index-performance.png" width=600/>
-
-	|image2|
+	# * 如果 index 是唯一的，Pandas 会使用哈希表优化，查询性能为 O(1);
+	# * 如果 index 不是唯一的，但是有序，Pandas会使用二分查找算法，查询性能为 O(logN);
+	# * 如果 index 是完全随机的，那么每次查询都要扫描全表，查询性能为O(N);
 
 	### 实验1：完全随机的顺序查询
 	# 将数据随机打散
@@ -1727,8 +1721,8 @@ Pandas 的索引 index 的用途
 	df_shuffle = shuffle(df)
 
 	df_shuffle.head()
-	userId	movieId	rating	timestamp
-	userId				
+		userId movieId rating timestamp
+	userId 	
 	274	274	5944	1.0	1171759788
 	156	156	6297	4.0	1106882124
 	177	177	3564	1.0	1435525801
@@ -1750,7 +1744,7 @@ Pandas 的索引 index 的用途
 	df_sorted = df_shuffle.sort_index()
 
 	df_sorted.head()
-	userId	movieId	rating	timestamp
+		userId	movieId	rating	timestamp
 	userId				
 	1	1	1060	4.0	964980924
 	1	1	2389	2.0	964983094
@@ -1767,11 +1761,6 @@ Pandas 的索引 index 的用途
 	# * 如果index是唯一的，Pandas会使用哈希表优化，查询性能为O(1);
 	# * 如果index不是唯一的，但是有序，Pandas会使用二分查找算法，查询性能为O(logN);
 	# * 如果index是完全随机的，那么每次查询都要扫描全表，查询性能为O(N);
-
-	%%html
-	<img src="./other_files/pandas-index-performance.png" width=600/>
-
-	|image2|
 
 	### 实验1：完全随机的顺序查询
 	# 将数据随机打散
@@ -1818,9 +1807,9 @@ Pandas 的索引 index 的用途
 	%timeit df_sorted.loc[500]
 	95 µs ± 31 µs per loop (mean ± std. dev. of 7 runs, 10000 loops each)
 
-	## 3. 使用index能自动对齐数据
+	## 3. 使用 index 能自动对齐数据
 
-	# 包括series和dataframe
+	# 包括 series 和 dataframe
 	s1 = pd.Series([1,2,3], index=list("abc"))
 
 	s1
@@ -1855,7 +1844,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 
 .. code-block:: python
 
-	# Pandas的Merge，相当于Sql的Join，将不同的表按key关联到一个表
+	# Pandas 的 Merge，相当于 Sql 的 Join，将不同的表按 key 关联到一个表
 
 	# ### merge的语法：
 	# pd.merge(left, right, how='inner', on=None, left_on=None, right_on=None,
@@ -1984,7 +1973,7 @@ Pandas 怎样实现 DataFrame 的 Merge
 	8	28	1193	3	978125194	F	25	1	14607	One Flew Over the Cuckoo's Nest (1975)	Drama
 	9	33	1193	5	978557765	M	45	3	55421	One Flew Over the Cuckoo's Nest (1975)	Drama
 
-	# ### 2、理解merge时数量的对齐关系
+	# ### 2、理解 merge 时数量的对齐关系
 
 	# 以下关系要正确理解：
 	# * one-to-one：一对一关系，关联的key都是唯一的
@@ -1998,10 +1987,6 @@ Pandas 怎样实现 DataFrame 的 Merge
 	#   - 结果条数为：M*N
 
 	#### 2.1 one-to-one 一对一关系的merge
-	%%html
-	<img src="./other_files/pandas-merge-one-to-one.png" />
-
-	|image3|
 
 	left = pd.DataFrame({'sno': [11, 12, 13, 14],
 	                      'name': ['name_a', 'name_b', 'name_c', 'name_d']
@@ -2030,11 +2015,6 @@ Pandas 怎样实现 DataFrame 的 Merge
 	1	12	name_b	22
 	2	13	name_c	23
 	3	14	name_d	24
-
-	%%html
-	<img src="./other_files/pandas-merge-one-to-many.png" />
-
-	|image4|
 
 	left = pd.DataFrame({'sno': [11, 12, 13, 14],
 	                      'name': ['name_a', 'name_b', 'name_c', 'name_d']
@@ -2071,12 +2051,6 @@ Pandas 怎样实现 DataFrame 的 Merge
 	#### 2.3 many-to-many 多对多关系的merge
 
 	# 注意：结果数量会出现乘法
-
-	%%html
-	<img src="./other_files/pandas-merge-many-to-many.png" />
-
-	|image5|
-
 	left = pd.DataFrame({'sno': [11, 11, 12, 12,12],
 	                      '爱好': ['篮球', '羽毛球', '乒乓球', '篮球', "足球"]
 	                    })
@@ -2116,11 +2090,6 @@ Pandas 怎样实现 DataFrame 的 Merge
 	11	12	足球	数学55
 
 	### 3、理解left join、right join、inner join、outer join的区别
-	%%html
-	<img src="./other_files/pandas-leftjoin-rightjoin-outerjoin.png" />
-
-	|image6|
-
 	left = pd.DataFrame({'key': ['K0', 'K1', 'K2', 'K3'],
 	                      'A': ['A0', 'A1', 'A2', 'A3'],
 	                      'B': ['B0', 'B1', 'B2', 'B3']})
