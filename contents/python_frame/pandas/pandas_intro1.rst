@@ -1,6 +1,8 @@
 Pandas 高级篇 1
 ##################################################################################
 
+| 相关代码地址: https://github.com/lilizhaolilizhao/ant-learn-pandas.git
+
 什么是 Pandas
 **********************************************************************************
 
@@ -89,7 +91,7 @@ Pandas 需要先读取表格类型的数据，然后进行分析
 	# 查看前几行数据
 	ratings.head()
 	# 输出
-	userId	movieId	rating	timestamp
+	   userId	movieId	rating	timestamp
 	0	1	1	4.0	964982703
 	1	1	3	4.0	964981247
 	2	1	6	4.0	964982224
@@ -239,7 +241,7 @@ DataFrame：二维数据，整个表格，多行多列
 	输出 ===> 
 	Index(['d', 'b', 'a', 'c'], dtype='object')
 
-	#### 1.3 使用Python字典创建Series
+	#### 1.3 使用 Python 字典创建 Series
 	sdata={'Ohio':35000,'Texas':72000,'Oregon':16000,'Utah':5000}
 	输出 ===> 
 	{'Ohio': 35000, 'Texas': 72000, 'Oregon': 16000, 'Utah': 5000}
@@ -254,7 +256,7 @@ DataFrame：二维数据，整个表格，多行多列
 	dtype: int64
 
 	#### 1.4 根据标签索引查询数据
-	# 类似Python的字典dict
+	# 类似 Python 的字典 dict
 	输出 ===> 
 	d      1
 	b      a
@@ -282,14 +284,14 @@ DataFrame：二维数据，整个表格，多行多列
 
 
 	### 2. DataFrame
-	# DataFrame是一个表格型的数据结构
+	# DataFrame 是一个表格型的数据结构
 	# * 每列可以是不同的值类型（数值、字符串、布尔值等）
-	# * 既有行索引index,也有列索引columns
-	# * 可以被看做由Series组成的字典
+	# * 既有行索引 index, 也有列索引 columns
+	# * 可以被看做由 Series 组成的字典
 
-	# 创建dataframe最常用的方法，见02节读取纯文本文件、excel、mysql数据库
+	# 创建 dataframe 最常用的方法，见 02 节读取纯文本文件、excel、mysql 数据库
 
-	#### 2.1 根据多个字典序列创建dataframe
+	#### 2.1 根据多个字典序列创建 dataframe
 	data={
 	        'state':['Ohio','Ohio','Ohio','Nevada','Nevada'],
 	        'year':[2000,2001,2002,2001,2002],
@@ -1588,21 +1590,19 @@ Pandas 的 axis 参数怎么理解
 	D    7.0
 	dtype: float64
 
-	%%html
-	<img src="./other_files/pandas-axis-index.png" width="300" />
-
 	axis=0 或者 axis=index
 
-	不是得到的是每行的结果
-	而是代表按行处理、跨行cross row的意思
+	不是得到的是每行的结果, 而是代表按行处理、跨行 cross row 的意思
 
 	col_data
 	for row in rows:
 	    col_data = row.sum/row.count
 
-	比喻：就像一把梳子往下梳
+比喻：就像一把梳子往下梳
 
-	|image0|
+|image0|
+
+.. code-block:: python
 
 	# ***指定了按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
 	### 4、按axis=1/columns执行mean聚合操作
@@ -1621,10 +1621,9 @@ Pandas 的 axis 参数怎么理解
 	2    9.5
 	dtype: float64
 
-	%%html
-	<img src="./other_files/pandas-axis-columns.png" width="700" />
+|image1|
 
-	|image1|
+.. code-block:: python
 
 	# ***指定了按哪个axis，就是这个axis要动起来(类似被for遍历)，其它的axis保持不动***
 	### 5、再次举例，加深理解
