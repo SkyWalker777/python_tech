@@ -4,31 +4,31 @@ Pandas 高级篇 2
 Pandas 实现数据的合并 concat
 **********************************************************************************
 
+	| #### 使用场景：
+	| 批量合并相同格式的 Excel、给 DataFrame 添加行、给 DataFrame 添加列
+	| 
+	| #### 一句话说明concat语法：  
+	| * 使用某种合并方式(inner/outer)
+	| * 沿着某个轴向(axis=0/1)
+	| * 把多个Pandas对象(DataFrame/Series)合并成一个。
+	| 
+	| #### concat语法：pandas.concat(objs, axis=0, join='outer', ignore_index=False)
+	| * objs：一个列表，内容可以是DataFrame或者Series，可以混合
+	| * axis：默认是0代表按行合并，如果等于1代表按列合并
+	| * join：合并的时候索引的对齐方式，默认是outer join，也可以是inner join
+	| * ignore_index：是否忽略掉原来的数据索引
+	| 
+	| #### append语法：DataFrame.append(other, ignore_index=False)
+	| append只有按行合并，没有按列合并，相当于concat按行的简写形式  
+	| * other：单个dataframe、series、dict，或者列表
+	| * ignore_index：是否忽略掉原来的数据索引
+	| 
+	| #### 参考文档：
+	| * pandas.concat的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
+	| * pandas.concat的教程：https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html
+	| * pandas.append的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.append.html
+
 .. code-block:: python
-
-	#### 使用场景：
-	批量合并相同格式的Excel、给DataFrame添加行、给DataFrame添加列
-
-	#### 一句话说明concat语法：  
-	* 使用某种合并方式(inner/outer)
-	* 沿着某个轴向(axis=0/1)
-	* 把多个Pandas对象(DataFrame/Series)合并成一个。
-
-	#### concat语法：pandas.concat(objs, axis=0, join='outer', ignore_index=False)
-	* objs：一个列表，内容可以是DataFrame或者Series，可以混合
-	* axis：默认是0代表按行合并，如果等于1代表按列合并
-	* join：合并的时候索引的对齐方式，默认是outer join，也可以是inner join
-	* ignore_index：是否忽略掉原来的数据索引
-
-	#### append语法：DataFrame.append(other, ignore_index=False)
-	append只有按行合并，没有按列合并，相当于concat按行的简写形式  
-	* other：单个dataframe、series、dict，或者列表
-	* ignore_index：是否忽略掉原来的数据索引
-
-	#### 参考文档：
-	* pandas.concat的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.concat.html
-	* pandas.concat的教程：https://pandas.pydata.org/pandas-docs/stable/user_guide/merging.html
-	* pandas.append的api文档：https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.append.html
 
 	import pandas as pd
 
