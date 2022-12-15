@@ -1169,30 +1169,24 @@ Pandas 怎样对每个分组应用 apply 函数?
 Pandas 的 stack 和 pivot 实现数据透视
 **********************************************************************************
 
+	| 1. 经过统计得到多维度指标数据
+	| 2. 使用unstack实现数据二维透视
+	| 3. 使用pivot简化透视
+	| 4. stack、unstack、pivot的语法
+
+.. figure:: pandas_image/reshaping_example.webp
+   :alt: reshaping_example.webp
+
 .. code-block:: python
-
-	<img src="./other_files/reshaping_example.png" style="margin-left:0px; width:600px" />
-
-	1. 经过统计得到多维度指标数据
-	2. 使用unstack实现数据二维透视
-	3. 使用pivot简化透视
-	4. stack、unstack、pivot的语法
-
-	#%% md
 
 	###  1. 经过统计得到多维度指标数据
 
-	非常常见的统计场景，指定多个维度，计算聚合后的指标  
-
-	实例：统计得到“电影评分数据集”，每个月份的每个分数被评分多少次：（月份、分数1~5、次数）
-
-	#%%
+	# 非常常见的统计场景，指定多个维度，计算聚合后的指标
+	# 实例：统计得到“电影评分数据集”，每个月份的每个分数被评分多少次：（月份、分数1~5、次数）
 
 	import pandas as pd
 	import numpy as np
 	%matplotlib inline
-
-	#%%
 
 	df = pd.read_csv(
 	    "./datas/movielens-1m/ratings.dat",
@@ -1201,92 +1195,162 @@ Pandas 的 stack 和 pivot 实现数据透视
 	    sep="::",
 	    engine="python"
 	)
-
-	#%%
-
-	df.head()
-
-	#%%
+	# print(df.head())
+	   # UserID  MovieID  Rating  Timestamp
+	# 0       1     1193       5  978300760
+	# 1       1      661       3  978302109
+	# 2       1      914       3  978301968
+	# 3       1     3408       4  978300275
+	# 4       1     2355       5  978824291
 
 	df["pdate"] = pd.to_datetime(df["Timestamp"], unit='s')
+	# print(df.head())
+	#    UserID  MovieID  Rating  Timestamp               pdate
+	# 0       1     1193       5  978300760 2000-12-31 22:12:40
+	# 1       1      661       3  978302109 2000-12-31 22:35:09
+	# 2       1      914       3  978301968 2000-12-31 22:32:48
+	# 3       1     3408       4  978300275 2000-12-31 22:04:35
+	# 4       1     2355       5  978824291 2001-01-06 23:38:11
 
-	#%%
+	# print(df.dtypes)
+	# UserID                int64
+	# MovieID               int64
+	# Rating                int64
+	# Timestamp             int64
+	# pdate        datetime64[ns]
+	# dtype: object
 
-	df.head()
-
-	#%%
-
-	df.dtypes
-
-	#%%
-
-	# 实现数据统计
 	df_group = df.groupby([df["pdate"].dt.month, "Rating"])["UserID"].agg(pv=np.size)
+	# print(df_group.head(20))
+	#                 pv
+	# pdate Rating
+	# 1     1       1127
+	#       2       2608
+	#       3       6442
+	#       4       8400
+	#       5       4495
+	# 2     1        629
+	#       2       1464
+	#       3       3297
+	#       4       4403
+	#       5       2335
+	# 3     1        466
+	#       2       1077
+	#       3       2523
+	#       4       3032
+	#       5       1439
+	# 4     1       1048
+	#       2       2247
+	#       3       5501
+	#       4       6748
+	#       5       3863
 
-	#%%
-
-	df_group.head(20)
-
-	#%%
-
-
-
-	#%% md
-
-	对这样格式的数据，我想查看按月份，不同评分的次数趋势，是没法实现的
-
-	需要将数据变换成每个评分是一列才可以实现
-
-	#%% md
+	# 对这样格式的数据，我想查看按月份，不同评分的次数趋势，是没法实现的
+	# 需要将数据变换成每个评分是一列才可以实现
 
 	### 2. 使用unstack实现数据二维透视
-
-	目的：想要画图对比按照月份的不同评分的数量趋势
-
-	#%%
+	# 目的：想要画图对比按照月份的不同评分的数量趋势
 
 	df_stack = df_group.unstack()
-	df_stack
-
-	#%%
+	# print(df_stack)
+	# Rating      1      2      3       4      5
+	# pdate
+	# 1        1127   2608   6442    8400   4495
+	# 2         629   1464   3297    4403   2335
+	# 3         466   1077   2523    3032   1439
+	# 4        1048   2247   5501    6748   3863
+	# 5        4557   7631  18481   25769  17840
+	# 6        3196   6500  15211   21838  14365
+	# 7        4891   9566  25421   34957  22169
+	# 8       10873  20597  50509   64198  42497
+	# 9        3107   5873  14702   19927  13182
+	# 10       2121   4785  12175   16095  10324
+	# 11      17701  32202  76069  102448  67041
+	# 12       6458  13007  30866   41156  26760
 
 	df_stack.plot()
 
-	#%%
+.. figure:: pandas_image/stack_pivot.webp
+   :alt: stack_pivot.webp
 
-	# unstack和stack是互逆操作
-	df_stack.stack().head(20)
+.. code-block:: python
 
-	#%% md
+	# print(df_stack.stack().head(20))
+	                # pv
+	# pdate Rating
+	# 1     1       1127
+	#       2       2608
+	#       3       6442
+	#       4       8400
+	#       5       4495
+	# 2     1        629
+	#       2       1464
+	#       3       3297
+	#       4       4403
+	#       5       2335
+	# 3     1        466
+	#       2       1077
+	#       3       2523
+	#       4       3032
+	#       5       1439
+	# 4     1       1048
+	#       2       2247
+	#       3       5501
+	#       4       6748
+	#       5       3863
 
-	### 3. 使用pivot简化透视
-
-	#%%
-
-	df_group.head(20)
-
-	#%%
+	### 3. 使用 pivot 简化透视
+	# print(df_group.head(20))
+	                # pv
+	# pdate Rating
+	# 1     1       1127
+	#       2       2608
+	#       3       6442
+	#       4       8400
+	#       5       4495
+	# 2     1        629
+	#       2       1464
+	#       3       3297
+	#       4       4403
+	#       5       2335
+	# 3     1        466
+	#       2       1077
+	#       3       2523
+	#       4       3032
+	#       5       1439
+	# 4     1       1048
+	#       2       2247
+	#       3       5501
+	#       4       6748
+	#       5       3863
 
 	df_reset = df_group.reset_index()
-	df_reset.head()
-
-	#%%
+	# print(df_reset.head())
+	   # pdate  Rating    pv
+	# 0      1       1  1127
+	# 1      1       2  2608
+	# 2      1       3  6442
+	# 3      1       4  8400
+	# 4      1       5  4495
 
 	df_pivot = df_reset.pivot("pdate", "Rating", "pv")
-
-	#%%
-
-	df_pivot.head()
-
-	#%%
+	# print(df_pivot.head())
+	# Rating     1     2      3      4      5
+	# pdate
+	# 1       1127  2608   6442   8400   4495
+	# 2        629  1464   3297   4403   2335
+	# 3        466  1077   2523   3032   1439
+	# 4       1048  2247   5501   6748   3863
+	# 5       4557  7631  18481  25769  17840
 
 	df_pivot.plot()
 
-	#%% md
+.. figure:: pandas_image/stack_pivot_002.webp
+   :alt: stack_pivot_002.webp
+
+::
 
 	***pivot方法相当于对df使用set_index创建分层索引，然后调用unstack***
-
-	#%% md
 
 	### 4. stack、unstack、pivot的语法
 
@@ -1294,15 +1358,22 @@ Pandas 的 stack 和 pivot 实现数据透视
 
 	level=-1代表多层索引的最内层，可以通过==0、1、2指定多层索引的对应层
 
-	<img src="./other_files/reshaping_stack.png" style="margin-left:0px; width:600px" />
+.. figure:: pandas_image/reshaping_stack.webp
+   :alt: reshaping_stack.webp
+
+::
 
 	#### unstack：DataFrame.unstack(level=-1, fill_value=None)，将index变成column，类似把竖放的书籍变成横放
 
-	<img src="./other_files/reshaping_unstack.png" style="margin-left:0px; width:600px" />
+.. figure:: pandas_image/reshaping_unstack.webp
+   :alt: reshaping_unstack.webp
+
+::
 
 	#### pivot：DataFrame.pivot(index=None, columns=None, values=None)，指定index、columns、values实现二维透视
 
-	<img src="./other_files/reshaping_pivot.png" style="margin-left:0px; width:600px" />
+.. figure:: pandas_image/reshaping_pivot.webp
+   :alt: reshaping_pivot.webp
 
 Pandas 怎样快捷方便的处理日期数据
 **********************************************************************************
