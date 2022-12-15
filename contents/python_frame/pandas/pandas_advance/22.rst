@@ -5,7 +5,7 @@ Pandas怎么处理日期索引的缺失？
 
 | 可以用两种方法实现：
 
-    | 1、DataFrame.reindex，调整dataframe的索引以适应新的索引
+    | 1、DataFrame.reindex，调整 dataframe 的索引以适应新的索引
     | 2、DataFrame.resample，可以对时间序列重采样，支持补充缺失值
 
 问题：如果缺失了索引该怎么填充？
@@ -25,9 +25,6 @@ Pandas怎么处理日期索引的缺失？
     })
     
     df
-
-
-
 
 .. raw:: html
 
@@ -89,9 +86,6 @@ Pandas怎么处理日期索引的缺失？
 
     df.set_index("pdate").plot()
 
-
-
-
 .. parsed-literal::
 
     <matplotlib.axes._subplots.AxesSubplot at 0x1a0d908bf48>
@@ -102,19 +96,16 @@ Pandas怎么处理日期索引的缺失？
 
 **问题，这里缺失了2019-12-03的数据，导致数据不全该怎么补充？**
 
-方法1：使用pandas.reindex方法
+方法1：使用 pandas.reindex 方法
 -----------------------------
 
-1、将df的索引变成日期索引
+将 df 的索引变成日期索引
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     df_date = df.set_index("pdate")
     df_date
-
-
-
 
 .. raw:: html
 
@@ -261,9 +252,7 @@ Pandas怎么处理日期索引的缺失？
 
     DatetimeIndex(['2019-12-01', '2019-12-02', '2019-12-04', '2019-12-05'], dtype='datetime64[ns]', name='pdate', freq=None)
 
-
-
-2、使用pandas.reindex填充缺失的索引
+使用 pandas.reindex 填充缺失的索引
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -272,24 +261,16 @@ Pandas怎么处理日期索引的缺失？
     pdates = pd.date_range(start="2019-12-01", end="2019-12-05")
     pdates
 
-
-
-
 .. parsed-literal::
 
     DatetimeIndex(['2019-12-01', '2019-12-02', '2019-12-03', '2019-12-04',
                    '2019-12-05'],
                   dtype='datetime64[ns]', freq='D')
 
-
-
 .. code:: ipython3
 
     df_date_new = df_date.reindex(pdates, fill_value=0)
     df_date_new
-
-
-
 
 .. raw:: html
 
@@ -344,38 +325,28 @@ Pandas怎么处理日期索引的缺失？
       </tbody>
     </table>
     </div>
-
-
-
+    
 .. code:: ipython3
 
     df_date_new.plot()
-
-
-
 
 .. parsed-literal::
 
     <matplotlib.axes._subplots.AxesSubplot at 0x1a0db1ab388>
 
-
-
 .. figure:: image/22_15_1.webp
    :alt: 22_15_1.webp
 
 
-方法2：使用pandas.resample方法
+方法2：使用 pandas.resample 方法
 ------------------------------
 
-1、先将索引变成日期索引
+先将索引变成日期索引
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     df
-
-
-
 
 .. raw:: html
 
@@ -437,9 +408,6 @@ Pandas怎么处理日期索引的缺失？
 
     df_new2 = df.set_index(pd.to_datetime(df["pdate"])).drop("pdate", axis=1)
     df_new2
-
-
-
 
 .. raw:: html
 
@@ -508,25 +476,19 @@ Pandas怎么处理日期索引的缺失？
 
     DatetimeIndex(['2019-12-01', '2019-12-02', '2019-12-04', '2019-12-05'], dtype='datetime64[ns]', name='pdate', freq=None)
 
-
-
-2、使用dataframe的resample的方法按照天重采样
+使用 dataframe 的 resample 的方法按照天重采样
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    | resample的含义：改变数据的时间频率，比如把天数据变成月份，或者把小时数据变成分钟级别
-    | resample的语法：(DataFrame or Series).resample(arguments).(aggregate function)
+    | resample 的含义：改变数据的时间频率，比如把天数据变成月份，或者把小时数据变成分钟级别
+    | resample 的语法：(DataFrame or Series).resample(arguments).(aggregate function)
 
-| resample的采样规则参数：
-| https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
+| resample的采样规则参数：https://pandas.pydata.org/pandas-docs/stable/user_guide/timeseries.html#offset-aliases
 
 .. code:: ipython3
 
     # 由于采样会让区间变成一个值，所以需要指定mean等采样值的设定方法
     df_new2 = df_new2.resample("D").mean().fillna(0)
     df_new2
-
-
-
 
 .. raw:: html
 
