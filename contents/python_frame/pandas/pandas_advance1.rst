@@ -18,8 +18,14 @@ Pandas 高级篇
 	pandas_advance/10
 	pandas_advance/11
 	pandas_advance/12
-
-
+	pandas_advance/13
+	pandas_advance/14
+	pandas_advance/15
+	pandas_advance/16
+	pandas_advance/17
+	pandas_advance/18
+	pandas_advance/19
+	pandas_advance/20
 
 
 
