@@ -1,0 +1,689 @@
+Python批量翻译英语单词
+----------------------
+
+| **用途：**
+| 对批量的英语文本，生成英语-汉语翻译的单词本，提供Excel下载
+
+**本代码实现：** 1. 提供一个英文文章URL，自动下载网页； 2.
+实现网页中所有英语单词的翻译； 3. 下载翻译结果的Excel
+
+**涉及技术：** 1. pandas的读取csv、多数据merge、输出Excel 2.
+requests库下载HTML网页 3. BeautifulSoup解析HTML网页 4.
+Python正则表达式实现英文分词
+
+1. 读取英语-汉语翻译词典文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 1.
+下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
+2. 解压master.zip，然后解压其中的‪stardict.csv文件
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    # 注意：stardict.csv的地址需要替换成你自己的文件地址
+    df_dict = pd.read_csv("D:/tmp/ECDICT-master/stardict.csv")
+
+
+.. parsed-literal::
+
+    d:\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py:3063: DtypeWarning: Columns (11) have mixed types.Specify dtype option on import or set low_memory=False.
+      interactivity=interactivity, compiler=compiler, result=result)
+
+
+.. code:: ipython3
+
+    df_dict.shape
+
+
+
+
+.. parsed-literal::
+
+    (3402564, 13)
+
+
+
+.. code:: ipython3
+
+    df_dict.sample(10).head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>phonetic</th>
+          <th>definition</th>
+          <th>translation</th>
+          <th>pos</th>
+          <th>collins</th>
+          <th>oxford</th>
+          <th>tag</th>
+          <th>bnc</th>
+          <th>frq</th>
+          <th>exchange</th>
+          <th>detail</th>
+          <th>audio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>3370509</th>
+          <td>WWDH</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>[网络] 淇楄壋</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>518014</th>
+          <td>chauhtan (chotan)</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>卓丹</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>389953</th>
+          <td>breviarist</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>[网络] 短笛师</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>951231</th>
+          <td>electric-vehicle</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>abbr. “EV”的变体；“electric car”的变体\n[网络] 电动汽车</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>91258</th>
+          <td>Albionian</td>
+          <td>æl'biәniәn</td>
+          <td>NaN</td>
+          <td>[地质]阿尔比翁期</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0.0</td>
+          <td>0.0</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 把word、translation之外的列扔掉
+    df_dict = df_dict[["word", "translation"]]
+    df_dict.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>'a</td>
+          <td>na. 一\nn. 英文字母表的第一字母；【乐】A音\nart. 冠以不定冠词主要表示类别\...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>'A' game</td>
+          <td>[网络] 游戏；一个游戏；一局</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>'Abbāsīyah</td>
+          <td>[地名] 阿巴西耶 ( 埃 )</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>'Abd al Kūrī</td>
+          <td>[地名] 阿卜杜勒库里岛 ( 也门 )</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>'Abd al Mājid</td>
+          <td>[地名] 阿卜杜勒马吉德 ( 苏丹 )</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+2. 下载网页，得到网页内容
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import requests
+
+.. code:: ipython3
+
+    # Pandas官方文档中的一个URL
+    url = "https://pandas.pydata.org/docs/user_guide/indexing.html"
+
+.. code:: ipython3
+
+    html_cont = requests.get(url).text
+
+.. code:: ipython3
+
+    html_cont[:100]
+
+
+
+
+.. parsed-literal::
+
+    '\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml">\n  <head>\n    <meta charset="utf-8" />'
+
+
+
+3. 提取HTML的正文内容
+~~~~~~~~~~~~~~~~~~~~~
+
+即：去除HTML标签，获取正文
+
+.. code:: ipython3
+
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(html_cont)
+    html_text = soup.get_text()
+
+.. code:: ipython3
+
+    html_text[:500]
+
+
+
+
+.. parsed-literal::
+
+    '\n\n\nIndexing and selecting data — pandas 1.0.1 documentation\n\n\n\n\n\n\n\n\n\n\n\n\nMathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\\\(", "\\\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHome\n\n\nWhat\'s New in 1.0.0\n\n\nGetting started\n\n\nUser Guide\n\n\nAPI reference\n\n\nDevelopment\n\n\nRelease Notes\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIO tools (text, CSV, HDF5, â\x80¦)\n\n\nIndexing and selecting data\n\n\nMultiIndex / advanced indexing\n\n\nMerge, join, a'
+
+
+
+4. 英文分词和数据清洗
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 分词
+    import re
+    word_list = re.split("""[ ,.\(\)/\n|\-:=\$\["']""",html_text)
+    word_list[:10]
+
+
+
+
+.. parsed-literal::
+
+    ['', '', '', 'Indexing', 'and', 'selecting', 'data', '—', 'pandas', '1']
+
+
+
+.. code:: ipython3
+
+    # 读取停用词表，从网上复制的，位于当前目录下
+    with open("./datas/stop_words/stop_words.txt") as fin:
+        stop_words=set(fin.read().split("\n"))
+    list(stop_words)[:10]
+
+
+
+
+.. parsed-literal::
+
+    ['',
+     'itself',
+     'showed',
+     'throughout',
+     'pointed',
+     'n',
+     'against',
+     'name',
+     'none',
+     'ran']
+
+
+
+.. code:: ipython3
+
+    # 数据清洗
+    word_list_clean = []
+    for word in word_list:
+        word = str(word).lower().strip()
+        # 过滤掉空词、数字、单个字符的词、停用词
+        if not word or word.isnumeric() or len(word)<=1 or word in stop_words:
+            continue
+        word_list_clean.append(word)
+    word_list_clean[:20]
+
+
+
+
+.. parsed-literal::
+
+    ['indexing',
+     'selecting',
+     'data',
+     'pandas',
+     'documentation',
+     'mathjax',
+     'hub',
+     'config',
+     'tex2jax',
+     'inlinemath',
+     '\\\\',
+     '\\\\',
+     ']]',
+     'processescapes',
+     'true',
+     'ignoreclass',
+     'document',
+     'processclass',
+     'math',
+     'output_area']
+
+
+
+5. 分词结果构造成一个DataFrame
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_words = pd.DataFrame({
+        "word": word_list_clean
+    })
+    df_words.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>indexing</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>selecting</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>data</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>pandas</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>documentation</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_words.shape
+
+
+
+
+.. parsed-literal::
+
+    (4915, 1)
+
+
+
+.. code:: ipython3
+
+    # 统计词频
+    df_words = (
+        df_words
+        .groupby("word")["word"]
+        .agg(count="size")
+        .reset_index()
+        .sort_values(by="count", ascending=False)
+    )
+    df_words.head(10)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>620</th>
+          <td>df</td>
+          <td>161</td>
+        </tr>
+        <tr>
+          <th>659</th>
+          <td>dtype</td>
+          <td>87</td>
+        </tr>
+        <tr>
+          <th>1274</th>
+          <td>true</td>
+          <td>86</td>
+        </tr>
+        <tr>
+          <th>593</th>
+          <td>dataframe</td>
+          <td>80</td>
+        </tr>
+        <tr>
+          <th>1038</th>
+          <td>pd</td>
+          <td>75</td>
+        </tr>
+        <tr>
+          <th>917</th>
+          <td>loc</td>
+          <td>72</td>
+        </tr>
+        <tr>
+          <th>970</th>
+          <td>nan</td>
+          <td>72</td>
+        </tr>
+        <tr>
+          <th>721</th>
+          <td>false</td>
+          <td>58</td>
+        </tr>
+        <tr>
+          <th>914</th>
+          <td>list</td>
+          <td>58</td>
+        </tr>
+        <tr>
+          <th>835</th>
+          <td>indexing</td>
+          <td>53</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+6. 和单词词典实现merge
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge = pd.merge(
+        left = df_dict,
+        right = df_words,
+        left_on = "word",
+        right_on = "word"
+    )
+
+.. code:: ipython3
+
+    df_merge.sample(10)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>translation</th>
+          <th>count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>658</th>
+          <td>team</td>
+          <td>n. 队, 组\nvt. 把马(牛)套在同一辆车上, 把...编成一组\nvi. 驾驶卡车, 协作</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>523</th>
+          <td>providing</td>
+          <td>conj. 以...为条件, 假如</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>394</th>
+          <td>lines</td>
+          <td>n. 台词</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>118</th>
+          <td>columns</td>
+          <td>塔器</td>
+          <td>49</td>
+        </tr>
+        <tr>
+          <th>136</th>
+          <td>conforms</td>
+          <td>v. 遵守( conform的第三人称单数 ); 顺应; 相一致; 相符合</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>529</th>
+          <td>python</td>
+          <td>n. 大蟒, 巨蟒\n[计] Python 程序设计语言；人生苦短，我用 Python</td>
+          <td>26</td>
+        </tr>
+        <tr>
+          <th>185</th>
+          <td>determine</td>
+          <td>v. 决定, 决心</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>285</th>
+          <td>forward</td>
+          <td>a. 向前的, 早的, 迅速的, 在前的, 进步的\nvt. 促进...的生长, 转寄, 运...</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>49</th>
+          <td>arguments</td>
+          <td>n. 参数</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>564</th>
+          <td>reported</td>
+          <td>a. 报告的；据报道的</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_merge.shape
+
+
+
+
+.. parsed-literal::
+
+    (718, 3)
+
+
+
+7. 存入Excel
+~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge.to_excel("./38. batch_chinese_english.xlsx", index=False)
+
+后续升级：
+~~~~~~~~~~
+
+1. 可以提供txt/excel/word/pdf的批量输入，生成单词本；
+2. 可以做成网页、微信小程序的形式，在线访问和使用
+3. 用户可以标记或上传“已经认识的词语”，每次过滤掉

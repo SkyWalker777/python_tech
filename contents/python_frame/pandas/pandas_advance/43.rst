@@ -1,0 +1,729 @@
+Pandas查询数据的简便方法df.query
+--------------------------------
+
+怎样进行复杂组合条件对数据查询： \* 方式1. 使用df[(df[“a”] > 3) &
+(df[“b”]<5)]的方式； \* 方式2. 使用df.query(“a>3 & b<5”)的方式；
+
+方法2的语法更加简洁
+
+性能对比： \* 当数据量小时，方法1更快； \*
+当数据量大时，因为方法2直接用C语言实现，节省方法1临时数组的多次复制，方法2更快；
+
+.. code:: ipython3
+
+    import pandas as pd
+    print(pd.__version__)
+
+
+.. parsed-literal::
+
+    1.0.1
+
+
+0、读取数据
+~~~~~~~~~~~
+
+数据为北京2018年全年天气预报
+
+.. code:: ipython3
+
+    df = pd.read_csv("./datas/beijing_tianqi/beijing_tianqi_2018.csv")
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>2018-01-01</td>
+          <td>3℃</td>
+          <td>-6℃</td>
+          <td>晴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>59</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2018-01-02</td>
+          <td>2℃</td>
+          <td>-5℃</td>
+          <td>阴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>49</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2018-01-03</td>
+          <td>2℃</td>
+          <td>-5℃</td>
+          <td>多云</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>28</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>2018-01-04</td>
+          <td>0℃</td>
+          <td>-8℃</td>
+          <td>阴</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>28</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>2018-01-05</td>
+          <td>3℃</td>
+          <td>-6℃</td>
+          <td>多云~晴</td>
+          <td>西北风</td>
+          <td>1-2级</td>
+          <td>50</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 替换掉温度的后缀℃
+    df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
+    df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
+
+1、使用dataframe条件表达式查询
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+最低温度低于-10度的列表
+^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df[df["yWendu"] < -10].head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>22</th>
+          <td>2018-01-23</td>
+          <td>-4</td>
+          <td>-12</td>
+          <td>晴</td>
+          <td>西北风</td>
+          <td>3-4级</td>
+          <td>31</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>2018-01-24</td>
+          <td>-4</td>
+          <td>-11</td>
+          <td>晴</td>
+          <td>西南风</td>
+          <td>1-2级</td>
+          <td>34</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>2018-01-25</td>
+          <td>-3</td>
+          <td>-11</td>
+          <td>多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>27</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>359</th>
+          <td>2018-12-26</td>
+          <td>-2</td>
+          <td>-11</td>
+          <td>晴~多云</td>
+          <td>东北风</td>
+          <td>2级</td>
+          <td>26</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>360</th>
+          <td>2018-12-27</td>
+          <td>-5</td>
+          <td>-12</td>
+          <td>多云~晴</td>
+          <td>西北风</td>
+          <td>3级</td>
+          <td>48</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+复杂条件查询
+^^^^^^^^^^^^
+
+注意，组合条件用&符号合并，每个条件判断都得带括号
+
+.. code:: ipython3
+
+    ## 查询最高温度小于30度，并且最低温度大于15度，并且是晴天，并且天气为优的数据
+    df[
+        (df["bWendu"]<=30) 
+        & (df["yWendu"]>=15) 
+        & (df["tianqi"]=='晴') 
+        & (df["aqiLevel"]==1)]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>235</th>
+          <td>2018-08-24</td>
+          <td>30</td>
+          <td>20</td>
+          <td>晴</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>40</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>249</th>
+          <td>2018-09-07</td>
+          <td>27</td>
+          <td>16</td>
+          <td>晴</td>
+          <td>西北风</td>
+          <td>3-4级</td>
+          <td>22</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+2、使用df.query可以简化查询
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+形式：DataFrame.query(expr, inplace=False, \**kwargs)
+
+其中expr为要返回boolean结果的字符串表达式
+
+形如： \* df.query(‘a<100’) \* df.query(‘a < b & b <
+c’)，或者df.query(‘(a<b)&(b<c)’)
+
+df.query可支持的表达式语法： \* 逻辑操作符: &, \|, ~ \* 比较操作符: <,
+<=, ==, !=, >=, > \* 单变量操作符: - \* 多变量操作符: +, -, \*, /, %
+
+df.query中可以使用@var的方式传入外部变量
+
+| df.query支持的语法来自NumExpr，地址：
+| https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/index.html
+
+查询最低温度低于-10度的列表
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.query("yWendu < 3").head(3)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>2018-01-01</td>
+          <td>3</td>
+          <td>-6</td>
+          <td>晴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>59</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2018-01-02</td>
+          <td>2</td>
+          <td>-5</td>
+          <td>阴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>49</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2018-01-03</td>
+          <td>2</td>
+          <td>-5</td>
+          <td>多云</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>28</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+查询最高温度小于30度，并且最低温度大于15度，并且是晴天，并且天气为优的数据
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    ## 查询最高温度小于30度，并且最低温度大于15度，并且是晴天，并且天气为优的数据
+    df.query("bWendu<=30 & yWendu>=15 & tianqi=='晴' & aqiLevel==1")
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>235</th>
+          <td>2018-08-24</td>
+          <td>30</td>
+          <td>20</td>
+          <td>晴</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>40</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>249</th>
+          <td>2018-09-07</td>
+          <td>27</td>
+          <td>16</td>
+          <td>晴</td>
+          <td>西北风</td>
+          <td>3-4级</td>
+          <td>22</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+查询温差大于15度的日子
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.query("bWendu-yWendu >= 15").head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>68</th>
+          <td>2018-03-10</td>
+          <td>14</td>
+          <td>-2</td>
+          <td>晴</td>
+          <td>东南风</td>
+          <td>1-2级</td>
+          <td>171</td>
+          <td>中度污染</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>82</th>
+          <td>2018-03-24</td>
+          <td>22</td>
+          <td>5</td>
+          <td>晴</td>
+          <td>西南风</td>
+          <td>1-2级</td>
+          <td>119</td>
+          <td>轻度污染</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>83</th>
+          <td>2018-03-25</td>
+          <td>24</td>
+          <td>7</td>
+          <td>晴</td>
+          <td>南风</td>
+          <td>1-2级</td>
+          <td>78</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>84</th>
+          <td>2018-03-26</td>
+          <td>25</td>
+          <td>7</td>
+          <td>多云</td>
+          <td>西南风</td>
+          <td>1-2级</td>
+          <td>151</td>
+          <td>中度污染</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>85</th>
+          <td>2018-03-27</td>
+          <td>27</td>
+          <td>11</td>
+          <td>晴</td>
+          <td>南风</td>
+          <td>1-2级</td>
+          <td>243</td>
+          <td>重度污染</td>
+          <td>5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+可以使用外部的变量
+^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    # 查询温度在这两个温度之间的数据
+    high_temperature = 15
+    low_temperature = 13
+
+.. code:: ipython3
+
+    df.query("yWendu<=@high_temperature & yWendu>=@low_temperature").head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>107</th>
+          <td>2018-04-18</td>
+          <td>27</td>
+          <td>14</td>
+          <td>多云~晴</td>
+          <td>西南风</td>
+          <td>3-4级</td>
+          <td>147</td>
+          <td>轻度污染</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>108</th>
+          <td>2018-04-19</td>
+          <td>26</td>
+          <td>13</td>
+          <td>多云</td>
+          <td>东南风</td>
+          <td>4-5级</td>
+          <td>170</td>
+          <td>中度污染</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>109</th>
+          <td>2018-04-20</td>
+          <td>28</td>
+          <td>14</td>
+          <td>多云~小雨</td>
+          <td>南风</td>
+          <td>4-5级</td>
+          <td>164</td>
+          <td>中度污染</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>116</th>
+          <td>2018-04-27</td>
+          <td>25</td>
+          <td>13</td>
+          <td>晴</td>
+          <td>西南风</td>
+          <td>3-4级</td>
+          <td>112</td>
+          <td>轻度污染</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <th>119</th>
+          <td>2018-04-30</td>
+          <td>24</td>
+          <td>14</td>
+          <td>多云</td>
+          <td>南风</td>
+          <td>3-4级</td>
+          <td>62</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+

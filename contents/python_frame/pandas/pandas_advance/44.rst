@@ -1,0 +1,202 @@
+Pandas按行遍历DataFrame的3种方法
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+    import collections
+
+.. code:: ipython3
+
+    df = pd.DataFrame(
+        np.random.random(size=(100000, 4)), 
+        columns=list('ABCD')
+    )
+    df.head(3)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>A</th>
+          <th>B</th>
+          <th>C</th>
+          <th>D</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.329292</td>
+          <td>0.975468</td>
+          <td>0.133584</td>
+          <td>0.224582</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.535746</td>
+          <td>0.451585</td>
+          <td>0.713250</td>
+          <td>0.409770</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.735287</td>
+          <td>0.667472</td>
+          <td>0.950622</td>
+          <td>0.245938</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.shape
+
+
+
+
+.. parsed-literal::
+
+    (100000, 4)
+
+
+
+1. df.iterrows()
+~~~~~~~~~~~~~~~~
+
+使用方式
+^^^^^^^^
+
+.. code:: ipython3
+
+    for idx, row in df.iterrows():
+        print(idx, row)
+        print(idx, row["A"], row["B"], row["C"], row["D"])
+        break
+
+
+.. parsed-literal::
+
+    0 A    0.329292
+    B    0.975468
+    C    0.133584
+    D    0.224582
+    Name: 0, dtype: float64
+    0 0.3292915092119043 0.9754683984716609 0.1335841433264423 0.22458227907355865
+
+
+时间耗费
+^^^^^^^^
+
+.. code:: ipython3
+
+    %%time
+    result = collections.defaultdict(int)
+    for idx, row in df.iterrows():
+        result[(row["A"], row["B"])] += row["A"] + row["B"]
+
+
+.. parsed-literal::
+
+    CPU times: user 7.82 s, sys: 35.6 ms, total: 7.85 s
+    Wall time: 7.89 s
+
+
+2. df.itertuples()
+~~~~~~~~~~~~~~~~~~
+
+使用方式
+^^^^^^^^
+
+.. code:: ipython3
+
+    for row in df.itertuples():
+        print(row)
+        print(row.Index, row.A, row.B, row.C, row.D)
+        break
+
+
+.. parsed-literal::
+
+    Pandas(Index=0, A=0.3292915092119043, B=0.9754683984716609, C=0.1335841433264423, D=0.22458227907355865)
+    0 0.3292915092119043 0.9754683984716609 0.1335841433264423 0.22458227907355865
+
+
+时间耗费
+^^^^^^^^
+
+.. code:: ipython3
+
+    %%time
+    result = collections.defaultdict(int)
+    for row in df.itertuples():
+        result[(row.A, row.B)] += row.A + row.B
+
+
+.. parsed-literal::
+
+    CPU times: user 168 ms, sys: 8.35 ms, total: 177 ms
+    Wall time: 178 ms
+
+
+3. for+zip
+~~~~~~~~~~
+
+使用方式
+^^^^^^^^
+
+.. code:: ipython3
+
+    # 既不需要类型检查，也不需要构建namedtuple
+    # 缺点是需要挨个指定变量
+    for A, B in zip(df["A"], df["B"]):
+        print(A, B)
+        break
+
+
+.. parsed-literal::
+
+    0.3292915092119043 0.9754683984716609
+
+
+时间耗费
+^^^^^^^^
+
+.. code:: ipython3
+
+    %%time
+    result = collections.defaultdict(int)
+    for A, B in zip(df["A"], df["B"]):
+        result[(A, B)] += A + B
+
+
+.. parsed-literal::
+
+    CPU times: user 82.2 ms, sys: 7.05 ms, total: 89.2 ms
+    Wall time: 89.9 ms
+
+

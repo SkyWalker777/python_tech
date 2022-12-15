@@ -1,0 +1,1097 @@
+Pandas怎样找出最影响结果的那些特征？
+====================================
+
+| 应用场景：
+| \*
+  机器学习的特征选择，去除无用的特征，可以提升模型效果、降低训练时间等等
+| \* 数据分析领域，找出收入波动的最大因素！！
+
+实例演示：泰坦尼克沉船事件中，最影响生死的因素有哪些？
+------------------------------------------------------
+
+1、导入相关的包
+~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+    
+    # 特征最影响结果的K个特征
+    from sklearn.feature_selection import SelectKBest
+    
+    # 卡方检验，作为SelectKBest的参数
+    from sklearn.feature_selection import chi2
+
+2、导入泰坦尼克号的数据
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df = pd.read_csv("./datas/titanic/titanic_train.csv")
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Braund, Mr. Owen Harris</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>A/5 21171</td>
+          <td>7.2500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Cumings, Mrs. John Bradley (Florence Briggs Th...</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>PC 17599</td>
+          <td>71.2833</td>
+          <td>C85</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>Heikkinen, Miss. Laina</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>STON/O2. 3101282</td>
+          <td>7.9250</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Futrelle, Mrs. Jacques Heath (Lily May Peel)</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>113803</td>
+          <td>53.1000</td>
+          <td>C123</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Allen, Mr. William Henry</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>373450</td>
+          <td>8.0500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df = df[["PassengerId", "Survived", "Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked"]].copy()
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Fare</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>7.2500</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>71.2833</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>7.9250</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>53.1000</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>8.0500</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3、数据清理和转换
+~~~~~~~~~~~~~~~~~
+
+3.1 查看是否有空值列
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.info()
+
+
+.. parsed-literal::
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 891 entries, 0 to 890
+    Data columns (total 9 columns):
+    PassengerId    891 non-null int64
+    Survived       891 non-null int64
+    Pclass         891 non-null int64
+    Sex            891 non-null object
+    Age            714 non-null float64
+    SibSp          891 non-null int64
+    Parch          891 non-null int64
+    Fare           891 non-null float64
+    Embarked       889 non-null object
+    dtypes: float64(2), int64(5), object(2)
+    memory usage: 62.8+ KB
+
+
+3.2 给Age列填充平均值
+^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df["Age"] = df["Age"].fillna(df["Age"].median())
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Fare</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>7.2500</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>71.2833</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>7.9250</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>53.1000</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>8.0500</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3.2 将性别列变成数字
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    # 性别
+    df.Sex.unique()
+
+
+
+
+.. parsed-literal::
+
+    array(['male', 'female'], dtype=object)
+
+
+
+.. code:: ipython3
+
+    df.loc[df["Sex"] == "male", "Sex"] = 0
+    df.loc[df["Sex"] == "female", "Sex"] = 1
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Fare</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>0</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>7.2500</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>71.2833</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>1</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>7.9250</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>53.1000</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>0</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>8.0500</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3.3 给Embarked列填充空值，字符串转换成数字
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    # Embarked
+    df.Embarked.unique()
+
+
+
+
+.. parsed-literal::
+
+    array(['S', 'C', 'Q', nan], dtype=object)
+
+
+
+.. code:: ipython3
+
+    # 填充空值
+    df["Embarked"] = df["Embarked"].fillna(0)
+    
+    # 字符串变成数字
+    df.loc[df["Embarked"] == "S", "Embarked"] = 1
+    df.loc[df["Embarked"] == "C", "Embarked"] = 2
+    df.loc[df["Embarked"] == "Q", "Embarked"] = 3
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Fare</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>0</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>7.2500</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>71.2833</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>1</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>7.9250</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>53.1000</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>0</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>8.0500</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+4、将特征列和结果列拆分开
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    y = df.pop("Survived")
+    X = df
+
+.. code:: ipython3
+
+    X.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Pclass</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Fare</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>3</td>
+          <td>0</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>7.2500</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>71.2833</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>3</td>
+          <td>1</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>7.9250</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>53.1000</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>3</td>
+          <td>0</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>8.0500</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    y.head()
+
+
+
+
+.. parsed-literal::
+
+    0    0
+    1    1
+    2    1
+    3    1
+    4    0
+    Name: Survived, dtype: int64
+
+
+
+5、使用卡方检验选择topK的特征
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 选择所有的特征，目的是看到特征重要性排序
+    bestfeatures = SelectKBest(score_func=chi2, k=len(X.columns))
+    fit = bestfeatures.fit(X, y)
+
+6、按照重要性顺序打印特征列表
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_scores = pd.DataFrame(fit.scores_)
+    df_scores
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>3.312934</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>30.873699</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>170.348127</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>21.649163</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>2.581865</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>10.097499</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>4518.319091</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>2.771019</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_columns = pd.DataFrame(X.columns)
+    df_columns
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>PassengerId</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Pclass</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Sex</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Age</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>SibSp</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Parch</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Fare</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Embarked</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 合并两个df
+    df_feature_scores = pd.concat([df_columns,df_scores],axis=1)
+    # 列名
+    df_feature_scores.columns = ['feature_name','Score']  #naming the dataframe columns
+    
+    # 查看
+    df_feature_scores
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>feature_name</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>PassengerId</td>
+          <td>3.312934</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Pclass</td>
+          <td>30.873699</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Sex</td>
+          <td>170.348127</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Age</td>
+          <td>21.649163</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>SibSp</td>
+          <td>2.581865</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Parch</td>
+          <td>10.097499</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>Fare</td>
+          <td>4518.319091</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Embarked</td>
+          <td>2.771019</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_feature_scores.sort_values(by="Score", ascending=False)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>feature_name</th>
+          <th>Score</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>6</td>
+          <td>Fare</td>
+          <td>4518.319091</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Sex</td>
+          <td>170.348127</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Pclass</td>
+          <td>30.873699</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Age</td>
+          <td>21.649163</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>Parch</td>
+          <td>10.097499</td>
+        </tr>
+        <tr>
+          <td>0</td>
+          <td>PassengerId</td>
+          <td>3.312934</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>Embarked</td>
+          <td>2.771019</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>SibSp</td>
+          <td>2.581865</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+

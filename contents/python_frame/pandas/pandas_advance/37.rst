@@ -1,0 +1,501 @@
+Python使用Pandas将Excel存入MySQL
+--------------------------------
+
+一个典型的数据处理流： 1.
+Pandas从多方数据源读取数据，比如excel、csv、mysql、爬虫等等 2.
+Pandas对数据做过滤、统计分析 3.
+Pandas将数据存储到MySQL，用于Web页面展示、后续的进一步SQL分析等等
+
+| 官网文档：
+| https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html#pandas.DataFrame.to_sql
+
+数据准备：学生信息Excel表
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    df = pd.read_excel("./course_datas/c23_excel_vlookup/学生信息表.xlsx")
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>籍贯</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 展示索引的name
+    df.index.name
+
+.. code:: ipython3
+
+    df.index.name = "id"
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>籍贯</th>
+        </tr>
+        <tr>
+          <th>id</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+创建sqlalchemy对象连接MySQL
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+SQLAlchemy是Python中的ORM框架， Object-Relational
+Mapping，把关系数据库的表结构映射到对象上。
+
+-  官网：https://www.sqlalchemy.org/
+-  如果sqlalchemy包不存在，用这个命令安装：pip install sqlalchemy
+-  需要安装依赖Python库：pip install mysql-connector-python
+
+可以直接执行SQL语句
+
+.. code:: ipython3
+
+    from sqlalchemy import create_engine
+
+.. code:: ipython3
+
+    engine = create_engine("mysql+mysqlconnector://root:123456@127.0.0.1:3306/test", echo=False)
+
+方法1：当数据表不存在时，每次覆盖整个表
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+每次运行会drop table，新建表
+
+.. code:: ipython3
+
+    df.to_sql(name='student', con=engine, if_exists="replace")
+
+.. code:: ipython3
+
+    engine.execute("show create table student").first()[1]
+
+
+
+
+.. parsed-literal::
+
+    'CREATE TABLE `student` (\n  `id` bigint(20) DEFAULT NULL,\n  `学号` text,\n  `姓名` text,\n  `性别` text,\n  `年龄` bigint(20) DEFAULT NULL,\n  `籍贯` text,\n  KEY `ix_student_id` (`id`)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
+
+
+
+.. code:: ipython3
+
+    print(engine.execute("show create table student").first()[1])
+
+
+.. parsed-literal::
+
+    CREATE TABLE `student` (
+      `id` bigint(20) DEFAULT NULL,
+      `学号` text,
+      `姓名` text,
+      `性别` text,
+      `年龄` bigint(20) DEFAULT NULL,
+      `籍贯` text,
+      KEY `ix_student_id` (`id`)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+
+
+.. code:: ipython3
+
+    engine.execute("select count(1) from student").first()
+
+
+
+
+.. parsed-literal::
+
+    (24,)
+
+
+
+.. code:: ipython3
+
+    engine.execute("select * from student limit 5").fetchall()
+
+
+
+
+.. parsed-literal::
+
+    [(0, 'S001', '怠涵', '女', 23, '山东'),
+     (1, 'S002', '婉清', '女', 25, '河南'),
+     (2, 'S003', '溪榕', '女', 23, '湖北'),
+     (3, 'S004', '漠涓', '女', 19, '陕西'),
+     (4, 'S005', '祈博', '女', 24, '山东')]
+
+
+
+方法2：当数据表存在时，每次新增数据
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+场景：每天会新增一部分数据，要添加到数据表，怎么处理？
+
+.. code:: ipython3
+
+    df_new = df.loc[:4, :]
+    df_new
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>籍贯</th>
+        </tr>
+        <tr>
+          <th>id</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_new.to_sql(name='student', con=engine, if_exists="append")
+
+.. code:: ipython3
+
+    engine.execute("SELECT * FROM student where id<5 ").fetchall()
+
+
+
+
+.. parsed-literal::
+
+    [(0, 'S001', '怠涵', '女', 23, '山东'),
+     (1, 'S002', '婉清', '女', 25, '河南'),
+     (2, 'S003', '溪榕', '女', 23, '湖北'),
+     (3, 'S004', '漠涓', '女', 19, '陕西'),
+     (4, 'S005', '祈博', '女', 24, '山东'),
+     (0, 'S001', '怠涵', '女', 23, '山东'),
+     (1, 'S002', '婉清', '女', 25, '河南'),
+     (2, 'S003', '溪榕', '女', 23, '湖北'),
+     (3, 'S004', '漠涓', '女', 19, '陕西'),
+     (4, 'S005', '祈博', '女', 24, '山东')]
+
+
+
+问题解决：先根据数据KEY删除旧数据
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df_new.index
+
+
+
+
+.. parsed-literal::
+
+    RangeIndex(start=0, stop=5, step=1, name='id')
+
+
+
+.. code:: ipython3
+
+    for id in df_new.index:
+        ## 先删除要新增的数据
+        delete_sql = f"delete from student where id={id}"
+        print(delete_sql)
+        engine.execute(delete_sql)
+
+
+.. parsed-literal::
+
+    delete from student where id=0
+    delete from student where id=1
+    delete from student where id=2
+    delete from student where id=3
+    delete from student where id=4
+
+
+.. code:: ipython3
+
+    engine.execute("SELECT * FROM student where id<5 ").fetchall()
+
+
+
+
+.. parsed-literal::
+
+    []
+
+
+
+.. code:: ipython3
+
+    engine.execute("select count(1) from student").first()
+
+
+
+
+.. parsed-literal::
+
+    (19,)
+
+
+
+.. code:: ipython3
+
+    # 新增数据到表中
+    df_new.to_sql(name='student', con=engine, if_exists="append")
+
+.. code:: ipython3
+
+    engine.execute("SELECT * FROM student where id<5 ").fetchall()
+
+
+
+
+.. parsed-literal::
+
+    [(0, 'S001', '怠涵', '女', 23, '山东'),
+     (1, 'S002', '婉清', '女', 25, '河南'),
+     (2, 'S003', '溪榕', '女', 23, '湖北'),
+     (3, 'S004', '漠涓', '女', 19, '陕西'),
+     (4, 'S005', '祈博', '女', 24, '山东')]
+
+
+
+.. code:: ipython3
+
+    engine.execute("SELECT count(1) FROM student").first()
+
+
+
+
+.. parsed-literal::
+
+    (24,)
+
+
+

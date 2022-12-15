@@ -1,0 +1,1742 @@
+Pandas和数据库查询语言SQL的对比
+-------------------------------
+
+-  Pandas：Python最流行的数据处理与数据分析的类库
+-  SQL：结构化查询语言，用于对MySQL、Oracle等关系型数据库的增删改查
+
+两者都是对“表格型”数据的操作和查询，所以很多语法都能对应起来
+
+对比列表： 1. SELECT数据查询 2. WHERE按条件查询 3. in和not in的条件查询
+4. groupby分组统计 5. JOIN数据关联 6. UNION数据合并 7. Order
+Limit先排序后分页 8. 取每个分组group的top n 9. UPDATE数据更新 10.
+DELETE删除数据
+
+0. 读取泰坦尼克数据集
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+
+.. code:: ipython3
+
+    df = pd.read_csv("./datas/titanic/titanic_train.csv")
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Braund, Mr. Owen Harris</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>A/5 21171</td>
+          <td>7.2500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Cumings, Mrs. John Bradley (Florence Briggs Th...</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>PC 17599</td>
+          <td>71.2833</td>
+          <td>C85</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>Heikkinen, Miss. Laina</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>STON/O2. 3101282</td>
+          <td>7.9250</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Futrelle, Mrs. Jacques Heath (Lily May Peel)</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>113803</td>
+          <td>53.1000</td>
+          <td>C123</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Allen, Mr. William Henry</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>373450</td>
+          <td>8.0500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+1. SELECT数据查询
+~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT PassengerId, Sex, Age, Survived
+        FROM titanic
+        LIMIT 5;
+    """
+
+.. code:: ipython3
+
+    # Pandas
+    df[["PassengerId", "Sex", "Age", "Survived"]].head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>Survived</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+df.head(5)类似select \* from table limit 5，查询所有的字段
+
+2. WHERE按条件查询
+~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT *
+        FROM titanic
+        where Sex='male' and Age>=20.0 and Age<=40.0
+        LIMIT 5;
+    """
+
+.. code:: ipython3
+
+    # 使用括号的方式，级联多个条件|
+    condition = (df["Sex"]=="male") & (df["Age"]>=20.0) & (df["Age"]<=40.0)
+    condition.value_counts()
+
+
+
+
+.. parsed-literal::
+
+    False    629
+    True     262
+    dtype: int64
+
+
+
+.. code:: ipython3
+
+    df[condition].head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Braund, Mr. Owen Harris</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>A/5 21171</td>
+          <td>7.250</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Allen, Mr. William Henry</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>373450</td>
+          <td>8.050</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>12</td>
+          <td>13</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Saundercock, Mr. William Henry</td>
+          <td>male</td>
+          <td>20.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>A/5. 2151</td>
+          <td>8.050</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>13</td>
+          <td>14</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Andersson, Mr. Anders Johan</td>
+          <td>male</td>
+          <td>39.0</td>
+          <td>1</td>
+          <td>5</td>
+          <td>347082</td>
+          <td>31.275</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>20</td>
+          <td>21</td>
+          <td>0</td>
+          <td>2</td>
+          <td>Fynney, Mr. Joseph J</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>239865</td>
+          <td>26.000</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3. in和not in的条件查询
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df["Pclass"].unique()
+
+
+
+
+.. parsed-literal::
+
+    array([3, 1, 2], dtype=int64)
+
+
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT *
+        FROM titanic
+        where Pclass in (1,2)
+        LIMIT 5;
+    """
+
+.. code:: ipython3
+
+    # in 
+    df[df["Pclass"].isin((1,2))].head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Cumings, Mrs. John Bradley (Florence Briggs Th...</td>
+          <td>female</td>
+          <td>38.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>PC 17599</td>
+          <td>71.2833</td>
+          <td>C85</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Futrelle, Mrs. Jacques Heath (Lily May Peel)</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>113803</td>
+          <td>53.1000</td>
+          <td>C123</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td>7</td>
+          <td>0</td>
+          <td>1</td>
+          <td>McCarthy, Mr. Timothy J</td>
+          <td>male</td>
+          <td>54.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>17463</td>
+          <td>51.8625</td>
+          <td>E46</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td>10</td>
+          <td>1</td>
+          <td>2</td>
+          <td>Nasser, Mrs. Nicholas (Adele Achem)</td>
+          <td>female</td>
+          <td>14.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>237736</td>
+          <td>30.0708</td>
+          <td>NaN</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>11</td>
+          <td>12</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Bonnell, Miss. Elizabeth</td>
+          <td>female</td>
+          <td>58.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>113783</td>
+          <td>26.5500</td>
+          <td>C103</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # not in 
+    df[~df["Pclass"].isin((1,2))].head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Braund, Mr. Owen Harris</td>
+          <td>male</td>
+          <td>22.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>A/5 21171</td>
+          <td>7.2500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>1</td>
+          <td>3</td>
+          <td>Heikkinen, Miss. Laina</td>
+          <td>female</td>
+          <td>26.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>STON/O2. 3101282</td>
+          <td>7.9250</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Allen, Mr. William Henry</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>373450</td>
+          <td>8.0500</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td>6</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Moran, Mr. James</td>
+          <td>male</td>
+          <td>NaN</td>
+          <td>0</td>
+          <td>0</td>
+          <td>330877</td>
+          <td>8.4583</td>
+          <td>NaN</td>
+          <td>Q</td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td>8</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Palsson, Master. Gosta Leonard</td>
+          <td>male</td>
+          <td>2.0</td>
+          <td>3</td>
+          <td>1</td>
+          <td>349909</td>
+          <td>21.0750</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+4. groupby分组统计
+~~~~~~~~~~~~~~~~~~
+
+4.1 单个列的聚合
+^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT 
+            -- 分性别的存活人数
+            sum(Survived),
+            -- 分性别的平均年龄
+            mean(Age)
+            -- 分性别的平均票价
+            mean(Fare)
+        FROM titanic
+        group by Sex
+    """
+
+.. code:: ipython3
+
+    df.groupby("Sex").agg({"Survived":np.sum, "Age":np.mean, "Fare":np.mean})
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>Survived</th>
+          <th>Age</th>
+          <th>Fare</th>
+        </tr>
+        <tr>
+          <th>Sex</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>female</td>
+          <td>233</td>
+          <td>27.915709</td>
+          <td>44.479818</td>
+        </tr>
+        <tr>
+          <td>male</td>
+          <td>109</td>
+          <td>30.726645</td>
+          <td>25.523893</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+4.2 多个列的聚合
+^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT 
+            -- 不同存活和性别分组的，平均年龄
+            mean(Age)
+            -- 不同存活和性别分组的，平均票价
+            mean(Fare)
+        FROM titanic
+        group by Survived, Sex
+    """
+
+.. code:: ipython3
+
+    df.groupby(["Survived", "Sex"]).agg({"Age":np.mean, "Fare":np.mean})
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>Age</th>
+          <th>Fare</th>
+        </tr>
+        <tr>
+          <th>Survived</th>
+          <th>Sex</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="2" valign="top">0</td>
+          <td>female</td>
+          <td>25.046875</td>
+          <td>23.024385</td>
+        </tr>
+        <tr>
+          <td>male</td>
+          <td>31.618056</td>
+          <td>21.960993</td>
+        </tr>
+        <tr>
+          <td rowspan="2" valign="top">1</td>
+          <td>female</td>
+          <td>28.847716</td>
+          <td>51.938573</td>
+        </tr>
+        <tr>
+          <td>male</td>
+          <td>27.276022</td>
+          <td>40.821484</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+5. JOIN数据关联
+~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 电影评分数据集，评分表
+    df_rating = pd.read_csv("./datas/ml-latest-small/ratings.csv")
+    df_rating.head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>userId</th>
+          <th>movieId</th>
+          <th>rating</th>
+          <th>timestamp</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>1</td>
+          <td>4.0</td>
+          <td>964982703</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>1</td>
+          <td>3</td>
+          <td>4.0</td>
+          <td>964981247</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>1</td>
+          <td>6</td>
+          <td>4.0</td>
+          <td>964982224</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>1</td>
+          <td>47</td>
+          <td>5.0</td>
+          <td>964983815</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>1</td>
+          <td>50</td>
+          <td>5.0</td>
+          <td>964982931</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 电影评分数据集，电影信息表
+    df_movies = pd.read_csv("./datas/ml-latest-small/movies.csv")
+    df_movies.head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>movieId</th>
+          <th>title</th>
+          <th>genres</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2</td>
+          <td>Jumanji (1995)</td>
+          <td>Adventure|Children|Fantasy</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>3</td>
+          <td>Grumpier Old Men (1995)</td>
+          <td>Comedy|Romance</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>4</td>
+          <td>Waiting to Exhale (1995)</td>
+          <td>Comedy|Drama|Romance</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>5</td>
+          <td>Father of the Bride Part II (1995)</td>
+          <td>Comedy</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT *
+        FROM 
+            rating join movies 
+            on(rating.movieId=movies.movieId)
+        limit 5
+    """
+
+.. code:: ipython3
+
+    df_merged = pd.merge(left=df_rating, right=df_movies, on="movieId")
+    df_merged.head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>userId</th>
+          <th>movieId</th>
+          <th>rating</th>
+          <th>timestamp</th>
+          <th>title</th>
+          <th>genres</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>1</td>
+          <td>1</td>
+          <td>4.0</td>
+          <td>964982703</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>5</td>
+          <td>1</td>
+          <td>4.0</td>
+          <td>847434962</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>7</td>
+          <td>1</td>
+          <td>4.5</td>
+          <td>1106635946</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>15</td>
+          <td>1</td>
+          <td>2.5</td>
+          <td>1510577970</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>17</td>
+          <td>1</td>
+          <td>4.5</td>
+          <td>1305696483</td>
+          <td>Toy Story (1995)</td>
+          <td>Adventure|Animation|Children|Comedy|Fantasy</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+6. UNION数据合并
+~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df1 = pd.DataFrame({'city': ['Chicago', 'San Francisco', 'New York City'],
+                        'rank': range(1, 4)}) 
+    df1
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>city</th>
+          <th>rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>Chicago</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>San Francisco</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>New York City</td>
+          <td>3</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df2 = pd.DataFrame({'city': ['Chicago', 'Boston', 'Los Angeles'],
+                        'rank': [1, 4, 5]})
+    df2
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>city</th>
+          <th>rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>Chicago</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Boston</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Los Angeles</td>
+          <td>5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT city, rank
+        FROM df1
+        
+        UNION ALL
+        
+        SELECT city, rank
+        FROM df2;
+    """
+
+.. code:: ipython3
+
+    # pandas
+    pd.concat([df1, df2])
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>city</th>
+          <th>rank</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>Chicago</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>San Francisco</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>New York City</td>
+          <td>3</td>
+        </tr>
+        <tr>
+          <td>0</td>
+          <td>Chicago</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Boston</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Los Angeles</td>
+          <td>5</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+7. Order Limit先排序后分页
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        SELECT *
+        from titanic
+        order by Fare
+        limit 5
+    """
+
+.. code:: ipython3
+
+    df.sort_values("Fare", ascending=False).head(5)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>258</td>
+          <td>259</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Ward, Miss. Anna</td>
+          <td>female</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>PC 17755</td>
+          <td>512.3292</td>
+          <td>NaN</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>737</td>
+          <td>738</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Lesurer, Mr. Gustave J</td>
+          <td>male</td>
+          <td>35.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>PC 17755</td>
+          <td>512.3292</td>
+          <td>B101</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>679</td>
+          <td>680</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Cardeza, Mr. Thomas Drake Martinez</td>
+          <td>male</td>
+          <td>36.0</td>
+          <td>0</td>
+          <td>1</td>
+          <td>PC 17755</td>
+          <td>512.3292</td>
+          <td>B51 B53 B55</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td>88</td>
+          <td>89</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Fortune, Miss. Mabel Helen</td>
+          <td>female</td>
+          <td>23.0</td>
+          <td>3</td>
+          <td>2</td>
+          <td>19950</td>
+          <td>263.0000</td>
+          <td>C23 C25 C27</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>27</td>
+          <td>28</td>
+          <td>0</td>
+          <td>1</td>
+          <td>Fortune, Mr. Charles Alexander</td>
+          <td>male</td>
+          <td>19.0</td>
+          <td>3</td>
+          <td>2</td>
+          <td>19950</td>
+          <td>263.0000</td>
+          <td>C23 C25 C27</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+8. 取每个分组group的top n
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # MYSQL不支持
+    # Oracle有ROW_NUMBER语法
+
+.. code:: ipython3
+
+    # 按（Survived，Sex）分组，取Age的TOP 2
+    df.groupby(["Survived", "Sex"]).apply(
+        lambda df:df.sort_values("Age", ascending=False).head(2))
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+        <tr>
+          <th>Survived</th>
+          <th>Sex</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td rowspan="4" valign="top">0</td>
+          <td rowspan="2" valign="top">female</td>
+          <td>772</td>
+          <td>773</td>
+          <td>0</td>
+          <td>2</td>
+          <td>Mack, Mrs. (Mary)</td>
+          <td>female</td>
+          <td>57.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>S.O./P.P. 3</td>
+          <td>10.5000</td>
+          <td>E77</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>177</td>
+          <td>178</td>
+          <td>0</td>
+          <td>1</td>
+          <td>Isham, Miss. Ann Elizabeth</td>
+          <td>female</td>
+          <td>50.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>PC 17595</td>
+          <td>28.7125</td>
+          <td>C49</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td rowspan="2" valign="top">male</td>
+          <td>851</td>
+          <td>852</td>
+          <td>0</td>
+          <td>3</td>
+          <td>Svensson, Mr. Johan</td>
+          <td>male</td>
+          <td>74.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>347060</td>
+          <td>7.7750</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>493</td>
+          <td>494</td>
+          <td>0</td>
+          <td>1</td>
+          <td>Artagaveytia, Mr. Ramon</td>
+          <td>male</td>
+          <td>71.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>PC 17609</td>
+          <td>49.5042</td>
+          <td>NaN</td>
+          <td>C</td>
+        </tr>
+        <tr>
+          <td rowspan="4" valign="top">1</td>
+          <td rowspan="2" valign="top">female</td>
+          <td>483</td>
+          <td>484</td>
+          <td>1</td>
+          <td>3</td>
+          <td>Turkula, Mrs. (Hedwig)</td>
+          <td>female</td>
+          <td>63.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>4134</td>
+          <td>9.5875</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>275</td>
+          <td>276</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Andrews, Miss. Kornelia Theodosia</td>
+          <td>female</td>
+          <td>63.0</td>
+          <td>1</td>
+          <td>0</td>
+          <td>13502</td>
+          <td>77.9583</td>
+          <td>D7</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td rowspan="2" valign="top">male</td>
+          <td>630</td>
+          <td>631</td>
+          <td>1</td>
+          <td>1</td>
+          <td>Barkworth, Mr. Algernon Henry Wilson</td>
+          <td>male</td>
+          <td>80.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>27042</td>
+          <td>30.0000</td>
+          <td>A23</td>
+          <td>S</td>
+        </tr>
+        <tr>
+          <td>570</td>
+          <td>571</td>
+          <td>1</td>
+          <td>2</td>
+          <td>Harris, Mr. George</td>
+          <td>male</td>
+          <td>62.0</td>
+          <td>0</td>
+          <td>0</td>
+          <td>S.W./PP 752</td>
+          <td>10.5000</td>
+          <td>NaN</td>
+          <td>S</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+9. UPDATE数据更新
+~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df.info()
+
+
+.. parsed-literal::
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 891 entries, 0 to 890
+    Data columns (total 12 columns):
+    PassengerId    891 non-null int64
+    Survived       891 non-null int64
+    Pclass         891 non-null int64
+    Name           891 non-null object
+    Sex            891 non-null object
+    Age            714 non-null float64
+    SibSp          891 non-null int64
+    Parch          891 non-null int64
+    Ticket         891 non-null object
+    Fare           891 non-null float64
+    Cabin          204 non-null object
+    Embarked       889 non-null object
+    dtypes: float64(2), int64(5), object(5)
+    memory usage: 83.7+ KB
+
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        UPDATE titanic
+        set Age=0
+        where Age is null
+    """
+
+.. code:: ipython3
+
+    condition = df["Age"].isna()
+    condition.value_counts()
+
+
+
+
+.. parsed-literal::
+
+    False    714
+    True     177
+    Name: Age, dtype: int64
+
+
+
+.. code:: ipython3
+
+    df[condition] = 0
+
+.. code:: ipython3
+
+    df["Age"].isna().value_counts()
+
+
+
+
+.. parsed-literal::
+
+    False    891
+    Name: Age, dtype: int64
+
+
+
+10. DELETE删除数据
+~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # SQL：
+    sql = """
+        DELETE FROM titanic
+        where Age=0
+    """
+
+.. code:: ipython3
+
+    df_new = df[df["Age"]!=0]
+
+.. code:: ipython3
+
+    df_new[df_new["Age"]==0]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>PassengerId</th>
+          <th>Survived</th>
+          <th>Pclass</th>
+          <th>Name</th>
+          <th>Sex</th>
+          <th>Age</th>
+          <th>SibSp</th>
+          <th>Parch</th>
+          <th>Ticket</th>
+          <th>Fare</th>
+          <th>Cabin</th>
+          <th>Embarked</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+    </div>
+
+
+

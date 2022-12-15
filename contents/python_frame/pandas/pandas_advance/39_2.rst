@@ -1,0 +1,692 @@
+Python自动翻译英语论文PDF
+-------------------------
+
+**涉及技术：** 1. Python读取PDF文本 2.
+pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现英文分词
+
+1. 读取PDF文本内容
+~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    !pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pdfplumber
+
+
+.. parsed-literal::
+
+    Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+    Requirement already satisfied: pdfplumber in d:\anaconda3\lib\site-packages (0.5.16)
+    Requirement already satisfied: chardet in d:\anaconda3\lib\site-packages (from pdfplumber) (3.0.4)
+    Requirement already satisfied: pdfminer.six==20200104 in d:\anaconda3\lib\site-packages (from pdfplumber) (20200104)
+    Requirement already satisfied: pillow>=7.0.0 in d:\anaconda3\lib\site-packages (from pdfplumber) (7.0.0)
+    Requirement already satisfied: unicodecsv>=0.14.1 in d:\anaconda3\lib\site-packages (from pdfplumber) (0.14.1)
+    Requirement already satisfied: six in d:\anaconda3\lib\site-packages (from pdfplumber) (1.14.0)
+    Requirement already satisfied: wand in d:\anaconda3\lib\site-packages (from pdfplumber) (0.5.9)
+    Requirement already satisfied: pycryptodome in d:\anaconda3\lib\site-packages (from pdfplumber) (3.9.7)
+    Requirement already satisfied: sortedcontainers in d:\anaconda3\lib\site-packages (from pdfminer.six==20200104->pdfplumber) (2.1.0)
+
+
+.. code:: ipython3
+
+    import pdfplumber
+    def read_pdf(pdf_fpath):
+        pdf = pdfplumber.open(pdf_fpath)
+        page_conts = []
+        for page in pdf.pages:
+            page_conts.append(page.extract_text())
+        pdf.close()
+        return " ".join(page_conts)
+
+.. code:: ipython3
+
+    pdf_fpath = "D:/tmp/Wide & Deep Learning for Recommender Systems.pdf"
+    pdf_cont = read_pdf(pdf_fpath)
+
+.. code:: ipython3
+
+    print(pdf_cont[:2000])
+
+
+.. parsed-literal::
+
+    Wide & Deep Learning for Recommender Systems
+    Heng-Tze Cheng, Levent Koc, Jeremiah Harmsen, Tal Shaked, Tushar Chandra,
+    Hrishi Aradhye, Glen Anderson, Greg Corrado, Wei Chai, Mustafa Ispir, Rohan Anil,
+    Zakaria Haque, Lichan Hong, Vihan Jain, Xiaobing Liu, Hemal Shah
+    ∗
+    GoogleInc.
+    ABSTRACT
+    have never or rarely occurred in the past. Recommenda-
+    6
+    tions based on memorization are usually more topical and
+    1 Generalized linear models with nonlinear feature transfor-
+    directly relevant to the items on which users have already
+    0 mations are widely used for large-scale regression and clas-
+    performed actions. Compared with memorization, general-
+    2 siﬁcationproblemswithsparseinputs. Memorizationoffea-
+    ization tends to improve the diversity of the recommended
+      tureinteractionsthroughawide setofcross-productfeature
+    n items. Inthispaper,wefocusontheappsrecommendation
+    transformationsareeﬀectiveandinterpretable,whilegener-
+    u problemfortheGooglePlaystore,buttheapproachshould
+    alizationrequiresmorefeatureengineeringeﬀort. Withless
+    J apply to generic recommender systems.
+      featureengineering,deepneuralnetworkscangeneralizebet-
+    4 Formassive-scaleonlinerecommendationandrankingsys-
+    tertounseenfeaturecombinationsthroughlow-dimensional
+    2 temsinanindustrialsetting,generalizedlinearmodelssuch
+    denseembeddingslearnedforthesparsefeatures. However,
+      as logistic regression are widely used because they are sim-
+      deep neural networks with embeddings can over-generalize
+    ] ple,scalableandinterpretable. Themodelsareoftentrained
+    G andrecommendlessrelevantitemswhentheuser-iteminter-
+    onbinarizedsparsefeatureswithone-hotencoding. E.g.,the
+    actions are sparse and high-rank. In this paper, we present
+    L binary feature“user_installed_app=netflix”has value 1
+    Wide & Deep learning—jointly trained wide linear models
+    . if the user installed Netﬂix. Memorization can be achieved
+    s anddeepneuralnetworks—tocombinethebeneﬁtsofmem-
+    c orization and generalization for recommender systems. We eﬀectively using cross-product t
+
+
+2. 读取英语-汉语翻译词典文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 1.
+下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
+2. 解压master.zip，然后解压其中的‪stardict.csv文件
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    # 注意：stardict.csv的地址需要替换成你自己的文件地址
+    df_dict = pd.read_csv("D:/tmp/ECDICT-master/stardict.csv")
+
+
+.. parsed-literal::
+
+    d:\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py:3063: DtypeWarning: Columns (11) have mixed types.Specify dtype option on import or set low_memory=False.
+      interactivity=interactivity, compiler=compiler, result=result)
+
+
+.. code:: ipython3
+
+    df_dict.shape
+
+
+
+
+.. parsed-literal::
+
+    (3402564, 13)
+
+
+
+.. code:: ipython3
+
+    df_dict.sample(10).head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>phonetic</th>
+          <th>definition</th>
+          <th>translation</th>
+          <th>pos</th>
+          <th>collins</th>
+          <th>oxford</th>
+          <th>tag</th>
+          <th>bnc</th>
+          <th>frq</th>
+          <th>exchange</th>
+          <th>detail</th>
+          <th>audio</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>801655</th>
+          <td>design height</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>设计高度</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2739800</th>
+          <td>shibu</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>[网络] 方回春堂；喊吧</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1232187</th>
+          <td>genus Testudo</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>[网络] Testudo属</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0.0</td>
+          <td>0.0</td>
+          <td>s:genus testudoes</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2403094</th>
+          <td>profit-and-loss statements</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>[会计] 损益表</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0:profit-and-loss statement/1:s</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1197174</th>
+          <td>gain limited sensitivity</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>极限增益灵敏度</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 把word、translation之外的列扔掉
+    df_dict = df_dict[["word", "translation"]]
+    df_dict.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>translation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>'a</td>
+          <td>na. 一\nn. 英文字母表的第一字母；【乐】A音\nart. 冠以不定冠词主要表示类别\...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>'A' game</td>
+          <td>[网络] 游戏；一个游戏；一局</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>'Abbāsīyah</td>
+          <td>[地名] 阿巴西耶 ( 埃 )</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>'Abd al Kūrī</td>
+          <td>[地名] 阿卜杜勒库里岛 ( 也门 )</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>'Abd al Mājid</td>
+          <td>[地名] 阿卜杜勒马吉德 ( 苏丹 )</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3. 英文分词和数据清洗
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 分词
+    import re
+    word_list = re.split("""[ ,.\(\)/\n|\-:=\$\["']""", pdf_cont)
+    word_list[:10]
+
+
+
+
+.. parsed-literal::
+
+    ['Wide',
+     '&',
+     'Deep',
+     'Learning',
+     'for',
+     'Recommender',
+     'Systems',
+     'Heng',
+     'Tze',
+     'Cheng']
+
+
+
+.. code:: ipython3
+
+    # 数据清洗
+    word_list_clean = []
+    for word in word_list:
+        word = str(word).lower().strip()
+        # 过滤掉空词、数字、单个字符的词、停用词
+        if not word or word.isnumeric() or len(word)<=1:
+            continue
+        word_list_clean.append(word)
+    word_list_clean[:20]
+
+
+
+
+.. parsed-literal::
+
+    ['wide',
+     'deep',
+     'learning',
+     'for',
+     'recommender',
+     'systems',
+     'heng',
+     'tze',
+     'cheng',
+     'levent',
+     'koc',
+     'jeremiah',
+     'harmsen',
+     'tal',
+     'shaked',
+     'tushar',
+     'chandra',
+     'hrishi',
+     'aradhye',
+     'glen']
+
+
+
+4. 分词结果构造成一个DataFrame
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_words = pd.DataFrame({
+        "word": word_list_clean
+    })
+    df_words.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>wide</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>deep</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>learning</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>for</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>recommender</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_words.shape
+
+
+
+
+.. parsed-literal::
+
+    (2322, 1)
+
+
+
+.. code:: ipython3
+
+    # 统计词频
+    df_words = (
+        df_words
+        .groupby("word")["word"]
+        .agg(count="size")
+        .reset_index()
+        .sort_values(by="count", ascending=False)
+    )
+    df_words.head(10)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>804</th>
+          <td>the</td>
+          <td>128</td>
+        </tr>
+        <tr>
+          <th>57</th>
+          <td>and</td>
+          <td>67</td>
+        </tr>
+        <tr>
+          <th>546</th>
+          <td>of</td>
+          <td>46</td>
+        </tr>
+        <tr>
+          <th>503</th>
+          <td>model</td>
+          <td>41</td>
+        </tr>
+        <tr>
+          <th>939</th>
+          <td>wide</td>
+          <td>36</td>
+        </tr>
+        <tr>
+          <th>374</th>
+          <td>in</td>
+          <td>36</td>
+        </tr>
+        <tr>
+          <th>203</th>
+          <td>deep</td>
+          <td>35</td>
+        </tr>
+        <tr>
+          <th>405</th>
+          <td>is</td>
+          <td>31</td>
+        </tr>
+        <tr>
+          <th>286</th>
+          <td>for</td>
+          <td>30</td>
+        </tr>
+        <tr>
+          <th>845</th>
+          <td>to</td>
+          <td>29</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+5. 和单词词典实现merge
+~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge = pd.merge(
+        left = df_dict,
+        right = df_words,
+        left_on = "word",
+        right_on = "word"
+    )
+
+.. code:: ipython3
+
+    df_merge.sample(10)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>word</th>
+          <th>translation</th>
+          <th>count</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>1</th>
+          <td>account</td>
+          <td>n. 报告, 解释, 估价, 理由, 利润, 算账, 帐目\nvi. 报帐, 解释, 导致,...</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>380</th>
+          <td>prediction</td>
+          <td>n. 预言, 预报\n[化] 预测</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>185</th>
+          <td>generalization</td>
+          <td>n. 一般化, 普遍化, 概括\n[化] 推广; 普适化</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>56</th>
+          <td>burget</td>
+          <td>[人名] 伯吉特</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>372</th>
+          <td>pipeline</td>
+          <td>n. 管道, 传递途径\n[化] 管路; 管线</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>237</th>
+          <td>include</td>
+          <td>vt. 包括, 把...算入, 包住\n[计] DOS内部命令:在CONFIG.SYS文件的...</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>524</th>
+          <td>threads</td>
+          <td>n. 线；相关串连；线程（thread的复数）</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>208</th>
+          <td>heng</td>
+          <td>n. 恒; 珩</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>62</th>
+          <td>capacity</td>
+          <td>n. 容量, 能力, 才能, 资格\n[计] 容量</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>228</th>
+          <td>important</td>
+          <td>a. 重要的, 有地位的, 大量的, 显要的, 自负的\n[计] 要点</td>
+          <td>2</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_merge.shape
+
+
+
+
+.. parsed-literal::
+
+    (607, 3)
+
+
+
+6. 存入Excel
+~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge.to_excel("./39. pdf_chinese_english.xlsx", index=False)
+

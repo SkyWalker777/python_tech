@@ -1,0 +1,1447 @@
+Pandas处理分析网站原始访问日志
+------------------------------
+
+目标：真实项目的实战，探索Pandas的数据处理与分析
+
+| 实例：
+| 数据来源：我自己的wordpress博客http://www.crazyant.net/ 的访问日志
+
+| 实现步骤：
+| 1、读取数据、清理、格式化
+| 2、统计爬虫spider的访问比例，输出柱状图
+| 3、统计http状态码的访问占比，输出饼图
+| 4、统计按小时、按天的PV/UV流量趋势，输出折线图
+
+1、读取数据并清理格式化
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+    
+    pd.set_option('display.max_colwidth', -1)
+    
+    from pyecharts import options as opts
+    from pyecharts.charts import Bar,Pie,Line
+
+.. code:: ipython3
+
+    # 读取整个目录，将所有的文件合并到一个dataframe
+    data_dir = "./datas/crazyant/blog_access_log"
+    
+    df_list = []
+    
+    import os
+    for fname in os.listdir(f"{data_dir}"):
+        df_list.append(pd.read_csv(f"{data_dir}/{fname}", sep=" ", header=None, error_bad_lines=False))
+    
+    df = pd.concat(df_list)
+
+
+.. parsed-literal::
+
+    b'Skipping line 2245: expected 10 fields, saw 16\nSkipping line 2889: expected 10 fields, saw 14\nSkipping line 2890: expected 10 fields, saw 14\nSkipping line 2891: expected 10 fields, saw 13\nSkipping line 2892: expected 10 fields, saw 13\nSkipping line 2900: expected 10 fields, saw 11\nSkipping line 2902: expected 10 fields, saw 11\nSkipping line 3790: expected 10 fields, saw 14\nSkipping line 3791: expected 10 fields, saw 14\nSkipping line 3792: expected 10 fields, saw 13\nSkipping line 3793: expected 10 fields, saw 13\nSkipping line 3833: expected 10 fields, saw 11\nSkipping line 3835: expected 10 fields, saw 11\nSkipping line 9936: expected 10 fields, saw 16\n'
+    b'Skipping line 11748: expected 10 fields, saw 11\nSkipping line 11750: expected 10 fields, saw 11\n'
+
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+          <th>1</th>
+          <th>2</th>
+          <th>3</th>
+          <th>4</th>
+          <th>5</th>
+          <th>6</th>
+          <th>7</th>
+          <th>8</th>
+          <th>9</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[02/Dec/2019:22:40:18</td>
+          <td>+0800]</td>
+          <td>GET /740.html?replytocom=1194 HTTP/1.0</td>
+          <td>200</td>
+          <td>13446</td>
+          <td>-</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[02/Dec/2019:22:40:23</td>
+          <td>+0800]</td>
+          <td>POST /wp-json/wordpress-popular-posts/v1/popular-posts HTTP/1.0</td>
+          <td>201</td>
+          <td>55</td>
+          <td>http://www.crazyant.net/740.html?replytocom=1194</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[02/Dec/2019:22:40:27</td>
+          <td>+0800]</td>
+          <td>GET /576.html HTTP/1.0</td>
+          <td>200</td>
+          <td>13461</td>
+          <td>-</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[02/Dec/2019:22:40:28</td>
+          <td>+0800]</td>
+          <td>GET /?lwfcdw=t9n2d3&amp;oqzohc=m5e7j1&amp;oubyvq=iab6a3&amp;oudmbg=6osqd3 HTTP/1.0</td>
+          <td>200</td>
+          <td>10485</td>
+          <td>-</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>-</td>
+          <td>-</td>
+          <td>[02/Dec/2019:22:40:30</td>
+          <td>+0800]</td>
+          <td>POST /wp-json/wordpress-popular-posts/v1/popular-posts HTTP/1.0</td>
+          <td>201</td>
+          <td>55</td>
+          <td>http://www.crazyant.net/576.html</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df = df[[0, 3, 6, 9]].copy()
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>0</th>
+          <th>3</th>
+          <th>6</th>
+          <th>9</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>[02/Dec/2019:22:40:18</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>[02/Dec/2019:22:40:23</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>[02/Dec/2019:22:40:27</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>[02/Dec/2019:22:40:28</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>[02/Dec/2019:22:40:30</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.columns = ["ip", "stime", "status", "client"]
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ip</th>
+          <th>stime</th>
+          <th>status</th>
+          <th>client</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>[02/Dec/2019:22:40:18</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>[02/Dec/2019:22:40:23</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>[02/Dec/2019:22:40:27</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>[02/Dec/2019:22:40:28</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>[02/Dec/2019:22:40:30</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.dtypes
+
+
+
+
+.. parsed-literal::
+
+    ip        object
+    stime     object
+    status    int64 
+    client    object
+    dtype: object
+
+
+
+2、统计spider的比例
+~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df["is_spider"] = df["client"].str.lower().str.contains("spider")
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ip</th>
+          <th>stime</th>
+          <th>status</th>
+          <th>client</th>
+          <th>is_spider</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>[02/Dec/2019:22:40:18</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>[02/Dec/2019:22:40:23</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>[02/Dec/2019:22:40:27</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>[02/Dec/2019:22:40:28</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>[02/Dec/2019:22:40:30</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_spider = df["is_spider"].value_counts()
+    df_spider
+
+
+
+
+.. parsed-literal::
+
+    False    46641
+    True     3637 
+    Name: is_spider, dtype: int64
+
+
+
+.. code:: ipython3
+
+    bar = (
+            Bar()
+            .add_xaxis([str(x) for x in df_spider.index])
+            .add_yaxis("是否Spider", df_spider.values.tolist())
+            .set_global_opts(title_opts=opts.TitleOpts(title="爬虫访问量占比"))
+    )
+    bar.render_notebook()
+
+
+
+
+.. raw:: html
+
+    <script>
+        require.config({
+            paths: {
+                'echarts':'https://assets.pyecharts.org/assets/echarts.min'
+            }
+        });
+    </script>
+    
+        <div id="c9bd2bcd2d004232b92db8db30eccba0" style="width:900px; height:500px;"></div>
+    
+    
+    <script>
+        require(['echarts'], function(echarts) {
+            var chart_c9bd2bcd2d004232b92db8db30eccba0 = echarts.init(
+                document.getElementById('c9bd2bcd2d004232b92db8db30eccba0'), 'white', {renderer: 'canvas'});
+            var option_c9bd2bcd2d004232b92db8db30eccba0 = {
+        "animation": true,
+        "animationThreshold": 2000,
+        "animationDuration": 1000,
+        "animationEasing": "cubicOut",
+        "animationDelay": 0,
+        "animationDurationUpdate": 300,
+        "animationEasingUpdate": "cubicOut",
+        "animationDelayUpdate": 0,
+        "color": [
+            "#c23531",
+            "#2f4554",
+            "#61a0a8",
+            "#d48265",
+            "#749f83",
+            "#ca8622",
+            "#bda29a",
+            "#6e7074",
+            "#546570",
+            "#c4ccd3",
+            "#f05b72",
+            "#ef5b9c",
+            "#f47920",
+            "#905a3d",
+            "#fab27b",
+            "#2a5caa",
+            "#444693",
+            "#726930",
+            "#b2d235",
+            "#6d8346",
+            "#ac6767",
+            "#1d953f",
+            "#6950a1",
+            "#918597"
+        ],
+        "series": [
+            {
+                "type": "bar",
+                "name": "\u662f\u5426Spider",
+                "data": [
+                    46641,
+                    3637
+                ],
+                "barCategoryGap": "20%",
+                "label": {
+                    "show": true,
+                    "position": "top",
+                    "margin": 8
+                }
+            }
+        ],
+        "legend": [
+            {
+                "data": [
+                    "\u662f\u5426Spider"
+                ],
+                "selected": {
+                    "\u662f\u5426Spider": true
+                },
+                "show": true
+            }
+        ],
+        "tooltip": {
+            "show": true,
+            "trigger": "item",
+            "triggerOn": "mousemove|click",
+            "axisPointer": {
+                "type": "line"
+            },
+            "textStyle": {
+                "fontSize": 14
+            },
+            "borderWidth": 0
+        },
+        "xAxis": [
+            {
+                "show": true,
+                "scale": false,
+                "nameLocation": "end",
+                "nameGap": 15,
+                "gridIndex": 0,
+                "inverse": false,
+                "offset": 0,
+                "splitNumber": 5,
+                "minInterval": 0,
+                "splitLine": {
+                    "show": false,
+                    "lineStyle": {
+                        "width": 1,
+                        "opacity": 1,
+                        "curveness": 0,
+                        "type": "solid"
+                    }
+                },
+                "data": [
+                    "False",
+                    "True"
+                ]
+            }
+        ],
+        "yAxis": [
+            {
+                "show": true,
+                "scale": false,
+                "nameLocation": "end",
+                "nameGap": 15,
+                "gridIndex": 0,
+                "inverse": false,
+                "offset": 0,
+                "splitNumber": 5,
+                "minInterval": 0,
+                "splitLine": {
+                    "show": false,
+                    "lineStyle": {
+                        "width": 1,
+                        "opacity": 1,
+                        "curveness": 0,
+                        "type": "solid"
+                    }
+                }
+            }
+        ],
+        "title": [
+            {
+                "text": "\u722c\u866b\u8bbf\u95ee\u91cf\u5360\u6bd4"
+            }
+        ]
+    };
+            chart_c9bd2bcd2d004232b92db8db30eccba0.setOption(option_c9bd2bcd2d004232b92db8db30eccba0);
+        });
+    </script>
+
+
+
+
+3、访问状态码的数量对比
+~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_status = df.groupby("status").size()
+    df_status
+
+
+
+
+.. parsed-literal::
+
+    status
+    200    41924
+    201    3432 
+    206    70   
+    301    2364 
+    302    23   
+    304    19   
+    400    20   
+    403    92   
+    404    1474 
+    405    12   
+    444    846  
+    500    1    
+    504    1    
+    dtype: int64
+
+
+
+.. code:: ipython3
+
+    list(zip(df_status.index, df_status))
+
+
+
+
+.. parsed-literal::
+
+    [(200, 41924),
+     (201, 3432),
+     (206, 70),
+     (301, 2364),
+     (302, 23),
+     (304, 19),
+     (400, 20),
+     (403, 92),
+     (404, 1474),
+     (405, 12),
+     (444, 846),
+     (500, 1),
+     (504, 1)]
+
+
+
+.. code:: ipython3
+
+    pie = (
+            Pie()
+            .add("状态码比例", list(zip(df_status.index, df_status)))
+            .set_series_opts(label_opts=opts.LabelOpts(formatter="{b}: {c}"))
+        )
+    pie.render_notebook()
+
+
+
+
+.. raw:: html
+
+    <script>
+        require.config({
+            paths: {
+                'echarts':'https://assets.pyecharts.org/assets/echarts.min'
+            }
+        });
+    </script>
+    
+        <div id="4412254edcf447b68e65faab50374114" style="width:900px; height:500px;"></div>
+    
+    
+    <script>
+        require(['echarts'], function(echarts) {
+            var chart_4412254edcf447b68e65faab50374114 = echarts.init(
+                document.getElementById('4412254edcf447b68e65faab50374114'), 'white', {renderer: 'canvas'});
+            var option_4412254edcf447b68e65faab50374114 = {
+        "animation": true,
+        "animationThreshold": 2000,
+        "animationDuration": 1000,
+        "animationEasing": "cubicOut",
+        "animationDelay": 0,
+        "animationDurationUpdate": 300,
+        "animationEasingUpdate": "cubicOut",
+        "animationDelayUpdate": 0,
+        "color": [
+            "#c23531",
+            "#2f4554",
+            "#61a0a8",
+            "#d48265",
+            "#749f83",
+            "#ca8622",
+            "#bda29a",
+            "#6e7074",
+            "#546570",
+            "#c4ccd3",
+            "#f05b72",
+            "#ef5b9c",
+            "#f47920",
+            "#905a3d",
+            "#fab27b",
+            "#2a5caa",
+            "#444693",
+            "#726930",
+            "#b2d235",
+            "#6d8346",
+            "#ac6767",
+            "#1d953f",
+            "#6950a1",
+            "#918597"
+        ],
+        "series": [
+            {
+                "type": "pie",
+                "name": "\u72b6\u6001\u7801\u6bd4\u4f8b",
+                "clockwise": true,
+                "data": [
+                    {
+                        "name": 200,
+                        "value": 41924
+                    },
+                    {
+                        "name": 201,
+                        "value": 3432
+                    },
+                    {
+                        "name": 206,
+                        "value": 70
+                    },
+                    {
+                        "name": 301,
+                        "value": 2364
+                    },
+                    {
+                        "name": 302,
+                        "value": 23
+                    },
+                    {
+                        "name": 304,
+                        "value": 19
+                    },
+                    {
+                        "name": 400,
+                        "value": 20
+                    },
+                    {
+                        "name": 403,
+                        "value": 92
+                    },
+                    {
+                        "name": 404,
+                        "value": 1474
+                    },
+                    {
+                        "name": 405,
+                        "value": 12
+                    },
+                    {
+                        "name": 444,
+                        "value": 846
+                    },
+                    {
+                        "name": 500,
+                        "value": 1
+                    },
+                    {
+                        "name": 504,
+                        "value": 1
+                    }
+                ],
+                "radius": [
+                    "0%",
+                    "75%"
+                ],
+                "center": [
+                    "50%",
+                    "50%"
+                ],
+                "label": {
+                    "show": true,
+                    "position": "top",
+                    "margin": 8,
+                    "formatter": "{b}: {c}"
+                },
+                "rippleEffect": {
+                    "show": true,
+                    "brushType": "stroke",
+                    "scale": 2.5,
+                    "period": 4
+                }
+            }
+        ],
+        "legend": [
+            {
+                "data": [
+                    200,
+                    201,
+                    206,
+                    301,
+                    302,
+                    304,
+                    400,
+                    403,
+                    404,
+                    405,
+                    444,
+                    500,
+                    504
+                ],
+                "selected": {}
+            }
+        ],
+        "tooltip": {
+            "show": true,
+            "trigger": "item",
+            "triggerOn": "mousemove|click",
+            "axisPointer": {
+                "type": "line"
+            },
+            "textStyle": {
+                "fontSize": 14
+            },
+            "borderWidth": 0
+        }
+    };
+            chart_4412254edcf447b68e65faab50374114.setOption(option_4412254edcf447b68e65faab50374114);
+        });
+    </script>
+
+
+
+
+4、实现按小时、按天粒度的流量统计
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ip</th>
+          <th>stime</th>
+          <th>status</th>
+          <th>client</th>
+          <th>is_spider</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>[02/Dec/2019:22:40:18</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>[02/Dec/2019:22:40:23</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>[02/Dec/2019:22:40:27</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>[02/Dec/2019:22:40:28</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>[02/Dec/2019:22:40:30</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df["stime"] = pd.to_datetime(df["stime"].str[1:], format="%d/%b/%Y:%H:%M:%S")
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ip</th>
+          <th>stime</th>
+          <th>status</th>
+          <th>client</th>
+          <th>is_spider</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>106.11.153.226</td>
+          <td>2019-12-02 22:40:18</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>42.156.254.60</td>
+          <td>2019-12-02 22:40:23</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>106.11.159.254</td>
+          <td>2019-12-02 22:40:27</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>106.11.157.254</td>
+          <td>2019-12-02 22:40:28</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>42.156.137.109</td>
+          <td>2019-12-02 22:40:30</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.set_index("stime", inplace=True)
+    df.sort_index(inplace=True)
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ip</th>
+          <th>status</th>
+          <th>client</th>
+          <th>is_spider</th>
+        </tr>
+        <tr>
+          <th>stime</th>
+          <th></th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2019-12-02 22:40:18</td>
+          <td>106.11.153.226</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2019-12-02 22:40:23</td>
+          <td>42.156.254.60</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2019-12-02 22:40:27</td>
+          <td>106.11.159.254</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2019-12-02 22:40:28</td>
+          <td>106.11.157.254</td>
+          <td>200</td>
+          <td>YisouSpider</td>
+          <td>True</td>
+        </tr>
+        <tr>
+          <td>2019-12-02 22:40:30</td>
+          <td>42.156.137.109</td>
+          <td>201</td>
+          <td>Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.81 YisouSpider/5.0 Safari/537.36</td>
+          <td>True</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.index
+
+
+
+
+.. parsed-literal::
+
+    DatetimeIndex(['2019-12-02 22:40:18', '2019-12-02 22:40:23',
+                   '2019-12-02 22:40:27', '2019-12-02 22:40:28',
+                   '2019-12-02 22:40:30', '2019-12-02 22:40:46',
+                   '2019-12-02 22:41:52', '2019-12-02 22:41:52',
+                   '2019-12-02 22:41:55', '2019-12-02 22:42:16',
+                   ...
+                   '2019-12-07 21:30:16', '2019-12-07 21:30:17',
+                   '2019-12-07 21:30:19', '2019-12-07 21:30:20',
+                   '2019-12-07 21:30:21', '2019-12-07 21:30:22',
+                   '2019-12-07 21:30:23', '2019-12-07 21:30:56',
+                   '2019-12-07 21:30:58', '2019-12-07 21:31:02'],
+                  dtype='datetime64[ns]', name='stime', length=50278, freq=None)
+
+
+
+.. code:: ipython3
+
+    # 按小时统计
+    #df_pvuv = df.resample("H")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
+    
+    # 按每6个小时统计
+    #df_pvuv = df.resample("6H")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
+    
+    # 按天统计
+    df_pvuv = df.resample("D")["ip"].agg(pv=np.size, uv=pd.Series.nunique)
+    
+    df_pvuv.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>pv</th>
+          <th>uv</th>
+        </tr>
+        <tr>
+          <th>stime</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2019-12-02</td>
+          <td>288</td>
+          <td>70</td>
+        </tr>
+        <tr>
+          <td>2019-12-03</td>
+          <td>10285</td>
+          <td>1180</td>
+        </tr>
+        <tr>
+          <td>2019-12-04</td>
+          <td>13618</td>
+          <td>1197</td>
+        </tr>
+        <tr>
+          <td>2019-12-05</td>
+          <td>10485</td>
+          <td>1152</td>
+        </tr>
+        <tr>
+          <td>2019-12-06</td>
+          <td>9469</td>
+          <td>1261</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    line = (
+            Line()
+            .add_xaxis(df_pvuv.index.to_list())
+            .add_yaxis("PV", df_pvuv["pv"].to_list())
+            .add_yaxis("UV", df_pvuv["uv"].to_list())
+            .set_global_opts(
+                title_opts=opts.TitleOpts(title="PVUV数据对比"),
+                tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross")
+            )
+        )
+    line.render_notebook()
+
+
+
+
+.. raw:: html
+
+    <script>
+        require.config({
+            paths: {
+                'echarts':'https://assets.pyecharts.org/assets/echarts.min'
+            }
+        });
+    </script>
+    
+        <div id="3375e16f7e3c45e8a7ca57f0310d594a" style="width:900px; height:500px;"></div>
+    
+    
+    <script>
+        require(['echarts'], function(echarts) {
+            var chart_3375e16f7e3c45e8a7ca57f0310d594a = echarts.init(
+                document.getElementById('3375e16f7e3c45e8a7ca57f0310d594a'), 'white', {renderer: 'canvas'});
+            var option_3375e16f7e3c45e8a7ca57f0310d594a = {
+        "animation": true,
+        "animationThreshold": 2000,
+        "animationDuration": 1000,
+        "animationEasing": "cubicOut",
+        "animationDelay": 0,
+        "animationDurationUpdate": 300,
+        "animationEasingUpdate": "cubicOut",
+        "animationDelayUpdate": 0,
+        "color": [
+            "#c23531",
+            "#2f4554",
+            "#61a0a8",
+            "#d48265",
+            "#749f83",
+            "#ca8622",
+            "#bda29a",
+            "#6e7074",
+            "#546570",
+            "#c4ccd3",
+            "#f05b72",
+            "#ef5b9c",
+            "#f47920",
+            "#905a3d",
+            "#fab27b",
+            "#2a5caa",
+            "#444693",
+            "#726930",
+            "#b2d235",
+            "#6d8346",
+            "#ac6767",
+            "#1d953f",
+            "#6950a1",
+            "#918597"
+        ],
+        "series": [
+            {
+                "type": "line",
+                "name": "PV",
+                "connectNulls": false,
+                "symbolSize": 4,
+                "showSymbol": true,
+                "smooth": false,
+                "step": false,
+                "data": [
+                    [
+                        "2019-12-02T00:00:00",
+                        288
+                    ],
+                    [
+                        "2019-12-03T00:00:00",
+                        10285
+                    ],
+                    [
+                        "2019-12-04T00:00:00",
+                        13618
+                    ],
+                    [
+                        "2019-12-05T00:00:00",
+                        10485
+                    ],
+                    [
+                        "2019-12-06T00:00:00",
+                        9469
+                    ],
+                    [
+                        "2019-12-07T00:00:00",
+                        6133
+                    ]
+                ],
+                "hoverAnimation": true,
+                "label": {
+                    "show": true,
+                    "position": "top",
+                    "margin": 8
+                },
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                },
+                "areaStyle": {
+                    "opacity": 0
+                }
+            },
+            {
+                "type": "line",
+                "name": "UV",
+                "connectNulls": false,
+                "symbolSize": 4,
+                "showSymbol": true,
+                "smooth": false,
+                "step": false,
+                "data": [
+                    [
+                        "2019-12-02T00:00:00",
+                        70
+                    ],
+                    [
+                        "2019-12-03T00:00:00",
+                        1180
+                    ],
+                    [
+                        "2019-12-04T00:00:00",
+                        1197
+                    ],
+                    [
+                        "2019-12-05T00:00:00",
+                        1152
+                    ],
+                    [
+                        "2019-12-06T00:00:00",
+                        1261
+                    ],
+                    [
+                        "2019-12-07T00:00:00",
+                        911
+                    ]
+                ],
+                "hoverAnimation": true,
+                "label": {
+                    "show": true,
+                    "position": "top",
+                    "margin": 8
+                },
+                "lineStyle": {
+                    "width": 1,
+                    "opacity": 1,
+                    "curveness": 0,
+                    "type": "solid"
+                },
+                "areaStyle": {
+                    "opacity": 0
+                }
+            }
+        ],
+        "legend": [
+            {
+                "data": [
+                    "PV",
+                    "UV"
+                ],
+                "selected": {
+                    "PV": true,
+                    "UV": true
+                },
+                "show": true
+            }
+        ],
+        "tooltip": {
+            "show": true,
+            "trigger": "axis",
+            "triggerOn": "mousemove|click",
+            "axisPointer": {
+                "type": "cross"
+            },
+            "textStyle": {
+                "fontSize": 14
+            },
+            "borderWidth": 0
+        },
+        "xAxis": [
+            {
+                "show": true,
+                "scale": false,
+                "nameLocation": "end",
+                "nameGap": 15,
+                "gridIndex": 0,
+                "inverse": false,
+                "offset": 0,
+                "splitNumber": 5,
+                "minInterval": 0,
+                "splitLine": {
+                    "show": false,
+                    "lineStyle": {
+                        "width": 1,
+                        "opacity": 1,
+                        "curveness": 0,
+                        "type": "solid"
+                    }
+                },
+                "data": [
+                    "2019-12-02T00:00:00",
+                    "2019-12-03T00:00:00",
+                    "2019-12-04T00:00:00",
+                    "2019-12-05T00:00:00",
+                    "2019-12-06T00:00:00",
+                    "2019-12-07T00:00:00"
+                ]
+            }
+        ],
+        "yAxis": [
+            {
+                "show": true,
+                "scale": false,
+                "nameLocation": "end",
+                "nameGap": 15,
+                "gridIndex": 0,
+                "inverse": false,
+                "offset": 0,
+                "splitNumber": 5,
+                "minInterval": 0,
+                "splitLine": {
+                    "show": false,
+                    "lineStyle": {
+                        "width": 1,
+                        "opacity": 1,
+                        "curveness": 0,
+                        "type": "solid"
+                    }
+                }
+            }
+        ],
+        "title": [
+            {
+                "text": "PVUV\u6570\u636e\u5bf9\u6bd4"
+            }
+        ]
+    };
+            chart_3375e16f7e3c45e8a7ca57f0310d594a.setOption(option_3375e16f7e3c45e8a7ca57f0310d594a);
+        });
+    </script>
+
+
+
+
+

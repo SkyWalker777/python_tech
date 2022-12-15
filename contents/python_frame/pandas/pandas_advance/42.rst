@@ -1,0 +1,267 @@
+Python处理Excel一列变多列
+-------------------------
+
+1. 读取数据
+~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    df = pd.read_excel("./course_datas/c42_split_onecolumn_tomany/学生数据表.xlsx")
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>数据</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵:女:23:山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清:女:25:河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕:女:23:湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓:女:19:陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博:女:24:山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+2. 实现拆分
+~~~~~~~~~~~
+
+.. code:: ipython3
+
+    def split_func(line):
+        line["姓名"], line["性别"], line["年龄"], line["城市"] = line["数据"].split(":")
+        return line
+    
+    df = df.apply(split_func, axis=1)
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>数据</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>城市</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵:女:23:山东</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清:女:25:河南</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕:女:23:湖北</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓:女:19:陕西</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博:女:24:山东</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.drop(["数据"], axis=1, inplace=True)
+
+.. code:: ipython3
+
+    df.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>城市</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3. 输出到结果Excel
+~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df.to_excel("./course_datas/c42_split_onecolumn_tomany/学生数据表_拆分后.xlsx", index=False)
+

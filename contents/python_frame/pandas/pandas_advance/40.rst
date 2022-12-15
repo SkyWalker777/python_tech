@@ -1,0 +1,593 @@
+Pandas怎样实现groupby聚合后字符串列的合并
+-----------------------------------------
+
+需求：
+^^^^^^
+
+计算每个月的最高温度、最低温度、出现的风向列表、出现的空气质量列表
+
+数据输入
+^^^^^^^^
+
+数据输出
+^^^^^^^^
+
+读取数据
+~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    fpath = "./datas/beijing_tianqi/beijing_tianqi_2018.csv"
+    df = pd.read_csv(fpath)
+    df.head(3)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>2018-01-01</td>
+          <td>3℃</td>
+          <td>-6℃</td>
+          <td>晴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>59</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2018-01-02</td>
+          <td>2℃</td>
+          <td>-5℃</td>
+          <td>阴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>49</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2018-01-03</td>
+          <td>2℃</td>
+          <td>-5℃</td>
+          <td>多云</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>28</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+知识：使用df.info()可以查看每列的类型
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.info()
+
+
+.. parsed-literal::
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 365 entries, 0 to 364
+    Data columns (total 9 columns):
+     #   Column     Non-Null Count  Dtype 
+    ---  ------     --------------  ----- 
+     0   ymd        365 non-null    object
+     1   bWendu     365 non-null    object
+     2   yWendu     365 non-null    object
+     3   tianqi     365 non-null    object
+     4   fengxiang  365 non-null    object
+     5   fengli     365 non-null    object
+     6   aqi        365 non-null    int64 
+     7   aqiInfo    365 non-null    object
+     8   aqiLevel   365 non-null    int64 
+    dtypes: int64(2), object(7)
+    memory usage: 25.8+ KB
+
+
+知识：series怎样从str类型变成int
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df["bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
+    df["yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
+    df.head(3)
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>ymd</th>
+          <th>bWendu</th>
+          <th>yWendu</th>
+          <th>tianqi</th>
+          <th>fengxiang</th>
+          <th>fengli</th>
+          <th>aqi</th>
+          <th>aqiInfo</th>
+          <th>aqiLevel</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>2018-01-01</td>
+          <td>3</td>
+          <td>-6</td>
+          <td>晴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>59</td>
+          <td>良</td>
+          <td>2</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2018-01-02</td>
+          <td>2</td>
+          <td>-5</td>
+          <td>阴~多云</td>
+          <td>东北风</td>
+          <td>1-2级</td>
+          <td>49</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2018-01-03</td>
+          <td>2</td>
+          <td>-5</td>
+          <td>多云</td>
+          <td>北风</td>
+          <td>1-2级</td>
+          <td>28</td>
+          <td>优</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+知识：进行日期列解析，可以方便提取月份
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df["ymd"] = pd.to_datetime(df["ymd"])
+
+.. code:: ipython3
+
+    df["ymd"].dt.month
+
+
+
+
+.. parsed-literal::
+
+    0       1
+    1       1
+    2       1
+    3       1
+    4       1
+           ..
+    360    12
+    361    12
+    362    12
+    363    12
+    364    12
+    Name: ymd, Length: 365, dtype: int64
+
+
+
+知识：series可以用Series.unique去重
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df["fengxiang"].unique()
+
+
+
+
+.. parsed-literal::
+
+    array(['东北风', '北风', '西北风', '西南风', '南风', '东南风', '东风', '西风'], dtype=object)
+
+
+
+知识：可以用“,”.join(series)实现数组合并成大字符串
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    ",".join(df["fengxiang"].unique())
+
+
+
+
+.. parsed-literal::
+
+    '东北风,北风,西北风,西南风,南风,东南风,东风,西风'
+
+
+
+方法1
+~~~~~
+
+.. code:: ipython3
+
+    result = (
+        df.groupby(df["ymd"].dt.month)
+          .agg(
+              # 新列名 = (原列名，函数)
+              最高温度=("bWendu", "max"),
+              最低温度=("yWendu", "min"),
+              风向列表=("fengxiang", lambda x : ",".join(x.unique())),
+              空气质量列表=("aqiInfo", lambda x : ",".join(x.unique()))
+          )
+          .reset_index()
+          .rename(columns={"ymd":"月份"})
+    )
+
+.. code:: ipython3
+
+    result
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>月份</th>
+          <th>最高温度</th>
+          <th>最低温度</th>
+          <th>风向列表</th>
+          <th>空气质量列表</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>7</td>
+          <td>-12</td>
+          <td>东北风,北风,西北风,西南风,南风,东南风,东风</td>
+          <td>良,优,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2</td>
+          <td>12</td>
+          <td>-10</td>
+          <td>北风,西南风,南风,西北风,西风,东北风,东风</td>
+          <td>良,优,轻度污染,中度污染,重度污染</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3</td>
+          <td>27</td>
+          <td>-4</td>
+          <td>西南风,北风,东南风,南风,东北风,东风</td>
+          <td>优,良,重度污染,轻度污染,中度污染,严重污染</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>4</td>
+          <td>30</td>
+          <td>1</td>
+          <td>南风,北风,东北风,西南风,西北风,东南风</td>
+          <td>重度污染,良,优,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5</td>
+          <td>35</td>
+          <td>10</td>
+          <td>东北风,北风,西南风,南风,东南风,东风,西风,西北风</td>
+          <td>轻度污染,优,良,中度污染</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>6</td>
+          <td>38</td>
+          <td>17</td>
+          <td>西南风,南风,北风,东风,东南风,东北风</td>
+          <td>良,轻度污染,优,中度污染</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>7</td>
+          <td>37</td>
+          <td>22</td>
+          <td>东南风,西南风,南风,东北风,东风,西风,北风</td>
+          <td>良,轻度污染,优</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>8</td>
+          <td>36</td>
+          <td>20</td>
+          <td>东南风,南风,东风,东北风,北风,西南风</td>
+          <td>良,轻度污染,优</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>9</td>
+          <td>31</td>
+          <td>11</td>
+          <td>南风,北风,西南风,西北风</td>
+          <td>优,良,轻度污染</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>10</td>
+          <td>25</td>
+          <td>1</td>
+          <td>北风,西北风,南风,西风,东北风,西南风</td>
+          <td>优,良,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>11</td>
+          <td>18</td>
+          <td>-4</td>
+          <td>南风,北风,西南风,东南风,西北风,东北风</td>
+          <td>良,轻度污染,重度污染,优,中度污染</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>12</td>
+          <td>10</td>
+          <td>-12</td>
+          <td>东南风,东北风,西北风,西南风</td>
+          <td>中度污染,重度污染,良,优,轻度污染</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+方法2
+~~~~~
+
+.. code:: ipython3
+
+    def agg_func(x):
+        """注意，这个x是每个分组的dataframe"""
+        return pd.Series({
+            "最高温度": x["bWendu"].max(),
+            "最低温度": x["yWendu"].min(),
+            "风向列表": ",".join(x["fengxiang"].unique()),
+            "空气质量列表": ",".join(x["aqiInfo"].unique())
+        })
+    
+    result = df \
+            .groupby(df["ymd"].dt.month) \
+            .apply(agg_func) \
+            .reset_index() \
+            .rename(columns={"ymd":"月份"})
+
+.. code:: ipython3
+
+    result
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>月份</th>
+          <th>最高温度</th>
+          <th>最低温度</th>
+          <th>风向列表</th>
+          <th>空气质量列表</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1</td>
+          <td>7</td>
+          <td>-12</td>
+          <td>东北风,北风,西北风,西南风,南风,东南风,东风</td>
+          <td>良,优,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>2</td>
+          <td>12</td>
+          <td>-10</td>
+          <td>北风,西南风,南风,西北风,西风,东北风,东风</td>
+          <td>良,优,轻度污染,中度污染,重度污染</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>3</td>
+          <td>27</td>
+          <td>-4</td>
+          <td>西南风,北风,东南风,南风,东北风,东风</td>
+          <td>优,良,重度污染,轻度污染,中度污染,严重污染</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>4</td>
+          <td>30</td>
+          <td>1</td>
+          <td>南风,北风,东北风,西南风,西北风,东南风</td>
+          <td>重度污染,良,优,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>5</td>
+          <td>35</td>
+          <td>10</td>
+          <td>东北风,北风,西南风,南风,东南风,东风,西风,西北风</td>
+          <td>轻度污染,优,良,中度污染</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>6</td>
+          <td>38</td>
+          <td>17</td>
+          <td>西南风,南风,北风,东风,东南风,东北风</td>
+          <td>良,轻度污染,优,中度污染</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>7</td>
+          <td>37</td>
+          <td>22</td>
+          <td>东南风,西南风,南风,东北风,东风,西风,北风</td>
+          <td>良,轻度污染,优</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>8</td>
+          <td>36</td>
+          <td>20</td>
+          <td>东南风,南风,东风,东北风,北风,西南风</td>
+          <td>良,轻度污染,优</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>9</td>
+          <td>31</td>
+          <td>11</td>
+          <td>南风,北风,西南风,西北风</td>
+          <td>优,良,轻度污染</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>10</td>
+          <td>25</td>
+          <td>1</td>
+          <td>北风,西北风,南风,西风,东北风,西南风</td>
+          <td>优,良,轻度污染,中度污染</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>11</td>
+          <td>18</td>
+          <td>-4</td>
+          <td>南风,北风,西南风,东南风,西北风,东北风</td>
+          <td>良,轻度污染,重度污染,优,中度污染</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>12</td>
+          <td>10</td>
+          <td>-12</td>
+          <td>东南风,东北风,西北风,西南风</td>
+          <td>中度污染,重度污染,良,优,轻度污染</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+

@@ -1,0 +1,1121 @@
+Pandas实现模糊匹配Merge数据的方法
+---------------------------------
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+    import re
+
+1. 两份数据
+~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 关键词数据
+    df_keyword = pd.DataFrame({
+        "keyid": np.arange(5),
+        "keyword": ["numpy", "pandas", "matplotlib", "sklearn", "tensorflow"]
+    })
+    df_keyword
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>keyid</th>
+          <th>keyword</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0</td>
+          <td>numpy</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>pandas</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2</td>
+          <td>matplotlib</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3</td>
+          <td>sklearn</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>4</td>
+          <td>tensorflow</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 句子数据
+    df_sentence = pd.DataFrame({
+        "senid": np.arange(10, 17),
+        "sentence": [
+            "怎样用Pandas实现数据的Merge？",
+            "Python之Numpy详细教程",
+            "怎样使用Pandas批量拆分与合并Excel文件？",
+            "怎样使用Pandas的map和apply函数？",
+            "深度学习及TensorFlow简介",
+            "Tensorflow和Numpy的关系",
+            "基于sklearn的一些机器学习的代码"
+        ]
+    })
+    df_sentence
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>senid</th>
+          <th>sentence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+方法1：暴力笛卡尔积 + 过滤
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+新增数字完全一样的列
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df_keyword["match"] = 1
+    df_sentence["match"] = 1
+
+.. code:: ipython3
+
+    df_keyword
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>keyid</th>
+          <th>keyword</th>
+          <th>match</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_sentence
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>senid</th>
+          <th>sentence</th>
+          <th>match</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+实现merge
+^^^^^^^^^
+
+结果行数 = A表行数 \* B表行数
+
+.. code:: ipython3
+
+    df_merge = pd.merge(df_keyword, df_sentence)
+    df_merge
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>keyid</th>
+          <th>keyword</th>
+          <th>match</th>
+          <th>senid</th>
+          <th>sentence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>2</td>
+          <td>matplotlib</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+过滤出结果
+^^^^^^^^^^
+
+.. code:: ipython3
+
+    def match_func(row):
+        return re.search(row["keyword"], row["sentence"], re.IGNORECASE) is not None
+    
+    df_merge[df_merge.apply(match_func, axis=1)]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>keyid</th>
+          <th>keyword</th>
+          <th>match</th>
+          <th>senid</th>
+          <th>sentence</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>1</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+方法2：小表变字典做merge最后explode
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+构建要join的key:index的关系
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    key_word_dict = {
+        row.keyword : row.keyid 
+        for row in df_keyword.itertuples()
+    }
+    key_word_dict
+
+
+
+
+.. parsed-literal::
+
+    {'numpy': 0, 'pandas': 1, 'matplotlib': 2, 'sklearn': 3, 'tensorflow': 4}
+
+
+
+大表搜寻小表字典
+^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    def merge_func(row):
+        # 新增一列，表示能匹配的keyids
+        row["keyids"] = [
+            keyid
+            for key_word, keyid in key_word_dict.items()
+            if re.search(key_word, row["sentence"], re.IGNORECASE)
+        ]
+        return row
+    
+    df_merge = df_sentence.apply(merge_func, axis=1)
+
+.. code:: ipython3
+
+    df_merge
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>senid</th>
+          <th>sentence</th>
+          <th>match</th>
+          <th>keyids</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+          <td>1</td>
+          <td>[1]</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+          <td>1</td>
+          <td>[0]</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+          <td>1</td>
+          <td>[1]</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+          <td>1</td>
+          <td>[1]</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+          <td>1</td>
+          <td>[4]</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+          <td>[0, 4]</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+          <td>1</td>
+          <td>[3]</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+展开然后做merge
+^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df_merge.explode("keyids")
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>senid</th>
+          <th>sentence</th>
+          <th>match</th>
+          <th>keyids</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+          <td>1</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+          <td>1</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+          <td>1</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+          <td>4</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+          <td>1</td>
+          <td>3</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_result = pd.merge(
+        left = df_merge.explode("keyids"),
+        right = df_keyword,
+        left_on = "keyids",
+        right_on = "keyid"
+    )
+    df_result
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>senid</th>
+          <th>sentence</th>
+          <th>match_x</th>
+          <th>keyids</th>
+          <th>keyid</th>
+          <th>keyword</th>
+          <th>match_y</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>10</td>
+          <td>怎样用Pandas实现数据的Merge？</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>12</td>
+          <td>怎样使用Pandas批量拆分与合并Excel文件？</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>13</td>
+          <td>怎样使用Pandas的map和apply函数？</td>
+          <td>1</td>
+          <td>1</td>
+          <td>1</td>
+          <td>pandas</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>11</td>
+          <td>Python之Numpy详细教程</td>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+          <td>0</td>
+          <td>0</td>
+          <td>numpy</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>14</td>
+          <td>深度学习及TensorFlow简介</td>
+          <td>1</td>
+          <td>4</td>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>15</td>
+          <td>Tensorflow和Numpy的关系</td>
+          <td>1</td>
+          <td>4</td>
+          <td>4</td>
+          <td>tensorflow</td>
+          <td>1</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>16</td>
+          <td>基于sklearn的一些机器学习的代码</td>
+          <td>1</td>
+          <td>3</td>
+          <td>3</td>
+          <td>sklearn</td>
+          <td>1</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+

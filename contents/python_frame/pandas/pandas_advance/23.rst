@@ -1,0 +1,514 @@
+Pandas怎样实现Excel的vlookup并且在指定列后面输出？
+--------------------------------------------------
+
+| 背景：
+| 1. 有两个excel，他们有相同的一个列；
+| 2. 按照这个列合并成一个大的excel，即vlookup功能，要求：
+| \* 只需要第二个excel的少量的列，比如从40个列中挑选2个列
+| \* 新增的来自第二个excel的列需要放到第一个excel指定的列后面；
+| 3. 将结果输出到一个新的excel;
+
+微信公众号：蚂蚁学Python
+
+步骤1：读取两个数据表
+~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    # 学生成绩表
+    df_grade = pd.read_excel("./course_datas/c23_excel_vlookup/学生成绩表.xlsx") 
+    df_grade.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>班级</th>
+          <th>学号</th>
+          <th>语文成绩</th>
+          <th>数学成绩</th>
+          <th>英语成绩</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>C01</td>
+          <td>S001</td>
+          <td>99</td>
+          <td>84</td>
+          <td>88</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>C01</td>
+          <td>S002</td>
+          <td>66</td>
+          <td>95</td>
+          <td>77</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>C01</td>
+          <td>S003</td>
+          <td>68</td>
+          <td>68</td>
+          <td>61</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>C01</td>
+          <td>S004</td>
+          <td>63</td>
+          <td>66</td>
+          <td>82</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>C01</td>
+          <td>S005</td>
+          <td>72</td>
+          <td>95</td>
+          <td>94</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 学生信息表
+    df_sinfo = pd.read_excel("./course_datas/c23_excel_vlookup/学生信息表.xlsx") 
+    df_sinfo.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>年龄</th>
+          <th>籍贯</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>23</td>
+          <td>山东</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>25</td>
+          <td>河南</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>23</td>
+          <td>湖北</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>19</td>
+          <td>陕西</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>24</td>
+          <td>山东</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+**目标：怎样将第二个“学生信息表”的姓名、性别两列，添加到第一个表“学生成绩表”，并且放在第一个表的“学号”列后面？**
+
+步骤2：实现两个表的关联
+~~~~~~~~~~~~~~~~~~~~~~~
+
+即excel的vloopup功能
+
+.. code:: ipython3
+
+    # 只筛选第二个表的少量的列
+    df_sinfo = df_sinfo[["学号", "姓名", "性别"]]
+    df_sinfo.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df_merge = pd.merge(left=df_grade, right=df_sinfo, left_on="学号", right_on="学号")
+    df_merge.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>班级</th>
+          <th>学号</th>
+          <th>语文成绩</th>
+          <th>数学成绩</th>
+          <th>英语成绩</th>
+          <th>姓名</th>
+          <th>性别</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>C01</td>
+          <td>S001</td>
+          <td>99</td>
+          <td>84</td>
+          <td>88</td>
+          <td>怠涵</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>C01</td>
+          <td>S002</td>
+          <td>66</td>
+          <td>95</td>
+          <td>77</td>
+          <td>婉清</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>C01</td>
+          <td>S003</td>
+          <td>68</td>
+          <td>68</td>
+          <td>61</td>
+          <td>溪榕</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>C01</td>
+          <td>S004</td>
+          <td>63</td>
+          <td>66</td>
+          <td>82</td>
+          <td>漠涓</td>
+          <td>女</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>C01</td>
+          <td>S005</td>
+          <td>72</td>
+          <td>95</td>
+          <td>94</td>
+          <td>祈博</td>
+          <td>女</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+步骤3：调整列的顺序
+~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge.columns
+
+
+
+
+.. parsed-literal::
+
+    Index(['班级', '学号', '语文成绩', '数学成绩', '英语成绩', '姓名', '性别'], dtype='object')
+
+
+
+问题：怎样将’姓名’, ’性别’两列，放到’学号’的后面？
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+接下来需要用Python的语法实现列表的处理
+
+.. code:: ipython3
+
+    # 将columns变成python的列表形式
+    new_columns = df_merge.columns.to_list()
+    new_columns
+
+
+
+
+.. parsed-literal::
+
+    ['班级', '学号', '语文成绩', '数学成绩', '英语成绩', '姓名', '性别']
+
+
+
+.. code:: ipython3
+
+    # 按逆序insert，会将"姓名"，"性别"放到"学号"的后面
+    for name in ["姓名", "性别"][::-1]:
+        new_columns.remove(name)
+        new_columns.insert(new_columns.index("学号")+1, name)
+
+.. code:: ipython3
+
+    new_columns
+
+
+
+
+.. parsed-literal::
+
+    ['班级', '学号', '姓名', '性别', '语文成绩', '数学成绩', '英语成绩']
+
+
+
+.. code:: ipython3
+
+    df_merge = df_merge.reindex(columns=new_columns)
+    df_merge.head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>班级</th>
+          <th>学号</th>
+          <th>姓名</th>
+          <th>性别</th>
+          <th>语文成绩</th>
+          <th>数学成绩</th>
+          <th>英语成绩</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>C01</td>
+          <td>S001</td>
+          <td>怠涵</td>
+          <td>女</td>
+          <td>99</td>
+          <td>84</td>
+          <td>88</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>C01</td>
+          <td>S002</td>
+          <td>婉清</td>
+          <td>女</td>
+          <td>66</td>
+          <td>95</td>
+          <td>77</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>C01</td>
+          <td>S003</td>
+          <td>溪榕</td>
+          <td>女</td>
+          <td>68</td>
+          <td>68</td>
+          <td>61</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>C01</td>
+          <td>S004</td>
+          <td>漠涓</td>
+          <td>女</td>
+          <td>63</td>
+          <td>66</td>
+          <td>82</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>C01</td>
+          <td>S005</td>
+          <td>祈博</td>
+          <td>女</td>
+          <td>72</td>
+          <td>95</td>
+          <td>94</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+步骤4：输出最终的Excel文件
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_merge.to_excel("./course_datas/c23_excel_vlookup/合并后的数据表.xlsx", index=False)
+

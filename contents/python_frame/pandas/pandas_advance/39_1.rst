@@ -1,0 +1,609 @@
+Pandas处理Excel - 复杂多列到多行转换
+------------------------------------
+
+用户需求图片
+^^^^^^^^^^^^
+
+分析：
+^^^^^^
+
+1. 一行变多行，可以用explode实现；
+2. 要使用explode，需要先将多列变成一列；
+3. 注意有的列为空，需要做空值过滤；
+
+1. 读取数据
+~~~~~~~~~~~
+
+.. code:: ipython3
+
+    import pandas as pd
+
+.. code:: ipython3
+
+    file_path = "./course_datas/c39_explode_to_manyrows/读者提供的数据-输入.xlsx"
+    df = pd.read_excel(file_path)
+
+.. code:: ipython3
+
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>Supplier</th>
+          <th>Supplier PN</th>
+          <th>Supplier.1</th>
+          <th>Supplier PN.1</th>
+          <th>Supplier.2</th>
+          <th>Supplier PN.2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA</td>
+          <td>GRM1555C1H101JA01D</td>
+          <td>YAGEO</td>
+          <td>CC0402JRNPO9BN101</td>
+          <td>GRM1555C1H101JA01J</td>
+          <td>Murata Electronics North America</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A6R8CAT2A</td>
+          <td>KEMET</td>
+          <td>C0402C689C5GACTU</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A3R9CAT2A</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+2. 把多列合并到一列
+~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 提取待合并的所有列名，一会可以把它们drop掉
+    merge_names = list(df.loc[:, "Supplier":].columns.values)
+    merge_names
+
+
+
+
+.. parsed-literal::
+
+    ['Supplier',
+     'Supplier PN',
+     'Supplier.1',
+     'Supplier PN.1',
+     'Supplier.2',
+     'Supplier PN.2']
+
+
+
+.. code:: ipython3
+
+    def merge_cols(x):
+        """
+        x是一个行Series，把它们按分隔符合并
+        """
+        # 删除为空的列
+        x = x[x.notna()]
+        # 使用x.values用于合并
+        y = x.values
+        # 合并后的列表，每个元素是"Supplier" + "Supplier PN"对
+        result = []
+        # range的步长为2，目的是每两列做合并
+        for idx in range(0, len(y), 2):
+            # 使用竖线作为"Supplier" + "Supplier PN"之间的分隔符
+            result.append(f"{y[idx]}|{y[idx+1]}")
+        # 将所有两两对，用#分割，返回一个大字符串
+        return "#".join(result)
+    
+    # 添加新列，把待合并的所有列变成一个大字符串
+    df["merge"] = df.loc[:, "Supplier":].apply(merge_cols, axis=1)
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>Supplier</th>
+          <th>Supplier PN</th>
+          <th>Supplier.1</th>
+          <th>Supplier PN.1</th>
+          <th>Supplier.2</th>
+          <th>Supplier PN.2</th>
+          <th>merge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA</td>
+          <td>GRM1555C1H101JA01D</td>
+          <td>YAGEO</td>
+          <td>CC0402JRNPO9BN101</td>
+          <td>GRM1555C1H101JA01J</td>
+          <td>Murata Electronics North America</td>
+          <td>MURATA|GRM1555C1H101JA01D#YAGEO|CC0402JRNPO9BN...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A6R8CAT2A</td>
+          <td>KEMET</td>
+          <td>C0402C689C5GACTU</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>AVX Corporation|04025A6R8CAT2A#KEMET|C0402C689...</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A3R9CAT2A</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>AVX Corporation|04025A3R9CAT2A</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 把不用的列删除掉
+    df.drop(merge_names, axis=1, inplace=True)
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>merge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA|GRM1555C1H101JA01D#YAGEO|CC0402JRNPO9BN...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A6R8CAT2A#KEMET|C0402C689...</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A3R9CAT2A</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3. 使用explode把一列变多行
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 先将merge列变成list的形式
+    df["merge"] = df["merge"].str.split("#")
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>merge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>[MURATA|GRM1555C1H101JA01D, YAGEO|CC0402JRNPO9...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>[AVX Corporation|04025A6R8CAT2A, KEMET|C0402C6...</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>[AVX Corporation|04025A3R9CAT2A]</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 执行explode变成多行
+    df_explode = df.explode("merge")
+    df_explode
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>merge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA|GRM1555C1H101JA01D</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>YAGEO|CC0402JRNPO9BN101</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>GRM1555C1H101JA01J|Murata Electronics North Am...</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A6R8CAT2A</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>KEMET|C0402C689C5GACTU</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A3R9CAT2A</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+4. 将一列还原成结果的多列
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    # 分别从merge中提取两列
+    df_explode["Supplier"]=df_explode["merge"].str.split("|").str[0]
+    df_explode["Supplier PN"]=df_explode["merge"].str.split("|").str[1]
+    df_explode
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>merge</th>
+          <th>Supplier</th>
+          <th>Supplier PN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA|GRM1555C1H101JA01D</td>
+          <td>MURATA</td>
+          <td>GRM1555C1H101JA01D</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>YAGEO|CC0402JRNPO9BN101</td>
+          <td>YAGEO</td>
+          <td>CC0402JRNPO9BN101</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>GRM1555C1H101JA01J|Murata Electronics North Am...</td>
+          <td>GRM1555C1H101JA01J</td>
+          <td>Murata Electronics North America</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A6R8CAT2A</td>
+          <td>AVX Corporation</td>
+          <td>04025A6R8CAT2A</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>KEMET|C0402C689C5GACTU</td>
+          <td>KEMET</td>
+          <td>C0402C689C5GACTU</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation|04025A3R9CAT2A</td>
+          <td>AVX Corporation</td>
+          <td>04025A3R9CAT2A</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    # 把merge列删除掉，得到最终数据
+    df_explode.drop("merge", axis=1, inplace=True)
+    df_explode
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>P/N</th>
+          <th>Description</th>
+          <th>Supplier</th>
+          <th>Supplier PN</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>MURATA</td>
+          <td>GRM1555C1H101JA01D</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>YAGEO</td>
+          <td>CC0402JRNPO9BN101</td>
+        </tr>
+        <tr>
+          <th>0</th>
+          <td>302-462-326</td>
+          <td>CAP CER 0402 100pF 5% 50V</td>
+          <td>GRM1555C1H101JA01J</td>
+          <td>Murata Electronics North America</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A6R8CAT2A</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>302-462-012</td>
+          <td>CAP CER 0402 6.8pF 0.25pF 50V</td>
+          <td>KEMET</td>
+          <td>C0402C689C5GACTU</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>302-462-009</td>
+          <td>CAP CER 0402 3.9pF 0.25pF 50V</td>
+          <td>AVX Corporation</td>
+          <td>04025A3R9CAT2A</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+5. 输出到结果Excel
+~~~~~~~~~~~~~~~~~~
+
+.. code:: ipython3
+
+    df_explode.to_excel("./course_datas/c39_explode_to_manyrows/读者提供的数据-输出.xlsx", index=False)
+
