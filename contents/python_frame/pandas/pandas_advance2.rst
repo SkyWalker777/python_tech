@@ -1060,13 +1060,21 @@ Pandas 的数据转换函数 map、apply、applymap
 Pandas 怎样对每个分组应用 apply 函数?
 **********************************************************************************
 
+* Pandas 的 GroupBy 遵从 split、apply、combine 模式
+
+.. figure:: pandas_image/pandas-split-apply-combine.webp
+   :alt: pandas-split-apply-combine.webp
+
+* 归一化的公式
+
+.. figure:: pandas_image/Normalization-Formula.webp
+   :alt: Normalization-Formula.webp
+
 .. code-block:: python
 
 	## Pandas怎样对每个分组应用apply函数?
 
 	#### 知识：Pandas的GroupBy遵从split、apply、combine模式
-
-	<div style="text-align:left; width:700px;"><img src="./other_files/pandas-split-apply-combine.png" style=""/></div>
 
 	这里的split指的是pandas的groupby，我们自己实现apply函数，apply返回的结果由pandas进行combine得到结果
 
@@ -1084,11 +1092,6 @@ Pandas 怎样对每个分组应用 apply 函数?
 	# * 更容易做数据横向对比，比如价格字段是几百到几千，增幅字段是0到100
 	# * 机器学习模型学的更快性能更好
 
-	# 归一化的公式：
-
-	%%html
-	<div style="text-align:left; width:500px;"><img src="./other_files/Normalization-Formula.jpg" style=""/></div>
-
 	#### 演示：用户对电影评分的归一化
 
 	# 每个用户的评分不同，有的乐观派评分高，有的悲观派评分低，按用户做归一化
@@ -1100,7 +1103,7 @@ Pandas 怎样对每个分组应用 apply 函数?
 	    names="UserID::MovieID::Rating::Timestamp".split("::")
 	)
 	ratings.head()
-	UserID	MovieID	Rating	Timestamp
+		UserID	MovieID	Rating	Timestamp
 	0	1	1193	5	978300760
 	1	1	661	3	978302109
 	2	1	914	3	978301968
@@ -1120,7 +1123,7 @@ Pandas 怎样对每个分组应用 apply 函数?
 
 	ratings = ratings.groupby("UserID").apply(ratings_norm)
 	ratings[ratings["UserID"]==1].head()
-	UserID	MovieID	Rating	Timestamp	Rating_norm
+		UserID	MovieID	Rating	Timestamp	Rating_norm
 	0	1	1193	5	978300760	1.0
 	1	1	661	3	978302109	0.0
 	2	1	914	3	978301968	0.0
@@ -1139,7 +1142,7 @@ Pandas 怎样对每个分组应用 apply 函数?
 	# 新增一列为月份
 	df['month'] = df['ymd'].str[:7]
 	df.head()
-	ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	month
+		ymd	bWendu	yWendu	tianqi	fengxiang	fengli	aqi	aqiInfo	aqiLevel	month
 	0	2018-01-01	3	-6	晴~多云	东北风	1-2级	59	良	2	2018-01
 	1	2018-01-02	2	-5	阴~多云	东北风	1-2级	49	优	1	2018-01
 	2	2018-01-03	2	-5	多云	北风	1-2级	28	优	1	2018-01
