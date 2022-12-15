@@ -1,17 +1,13 @@
 Pandas对缺失值的处理
 --------------------
 
-Pandas使用这些函数处理缺失值： \*
-isnull和notnull：检测是否是空值，可用于df和series \*
-dropna：丢弃、删除缺失值 - axis : 删除行还是列，{0 or ‘index’, 1 or
-‘columns’}, default 0 - how :
-如果等于any则任何值为空都删除，如果等于all则所有值都为空才删除 - inplace
-: 如果为True则修改当前df，否则返回新的df \* fillna：填充空值 -
-value：用于填充的值，可以是单个值，或者字典（key是列名，value是值） -
-method : 等于ffill使用前一个不为空的值填充forword
-fill；等于bfill使用后一个不为空的值填充backword fill - axis :
-按行还是列填充，{0 or ‘index’, 1 or ‘columns’} - inplace :
-如果为True则修改当前df，否则返回新的df
+Pandas使用这些函数处理缺失值： 
+
+  | isnull和notnull：检测是否是空值，可用于df和series \*
+  | dropna：丢弃、删除缺失值 - axis : 删除行还是列，{0 or ‘index’, 1 or ‘columns’}, default 0 - how :如果等于any则任何值为空都删除，如果等于all则所有值都为空才删除 - inplace:如果为True则修改当前df，否则返回新的df \* fillna：填充空值 -
+  | value：用于填充的值，可以是单个值，或者字典（key是列名，value是值） -
+  | method : 等于ffill使用前一个不为空的值填充forword
+  | fill；等于bfill使用后一个不为空的值填充backword fill - axis :按行还是列填充，{0 or ‘index’, 1 or ‘columns’} - inplace :如果为True则修改当前df，否则返回新的df
 
 .. code:: ipython3
 

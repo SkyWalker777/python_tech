@@ -4,7 +4,8 @@ Pandas怎样对每个分组应用apply函数?
 知识：Pandas的GroupBy遵从split、apply、combine模式
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. container::
+.. figure:: image/pandas-split-apply-combine.webp
+   :alt: pandas-split-apply-combine.webp
 
 这里的split指的是pandas的groupby，我们自己实现apply函数，apply返回的结果由pandas进行combine得到结果
 
@@ -17,8 +18,8 @@ GroupBy.apply(function)
 本次实例演示：
 ^^^^^^^^^^^^^^
 
-1. 怎样对数值列按分组的归一化？
-2. 怎样取每个分组的TOPN数据？
+    | 1. 怎样对数值列按分组的归一化？
+    | 2. 怎样取每个分组的TOPN数据？
 
 实例1：怎样对数值列按分组的归一化？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -29,7 +30,8 @@ GroupBy.apply(function)
 
 归一化的公式：
 
-.. container::
+.. figure:: image/Normalization-Formula.webp
+   :alt: Normalization-Formula.webp
 
 演示：用户对电影评分的归一化
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^

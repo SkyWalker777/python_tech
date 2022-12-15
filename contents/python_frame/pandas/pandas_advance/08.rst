@@ -728,7 +728,7 @@ https://pandas.pydata.org/pandas-docs/stable/user_guide/indexing.html#returning-
 
 
 
-| **总之，pandas不允许先筛选子dataframe，再进行修改写入**
-| 要么使用.loc实现一个步骤直接修改源dataframe
-| 要么先复制一个子dataframe再一个步骤执行修改
+    | **总之，pandas不允许先筛选子dataframe，再进行修改写入**
+    | 要么使用.loc实现一个步骤直接修改源dataframe
+    | 要么先复制一个子dataframe再一个步骤执行修改
 

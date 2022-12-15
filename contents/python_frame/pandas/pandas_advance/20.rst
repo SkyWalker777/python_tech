@@ -1,10 +1,13 @@
 Pandas的stack和pivot实现数据透视
 --------------------------------
 
-1. 经过统计得到多维度指标数据
-2. 使用unstack实现数据二维透视
-3. 使用pivot简化透视
-4. stack、unstack、pivot的语法
+.. figure:: image/reshaping_example.webp
+   :alt: reshaping_example.webp
+
+  | 1. 经过统计得到多维度指标数据
+  | 2. 使用unstack实现数据二维透视
+  | 3. 使用pivot简化透视
+  | 4. stack、unstack、pivot的语法
 
 1. 经过统计得到多维度指标数据
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -507,9 +510,6 @@ Pandas的stack和pivot实现数据透视
 
     df_stack.plot()
 
-
-
-
 .. parsed-literal::
 
     <matplotlib.axes._subplots.AxesSubplot at 0x1ba09b0ce48>
@@ -956,16 +956,22 @@ Pandas的stack和pivot实现数据透视
 
 **pivot方法相当于对df使用set_index创建分层索引，然后调用unstack**
 
-4. stack、unstack、pivot的语法
+stack、unstack、pivot的语法
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-stack：DataFrame.stack(level=-1, dropna=True)，将column变成index，类似把横放的书籍变成竖放
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* stack：DataFrame.stack(level=-1, dropna=True)，将column变成index，类似把横放的书籍变成竖放
+
+.. figure:: image/reshaping_stack.webp
+   :alt: reshaping_stack.webp
 
 level=-1代表多层索引的最内层，可以通过==0、1、2指定多层索引的对应层
 
-unstack：DataFrame.unstack(level=-1, fill_value=None)，将index变成column，类似把竖放的书籍变成横放
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+* unstack：DataFrame.unstack(level=-1, fill_value=None)，将index变成column，类似把竖放的书籍变成横放
 
-pivot：DataFrame.pivot(index=None, columns=None, values=None)，指定index、columns、values实现二维透视
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. figure:: image/reshaping_unstack.webp
+   :alt: reshaping_unstack.webp
+
+* pivot：DataFrame.pivot(index=None, columns=None, values=None)，指定index、columns、values实现二维透视
+
+.. figure:: image/reshaping_pivot.webp
+   :alt: reshaping_pivot.webp

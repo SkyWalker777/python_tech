@@ -2,21 +2,26 @@ Pandas字符串处理
 ----------------
 
 | 前面我们已经使用了字符串的处理函数：
-| df[“bWendu”].str.replace(“℃”, "").astype(‘int32’)
+
+    | df[“bWendu”].str.replace(“℃”, "").astype(‘int32’)
 
 | **Pandas的字符串处理：**
-| 1. 使用方法：先获取Series的str属性，然后在属性上调用函数； 2.
-  只能在字符串列上使用，不能数字列上使用； 3.
-  Dataframe上没有str属性和处理方法 4.
-  Series.str并不是Python原生字符串，而是自己的一套方法，不过大部分和原生str很相似；
+
+    | 1. 使用方法：先获取Series的str属性，然后在属性上调用函数； 
+    | 2. 只能在字符串列上使用，不能数字列上使用； 
+    | 3. Dataframe上没有str属性和处理方法 
+    | 4. Series.str并不是Python原生字符串，而是自己的一套方法，不过大部分和原生str很相似；
 
 | **Series.str字符串方法列表参考文档:**
-| https://pandas.pydata.org/pandas-docs/stable/reference/series.html#string-handling
+
+    | https://pandas.pydata.org/pandas-docs/stable/reference/series.html#string-handling
 
 | **本节演示内容：**
-| 1. 获取Series的str属性，然后使用各种字符串处理函数 2.
-  使用str的startswith、contains等bool类Series可以做条件查询 3.
-  需要多次str处理的链式操作 4. 使用正则表达式的处理
+
+    | 1. 获取Series的str属性，然后使用各种字符串处理函数 
+    | 2. 使用str的startswith、contains等bool类Series可以做条件查询 
+    | 3. 需要多次str处理的链式操作 
+    | 4. 使用正则表达式的处理
 
 0、读取北京2018年天气数据
 ~~~~~~~~~~~~~~~~~~~~~~~~~

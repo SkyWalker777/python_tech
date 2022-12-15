@@ -1,10 +1,11 @@
 Pandas的数据转换函数map、apply、applymap
 ----------------------------------------
 
-数据转换函数对比：map、apply、applymap： 1.
-map：只用于Series，实现每个值->值的映射； 2.
-apply：用于Series实现每个值的处理，用于Dataframe实现某个轴的Series的处理；
-3. applymap：只能用于DataFrame，用于处理该DataFrame的每个元素；
+数据转换函数对比：map、apply、applymap： 
+
+    | 1. map：只用于Series，实现每个值->值的映射； 
+    | 2. apply：用于Series实现每个值的处理，用于Dataframe实现某个轴的Series的处理；
+    | 3. applymap：只能用于DataFrame，用于处理该DataFrame的每个元素；
 
 1. map用于Series值的转换
 ~~~~~~~~~~~~~~~~~~~~~~~~

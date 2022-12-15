@@ -1,15 +1,15 @@
 Pandas怎样实现groupby分组统计
 -----------------------------
 
-| 类似SQL：
-| select city,max(temperature) from city_weather group by city;
+| 类似SQL: select city,max(temperature) from city_weather group by city;
 
 groupby：先对数据分组，然后在每个分组上应用聚合函数、转换函数
 
 | 本次演示：
-| 一、分组使用聚合函数做数据统计
-| 二、遍历groupby的结果理解执行流程
-| 三、实例分组探索天气数据
+
+    | 一、分组使用聚合函数做数据统计
+    | 二、遍历groupby的结果理解执行流程
+    | 三、实例分组探索天气数据
 
 .. code:: ipython3
 

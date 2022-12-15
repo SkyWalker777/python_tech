@@ -3,10 +3,10 @@ Pandas怎样新增数据列？
 
 在进行数据分析时，经常需要按照一定条件创建新的数据列，然后进行进一步分析。
 
-1. 直接赋值
-2. df.apply方法
-3. df.assign方法
-4. 按条件选择分组分别赋值 微信公众号：蚂蚁学Python
+    | 1. 直接赋值
+    | 2. df.apply方法
+    | 3. df.assign方法
+    | 4. 按条件选择分组分别赋值 微信公众号：蚂蚁学Python
 
 .. code:: ipython3
 
@@ -23,9 +23,6 @@ Pandas怎样新增数据列？
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -657,8 +654,6 @@ Returns a new object with all original columns in addition to new ones.
 .. code:: ipython3
 
     df["wencha_type"].value_counts()
-
-
 
 
 .. parsed-literal::

@@ -22,19 +22,20 @@ scikit-learn：用于机器学习
 怎样下载安装Pandas
 ~~~~~~~~~~~~~~~~~~
 
-| 1、下载使用Python类库集成安装包：anaconda
-| https://www.anaconda.com
-| 当今最流行的Python数据分析发行版
-| 已经安装了数据分析需要的几乎所有的类库
+	| 1、下载使用Python类库集成安装包：anaconda
+	| https://www.anaconda.com
+	| 当今最流行的Python数据分析发行版
+	| 已经安装了数据分析需要的几乎所有的类库
 
 2、pip install pandas
 
 本课程演示方式
 ~~~~~~~~~~~~~~
 
-1、使用jupyter notebook演示 \*
-jupyter：交互性、探索性的开发神器，适合学习语法、数据分析； \*
-pycharm：大而全的集成开发环境，适合复杂项目的开发；
+1、使用jupyter notebook演示 
+
+	| jupyter：交互性、探索性的开发神器，适合学习语法、数据分析； 
+	| pycharm：大而全的集成开发环境，适合复杂项目的开发；
 
 2、使用真实数据集做演示
 

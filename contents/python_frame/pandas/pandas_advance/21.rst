@@ -3,14 +3,17 @@ Pandas怎样快捷方便的处理日期数据
 
 Pandas日期处理的作用：将2018-01-01、1/1/2018等多种日期格式映射成统一的格式对象，在该对象上提供强大的功能支持
 
-几个概念： 1.
-pd.to_datetime：pandas的一个函数，能将字符串、列表、series变成日期形式
-2. Timestamp：pandas表示日期的对象形式 3.
-DatetimeIndex：pandas表示日期的对象列表形式
+几个概念： 
 
-其中： \* DatetimeIndex是Timestamp的列表形式 \*
-pd.to_datetime对单个日期字符串处理会得到Timestamp \*
-pd.to_datetime对日期字符串列表处理会得到DatetimeIndex
+  | 1. pd.to_datetime：pandas的一个函数，能将字符串、列表、series变成日期形式
+  | 2. Timestamp：pandas表示日期的对象形式 
+  | 3. DatetimeIndex：pandas表示日期的对象列表形式
+
+其中： 
+
+  | DatetimeIndex是Timestamp的列表形式 
+  | pd.to_datetime对单个日期字符串处理会得到Timestamp 
+  | pd.to_datetime对日期字符串列表处理会得到DatetimeIndex
 
 问题：怎样统计每周、每月、每季度的最高温度？
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
