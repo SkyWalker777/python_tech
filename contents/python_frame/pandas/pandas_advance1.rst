@@ -41,10 +41,10 @@ Pandas 高级篇
 	pandas_advance/33
 	pandas_advance/34
 	pandas_advance/35
-	pandas_advance/36
 	pandas_advance/37
 	pandas_advance/38
-	pandas_advance/39
+	pandas_advance/39_1
+	pandas_advance/39_2
 	pandas_advance/40
 	pandas_advance/41
 	pandas_advance/42
