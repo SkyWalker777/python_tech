@@ -1,0 +1,636 @@
+Pandas数据结构
+------------------
+
+1. Series
+2. DataFrame
+3. 从DataFrame中查询出Series
+
+.. code:: ipython3
+
+    import pandas as pd
+    import numpy as np
+
+1. Series
+~~~~~~~~~
+
+Series是一种类似于一维数组的对象，它由一组数据（不同数据类型）以及一组与之相关的数据标签（即索引）组成。
+
+1.1 仅有数据列表即可产生最简单的Series
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    s1 = pd.Series([1,'a',5.2,7])
+
+.. code:: ipython3
+
+    # 左侧为索引，右侧是数据
+    s1
+
+
+
+
+.. parsed-literal::
+
+    0      1
+    1      a
+    2    5.2
+    3      7
+    dtype: object
+
+
+
+.. code:: ipython3
+
+    # 获取索引
+    s1.index
+
+
+
+
+.. parsed-literal::
+
+    RangeIndex(start=0, stop=4, step=1)
+
+
+
+.. code:: ipython3
+
+    # 获取数据
+    s1.values
+
+
+
+
+.. parsed-literal::
+
+    array([1, 'a', 5.2, 7], dtype=object)
+
+
+
+1.2 创建一个具有标签索引的Series
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    s2 = pd.Series([1, 'a', 5.2, 7], index=['d','b','a','c'])
+
+.. code:: ipython3
+
+    s2
+
+
+
+
+.. parsed-literal::
+
+    d      1
+    b      a
+    a    5.2
+    c      7
+    dtype: object
+
+
+
+.. code:: ipython3
+
+    s2.index
+
+
+
+
+.. parsed-literal::
+
+    Index(['d', 'b', 'a', 'c'], dtype='object')
+
+
+
+1.3 使用Python字典创建Series
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    sdata={'Ohio':35000,'Texas':72000,'Oregon':16000,'Utah':5000}
+
+.. code:: ipython3
+
+    s3=pd.Series(sdata)
+
+.. code:: ipython3
+
+    s3
+
+
+
+
+.. parsed-literal::
+
+    Ohio      35000
+    Texas     72000
+    Oregon    16000
+    Utah       5000
+    dtype: int64
+
+
+
+1.4 根据标签索引查询数据
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+类似Python的字典dict
+
+.. code:: ipython3
+
+    s2
+
+
+
+
+.. parsed-literal::
+
+    d      1
+    b      a
+    a    5.2
+    c      7
+    dtype: object
+
+
+
+.. code:: ipython3
+
+    s2['a']
+
+
+
+
+.. parsed-literal::
+
+    5.2
+
+
+
+.. code:: ipython3
+
+    type(s2['a'])
+
+
+
+
+.. parsed-literal::
+
+    float
+
+
+
+.. code:: ipython3
+
+    s2[['b','a']]
+
+
+
+
+.. parsed-literal::
+
+    b      a
+    a    5.2
+    dtype: object
+
+
+
+.. code:: ipython3
+
+    type(s2[['b','a']])
+
+
+
+
+.. parsed-literal::
+
+    pandas.core.series.Series
+
+
+
+2. DataFrame
+~~~~~~~~~~~~
+
+DataFrame是一个表格型的数据结构 \*
+每列可以是不同的值类型（数值、字符串、布尔值等） \*
+既有行索引index,也有列索引columns \* 可以被看做由Series组成的字典
+
+创建dataframe最常用的方法，见02节读取纯文本文件、excel、mysql数据库
+
+2.1 根据多个字典序列创建dataframe
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    data={
+            'state':['Ohio','Ohio','Ohio','Nevada','Nevada'],
+            'year':[2000,2001,2002,2001,2002],
+            'pop':[1.5,1.7,3.6,2.4,2.9]
+        }
+    df = pd.DataFrame(data)
+
+.. code:: ipython3
+
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>state</th>
+          <th>year</th>
+          <th>pop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>Ohio</td>
+          <td>2000</td>
+          <td>1.5</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Ohio</td>
+          <td>2001</td>
+          <td>1.7</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ohio</td>
+          <td>2002</td>
+          <td>3.6</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Nevada</td>
+          <td>2001</td>
+          <td>2.4</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Nevada</td>
+          <td>2002</td>
+          <td>2.9</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    df.dtypes
+
+
+
+
+.. parsed-literal::
+
+    state     object
+    year       int64
+    pop      float64
+    dtype: object
+
+
+
+.. code:: ipython3
+
+    df.columns
+
+
+
+
+.. parsed-literal::
+
+    Index(['state', 'year', 'pop'], dtype='object')
+
+
+
+.. code:: ipython3
+
+    df.index
+
+
+
+
+.. parsed-literal::
+
+    RangeIndex(start=0, stop=5, step=1)
+
+
+
+3. 从DataFrame中查询出Series
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+-  如果只查询一行、一列，返回的是pd.Series
+-  如果查询多行、多列，返回的是pd.DataFrame
+
+.. code:: ipython3
+
+    df
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>state</th>
+          <th>year</th>
+          <th>pop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>Ohio</td>
+          <td>2000</td>
+          <td>1.5</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>Ohio</td>
+          <td>2001</td>
+          <td>1.7</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ohio</td>
+          <td>2002</td>
+          <td>3.6</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Nevada</td>
+          <td>2001</td>
+          <td>2.4</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>Nevada</td>
+          <td>2002</td>
+          <td>2.9</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+3.1 查询一列，结果是一个pd.Series
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df['year']
+
+
+
+
+.. parsed-literal::
+
+    0    2000
+    1    2001
+    2    2002
+    3    2001
+    4    2002
+    Name: year, dtype: int64
+
+
+
+.. code:: ipython3
+
+    type(df['year'])
+
+
+
+
+.. parsed-literal::
+
+    pandas.core.series.Series
+
+
+
+3.2 查询多列，结果是一个pd.DataFrame
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df[['year', 'pop']]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>year</th>
+          <th>pop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>0</td>
+          <td>2000</td>
+          <td>1.5</td>
+        </tr>
+        <tr>
+          <td>1</td>
+          <td>2001</td>
+          <td>1.7</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>2002</td>
+          <td>3.6</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>2001</td>
+          <td>2.4</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td>2002</td>
+          <td>2.9</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    type(df[['year', 'pop']])
+
+
+
+
+.. parsed-literal::
+
+    pandas.core.frame.DataFrame
+
+
+
+3.3 查询一行，结果是一个pd.Series
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.loc[1]
+
+
+
+
+.. parsed-literal::
+
+    state    Ohio
+    year     2001
+    pop       1.7
+    Name: 1, dtype: object
+
+
+
+.. code:: ipython3
+
+    type(df.loc[1])
+
+
+
+
+.. parsed-literal::
+
+    pandas.core.series.Series
+
+
+
+3.4 查询多行，结果是一个pd.DataFrame
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. code:: ipython3
+
+    df.loc[1:3]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>state</th>
+          <th>year</th>
+          <th>pop</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>Ohio</td>
+          <td>2001</td>
+          <td>1.7</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Ohio</td>
+          <td>2002</td>
+          <td>3.6</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>Nevada</td>
+          <td>2001</td>
+          <td>2.4</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
+    type(df.loc[1:3])
+
+
+
+
+.. parsed-literal::
+
+    pandas.core.frame.DataFrame
+
+
+

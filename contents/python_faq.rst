@@ -1,6 +1,34 @@
 Python 问题篇
 ##################################################################################
 
+jupyter notebook 格式转化
+**********************************************************************************
+
+运行nbconvert脚本的命令行语法是：
+
+	| $ jupyter nbconvert --to FORMAT notebook.ipynb
+
+
+将 jupyter 笔记本文件 notebook.ipynb 转换成 FORMAT 字符串给出的输出格式。
+
+当前支持的输出格式：
+
+	| HTML
+	| LaTeX
+	| PDF
+	| Reveal.js HTML 
+	| slideshow
+	| Markdown
+	| Ascii
+	| reStructruredText
+	| executable 
+	| script
+	| notebook
+
+实战案例:
+
+	| jupyter nbconvert --to rst  21.\ Pandas怎样快捷方便的处理日期数据.ipynb
+
 current limit exceeds maximum limit
 **********************************************************************************
 
@@ -75,33 +103,6 @@ num_op函数一共有四个返回值，但是调用的时候只接收三个返�
 	   crossorigin="anonymous"
 	/>
 
-jupter notebook 格式转化
-**********************************************************************************
-
-运行nbconvert脚本的命令行语法是：
-
-	| $ jupyter nbconvert --to FORMAT notebook.ipynb
-
-
-将 jupyter 笔记本文件 notebook.ipynb 转换成 FORMAT 字符串给出的输出格式。
-
-当前支持的输出格式：
-
-	| HTML
-	| LaTeX
-	| PDF
-	| Reveal.js HTML 
-	| slideshow
-	| Markdown
-	| Ascii
-	| reStructruredText
-	| executable 
-	| script
-	| notebook
-
-实战案例:
-
-	| jupyter nbconvert --to rst  21.\ Pandas怎样快捷方便的处理日期数据.ipynb
 
 
 
