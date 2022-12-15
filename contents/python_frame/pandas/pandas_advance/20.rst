@@ -1,13 +1,13 @@
 Pandas的stack和pivot实现数据透视
 --------------------------------
 
-.. figure:: image/reshaping_example.webp
-   :alt: reshaping_example.webp
-
   | 1. 经过统计得到多维度指标数据
   | 2. 使用unstack实现数据二维透视
   | 3. 使用pivot简化透视
   | 4. stack、unstack、pivot的语法
+
+.. figure:: image/reshaping_example.webp
+   :alt: reshaping_example.webp
 
 1. 经过统计得到多维度指标数据
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -35,8 +35,6 @@ Pandas的stack和pivot实现数据透视
 .. code:: ipython3
 
     df.head()
-
-
 
 
 .. raw:: html

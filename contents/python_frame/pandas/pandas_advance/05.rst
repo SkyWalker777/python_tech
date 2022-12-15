@@ -6,7 +6,7 @@ Pandas怎样新增数据列？
     | 1. 直接赋值
     | 2. df.apply方法
     | 3. df.assign方法
-    | 4. 按条件选择分组分别赋值 微信公众号：蚂蚁学Python
+    | 4. 按条件选择分组分别赋值
 
 .. code:: ipython3
 
