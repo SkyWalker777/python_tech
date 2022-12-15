@@ -1378,31 +1378,25 @@ Pandas 的 stack 和 pivot 实现数据透视
 Pandas 怎样快捷方便的处理日期数据
 **********************************************************************************
 
+	| Pandas日期处理的作用：将2018-01-01、1/1/2018等多种日期格式映射成统一的格式对象，在该对象上提供强大的功能支持
+	| 
+	| 几个概念：
+	| 1. pd.to_datetime：pandas的一个函数，能将字符串、列表、series变成日期形式
+	| 2. Timestamp：pandas 表示日期的对象形式
+	| 3. DatetimeIndex：pandas表示日期的对象列表形式
+	| 
+	| 其中：
+	| * DatetimeIndex 是 Timestamp 的列表形式
+	| * pd.to_datetime 对单个日期字符串处理会得到 Timestamp
+	| * pd.to_datetime 对日期字符串列表处理会得到 DatetimeIndex
+
+.. figure:: pandas_image/pandas-todatetime-timestamp-datetimeindex.webp
+   :alt: pandas-todatetime-timestamp-datetimeindex.webp
+
 .. code-block:: python
 
-	Pandas日期处理的作用：将2018-01-01、1/1/2018等多种日期格式映射成统一的格式对象，在该对象上提供强大的功能支持
-
-	几个概念：
-	1. pd.to_datetime：pandas的一个函数，能将字符串、列表、series变成日期形式
-	2. Timestamp：pandas表示日期的对象形式
-	3. DatetimeIndex：pandas表示日期的对象列表形式
-
-	其中：
-	* DatetimeIndex是Timestamp的列表形式
-	* pd.to_datetime对单个日期字符串处理会得到Timestamp
-	* pd.to_datetime对日期字符串列表处理会得到DatetimeIndex
-
-	<img src="./other_files/pandas-todatetime-timestamp-datetimeindex.png" style="margin-left:0px"/>
-
-	#%% md
-
 	### 问题：怎样统计每周、每月、每季度的最高温度？
-
-	#%% md
-
 	### 1、读取天气数据到dataframe
-
-	#%%
 
 	import pandas as pd
 	%matplotlib inline
