@@ -1,26 +1,28 @@
-Pandas查询数据的简便方法df.query
---------------------------------
+Pandas 查询数据的简便方法 df.query
+------------------------------------
 
-怎样进行复杂组合条件对数据查询： \* 方式1. 使用df[(df[“a”] > 3) &
-(df[“b”]<5)]的方式； \* 方式2. 使用df.query(“a>3 & b<5”)的方式；
+怎样进行复杂组合条件对数据查询： 
+
+    | 方式 1. 使用 df[(df[“a”] > 3) & (df[“b”]<5)] 的方式； 
+    | 方式 2. 使用 df.query(“a>3 & b<5”) 的方式；
 
 方法2的语法更加简洁
 
-性能对比： \* 当数据量小时，方法1更快； \*
-当数据量大时，因为方法2直接用C语言实现，节省方法1临时数组的多次复制，方法2更快；
+性能对比： 
+
+    | 当数据量小时，方法 1 更快；
+    | 当数据量大时，因为方法 2 直接用 C 语言实现，节省方法 1 临时数组的多次复制，方法2更快；
 
 .. code:: ipython3
 
     import pandas as pd
     print(pd.__version__)
 
-
 .. parsed-literal::
 
     1.0.1
 
-
-0、读取数据
+读取数据
 ~~~~~~~~~~~
 
 数据为北京2018年全年天气预报
@@ -132,15 +134,13 @@ Pandas查询数据的简便方法df.query
     </table>
     </div>
 
-
-
 .. code:: ipython3
 
     # 替换掉温度的后缀℃
     df.loc[:, "bWendu"] = df["bWendu"].str.replace("℃", "").astype('int32')
     df.loc[:, "yWendu"] = df["yWendu"].str.replace("℃", "").astype('int32')
 
-1、使用dataframe条件表达式查询
+使用 dataframe 条件表达式查询
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 最低温度低于-10度的列表
@@ -330,23 +330,28 @@ Pandas查询数据的简便方法df.query
 
 
 
-2、使用df.query可以简化查询
+使用 df.query 可以简化查询
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 形式：DataFrame.query(expr, inplace=False, \**kwargs)
 
-其中expr为要返回boolean结果的字符串表达式
+其中 expr 为要返回 boolean 结果的字符串表达式
 
-形如： \* df.query(‘a<100’) \* df.query(‘a < b & b <
-c’)，或者df.query(‘(a<b)&(b<c)’)
+形如： 
 
-df.query可支持的表达式语法： \* 逻辑操作符: &, \|, ~ \* 比较操作符: <,
-<=, ==, !=, >=, > \* 单变量操作符: - \* 多变量操作符: +, -, \*, /, %
+    | df.query(‘a<100’) 
+    | df.query(‘a < b & b < c’)
+    | df.query(‘(a<b)&(b<c)’)
+
+df.query可支持的表达式语法： 
+
+    | 逻辑操作符: &, \|, ~ \* 比较操作符: <, <=, ==, !=, >=, >
+    | 单变量操作符: - \* 多变量操作符: +, -, \*, /, %
 
 df.query中可以使用@var的方式传入外部变量
 
-| df.query支持的语法来自NumExpr，地址：
-| https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/index.html
+    | df.query支持的语法来自NumExpr，地址：
+    | https://numexpr.readthedocs.io/projects/NumExpr3/en/latest/index.html
 
 查询最低温度低于-10度的列表
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -354,9 +359,6 @@ df.query中可以使用@var的方式传入外部变量
 .. code:: ipython3
 
     df.query("yWendu < 3").head(3)
-
-
-
 
 .. raw:: html
 
@@ -441,8 +443,6 @@ df.query中可以使用@var的方式传入外部变量
     df.query("bWendu<=30 & yWendu>=15 & tianqi=='晴' & aqiLevel==1")
 
 
-
-
 .. raw:: html
 
     <div>
@@ -503,17 +503,12 @@ df.query中可以使用@var的方式传入外部变量
     </table>
     </div>
 
-
-
 查询温差大于15度的日子
 ^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
     df.query("bWendu-yWendu >= 15").head()
-
-
-
 
 .. raw:: html
 
@@ -625,9 +620,6 @@ df.query中可以使用@var的方式传入外部变量
 .. code:: ipython3
 
     df.query("yWendu<=@high_temperature & yWendu>=@low_temperature").head()
-
-
-
 
 .. raw:: html
 

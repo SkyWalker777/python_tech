@@ -1,22 +1,30 @@
 Python批量翻译英语单词
 ----------------------
 
-| **用途：**
-| 对批量的英语文本，生成英语-汉语翻译的单词本，提供Excel下载
+| **用途：** 
 
-**本代码实现：** 1. 提供一个英文文章URL，自动下载网页； 2.
-实现网页中所有英语单词的翻译； 3. 下载翻译结果的Excel
+    | 对批量的英语文本，生成英语-汉语翻译的单词本，提供Excel下载
 
-**涉及技术：** 1. pandas的读取csv、多数据merge、输出Excel 2.
-requests库下载HTML网页 3. BeautifulSoup解析HTML网页 4.
-Python正则表达式实现英文分词
+**本代码实现：** 
 
-1. 读取英语-汉语翻译词典文件
+    | 1. 提供一个英文文章URL，自动下载网页； 
+    | 2. 实现网页中所有英语单词的翻译； 
+    | 3. 下载翻译结果的Excel
+
+**涉及技术：** 
+
+    | 1. pandas的读取csv、多数据merge、输出Excel 
+    | 2. requests库下载HTML网页 
+    | 3. BeautifulSoup解析HTML网页 
+    | 4. Python正则表达式实现英文分词
+
+读取英语-汉语翻译词典文件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 1.
-下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
-2. 解压master.zip，然后解压其中的‪stardict.csv文件
+词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 
+
+    | 1. 下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
+    | 2. 解压 master.zip，然后解压其中的 stardict.csv 文件
 
 .. code:: ipython3
 
@@ -239,9 +247,7 @@ Python正则表达式实现英文分词
     </table>
     </div>
 
-
-
-2. 下载网页，得到网页内容
+下载网页，得到网页内容
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -268,9 +274,7 @@ Python正则表达式实现英文分词
 
     '\n\n<!DOCTYPE html>\n\n<html xmlns="http://www.w3.org/1999/xhtml">\n  <head>\n    <meta charset="utf-8" />'
 
-
-
-3. 提取HTML的正文内容
+提取 HTML 的正文内容
 ~~~~~~~~~~~~~~~~~~~~~
 
 即：去除HTML标签，获取正文
@@ -293,8 +297,7 @@ Python正则表达式实现英文分词
     '\n\n\nIndexing and selecting data — pandas 1.0.1 documentation\n\n\n\n\n\n\n\n\n\n\n\n\nMathJax.Hub.Config({"tex2jax": {"inlineMath": [["$", "$"], ["\\\\(", "\\\\)"]], "processEscapes": true, "ignoreClass": "document", "processClass": "math|output_area"}})\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nHome\n\n\nWhat\'s New in 1.0.0\n\n\nGetting started\n\n\nUser Guide\n\n\nAPI reference\n\n\nDevelopment\n\n\nRelease Notes\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nIO tools (text, CSV, HDF5, â\x80¦)\n\n\nIndexing and selecting data\n\n\nMultiIndex / advanced indexing\n\n\nMerge, join, a'
 
 
-
-4. 英文分词和数据清洗
+英文分词和数据清洗
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -377,8 +380,7 @@ Python正则表达式实现英文分词
      'output_area']
 
 
-
-5. 分词结果构造成一个DataFrame
+分词结果构造成一个 DataFrame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -548,9 +550,7 @@ Python正则表达式实现英文分词
     </table>
     </div>
 
-
-
-6. 和单词词典实现merge
+和单词词典实现 merge
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -672,9 +672,7 @@ Python正则表达式实现英文分词
 
     (718, 3)
 
-
-
-7. 存入Excel
+存入Excel
 ~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -684,6 +682,6 @@ Python正则表达式实现英文分词
 后续升级：
 ~~~~~~~~~~
 
-1. 可以提供txt/excel/word/pdf的批量输入，生成单词本；
-2. 可以做成网页、微信小程序的形式，在线访问和使用
-3. 用户可以标记或上传“已经认识的词语”，每次过滤掉
+    | 1. 可以提供txt/excel/word/pdf的批量输入，生成单词本；
+    | 2. 可以做成网页、微信小程序的形式，在线访问和使用
+    | 3. 用户可以标记或上传“已经认识的词语”，每次过滤掉

@@ -1,16 +1,18 @@
-Python自动翻译英语论文PDF
--------------------------
+Python 自动翻译英语论文 PDF
+----------------------------
 
-**涉及技术：** 1. Python读取PDF文本 2.
-pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现英文分词
+**涉及技术：** 
 
-1. 读取PDF文本内容
+    | 1. Python 读取 PDF 文本 
+    | 2. pandas 的读取 csv、多数据 merge、输出 Excel 
+    | 3. Python 正则表达式实现英文分词
+
+读取 PDF 文本内容
 ~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     !pip install -i https://pypi.tuna.tsinghua.edu.cn/simple pdfplumber
-
 
 .. parsed-literal::
 
@@ -89,12 +91,13 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
     c orization and generalization for recommender systems. We eﬀectively using cross-product t
 
 
-2. 读取英语-汉语翻译词典文件
+读取英语-汉语翻译词典文件
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 1.
-下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
-2. 解压master.zip，然后解压其中的‪stardict.csv文件
+词典文件来自：https://github.com/skywind3000/ECDICT 使用步骤： 
+
+    | 1. 下载代码打包：https://github.com/skywind3000/ECDICT/archive/master.zip
+    | 2. 解压master.zip，然后解压其中的 stardict.csv文件
 
 .. code:: ipython3
 
@@ -110,7 +113,6 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
 
     d:\Anaconda3\lib\site-packages\IPython\core\interactiveshell.py:3063: DtypeWarning: Columns (11) have mixed types.Specify dtype option on import or set low_memory=False.
       interactivity=interactivity, compiler=compiler, result=result)
-
 
 .. code:: ipython3
 
@@ -317,9 +319,7 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
     </table>
     </div>
 
-
-
-3. 英文分词和数据清洗
+英文分词和数据清洗
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -385,9 +385,7 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
      'aradhye',
      'glen']
 
-
-
-4. 分词结果构造成一个DataFrame
+分词结果构造成一个 DataFrame
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -557,9 +555,7 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
     </table>
     </div>
 
-
-
-5. 和单词词典实现merge
+和单词词典实现 merge
 ~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -574,9 +570,6 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
 .. code:: ipython3
 
     df_merge.sample(10)
-
-
-
 
 .. raw:: html
 
@@ -683,7 +676,7 @@ pandas的读取csv、多数据merge、输出Excel 3. Python正则表达式实现
 
 
 
-6. 存入Excel
+存入 Excel
 ~~~~~~~~~~~~
 
 .. code:: ipython3

@@ -1,15 +1,16 @@
-Python使用Pandas将Excel存入MySQL
---------------------------------
+Python 使用 Pandas 将 Excel 存入 MySQL
+------------------------------------------
 
-一个典型的数据处理流： 1.
-Pandas从多方数据源读取数据，比如excel、csv、mysql、爬虫等等 2.
-Pandas对数据做过滤、统计分析 3.
-Pandas将数据存储到MySQL，用于Web页面展示、后续的进一步SQL分析等等
+一个典型的数据处理流： 
+
+    | 1. Pandas 从多方数据源读取数据，比如 excel、csv、mysql、爬虫等等 
+    | 2. Pandas 对数据做过滤、统计分析 
+    | 3. Pandas 将数据存储到 MySQL，用于 Web 页面展示、后续的进一步 SQL 分析等等
 
 | 官网文档：
 | https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.to_sql.html#pandas.DataFrame.to_sql
 
-数据准备：学生信息Excel表
+数据准备：学生信息 Excel 表
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -20,9 +21,6 @@ Pandas将数据存储到MySQL，用于Web页面展示、后续的进一步SQL分
 
     df = pd.read_excel("./course_datas/c23_excel_vlookup/学生信息表.xlsx")
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -196,12 +194,11 @@ Pandas将数据存储到MySQL，用于Web页面展示、后续的进一步SQL分
 创建sqlalchemy对象连接MySQL
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-SQLAlchemy是Python中的ORM框架， Object-Relational
-Mapping，把关系数据库的表结构映射到对象上。
+SQLAlchemy 是 Python 中的 ORM 框架， Object-Relational Mapping，把关系数据库的表结构映射到对象上。
 
--  官网：https://www.sqlalchemy.org/
--  如果sqlalchemy包不存在，用这个命令安装：pip install sqlalchemy
--  需要安装依赖Python库：pip install mysql-connector-python
+    | 官网：https://www.sqlalchemy.org/
+    | 如果 sqlalchemy 包不存在，用这个命令安装：pip install sqlalchemy
+    | 需要安装依赖 Python 库：pip install mysql-connector-python
 
 可以直接执行SQL语句
 

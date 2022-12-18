@@ -1,5 +1,5 @@
-Pandas按行遍历DataFrame的3种方法
--------------------------------
+Pandas 按行遍历 DataFrame 的 3 种方法
+-------------------------------------------
 
 .. code:: ipython3
 
@@ -14,9 +14,6 @@ Pandas按行遍历DataFrame的3种方法
         columns=list('ABCD')
     )
     df.head(3)
-
-
-
 
 .. raw:: html
 
@@ -85,7 +82,7 @@ Pandas按行遍历DataFrame的3种方法
 
 
 
-1. df.iterrows()
+df.iterrows()
 ~~~~~~~~~~~~~~~~
 
 使用方式
@@ -126,7 +123,7 @@ Pandas按行遍历DataFrame的3种方法
     Wall time: 7.89 s
 
 
-2. df.itertuples()
+df.itertuples()
 ~~~~~~~~~~~~~~~~~~
 
 使用方式
@@ -163,7 +160,7 @@ Pandas按行遍历DataFrame的3种方法
     Wall time: 178 ms
 
 
-3. for+zip
+for+zip
 ~~~~~~~~~~
 
 使用方式

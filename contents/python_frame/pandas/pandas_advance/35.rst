@@ -1,23 +1,22 @@
-Pandas实现groupby聚合后不同列数据统计
+Pandas 实现 groupby 聚合后不同列数据统计
 -------------------------------------
 
 电影评分数据集（UserID，MovieID，Rating，Timestamp）
 
-| 聚合后单列-单指标统计：每个MovieID的平均评分
-| df.groupby(“MovieID”)[“Rating”].mean()
+| 聚合后单列-单指标统计：每个 MovieID 的平均评分
+
+  | df.groupby(“MovieID”)[“Rating”].mean()
 
 | 聚合后单列-多指标统计：每个MoiveID的最高评分、最低评分、平均评分
-| df.groupby(“MovieID”)[“Rating”].agg(mean=“mean”, max=“max”,
-  min=np.min)
-| df.groupby(“MovieID”).agg({“Rating”:[‘mean’, ‘max’, np.min]})
+
+  | df.groupby(“MovieID”)[“Rating”].agg(mean=“mean”, max=“max”,min=np.min)
+  | df.groupby(“MovieID”).agg({“Rating”:[‘mean’, ‘max’, np.min]})
 
 | 聚合后多列-多指标统计：每个MoiveID的评分人数，最高评分、最低评分、平均评分
-| df.groupby(“MovieID”).agg( rating_mean=(“Rating”, “mean”),
-  user_count=(“UserID”, lambda x : x.nunique())
-| df.groupby(“MovieID”).agg( {“Rating”: [‘mean’, ‘min’, ‘max’],
-  “UserID”: lambda x :x.nunique()})
-| df.groupby(“MovieID”).apply( lambda x: pd.Series( {“min”:
-  x[“Rating”].min(), “mean”: x[“Rating”].mean()}))
+
+  | df.groupby(“MovieID”).agg( rating_mean=(“Rating”, “mean”),user_count=(“UserID”, lambda x : x.nunique())
+  | df.groupby(“MovieID”).agg( {“Rating”: [‘mean’, ‘min’, ‘max’],“UserID”: lambda x :x.nunique()})
+  | df.groupby(“MovieID”).apply( lambda x: pd.Series( {“min”:x[“Rating”].min(), “mean”: x[“Rating”].mean()}))
 
 | 记忆：agg(新列名=函数)、agg(新列名=(原列名，函数))、agg({“原列名”：函数/列表})
 | agg函数的两种形式，等号代表“把结果赋值给新列”，字典/元组代表“对这个列运用这些函数”

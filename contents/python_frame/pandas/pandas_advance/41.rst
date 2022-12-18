@@ -1,11 +1,12 @@
-Pandas读取Excel绘制直方图
--------------------------
+Pandas 读取 Excel 绘制直方图
+-------------------------------
 
 | **直方图(Histogram)：**
-| 直方图是数值数据分布的精确图形表示，是一个连续变量（定量变量）的概率分布的估计，它是一种条形图。
-| 为了构建直方图，第一步是将值的范围分段，即将整个值的范围分成一系列间隔，然后计算每个间隔中有多少值。
 
-1. 读取数据
+    | 直方图是数值数据分布的精确图形表示，是一个连续变量（定量变量）的概率分布的估计，它是一种条形图。
+    | 为了构建直方图，第一步是将值的范围分段，即将整个值的范围分成一系列间隔，然后计算每个间隔中有多少值。
+
+读取数据
 ~~~~~~~~~~~
 
 波斯顿房价数据集
@@ -311,7 +312,7 @@ Pandas读取Excel绘制直方图
 
 
 
-2. 使用matplotlib画直方图
+使用 matplotlib 画直方图
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 matplotlib直方图文档：https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.pyplot.hist.html
@@ -330,7 +331,7 @@ matplotlib直方图文档：https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.
 .. figure:: image/41_12_0.webp
    :alt: 41_12_0.webp
 
-3. 使用pyecharts画直方图
+使用 pyecharts 画直方图
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
 | pyecharts直方图文档：http://gallery.pyecharts.org/#/Bar/bar_histogram
@@ -417,7 +418,7 @@ matplotlib直方图文档：https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.
 
 
 
-对bin_edges的解释，为什么是101个？比hist计数多1个？
+对 bin_edges 的解释，为什么是101个？比 hist 计数多1个？
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 | 举例：如果bins是[1, 2, 3, 4]，那么会分成3个区间：[1, 2)、[2, 3)、[3,
@@ -861,5 +862,4 @@ matplotlib直方图文档：https://matplotlib.org/3.2.0/api/_as_gen/matplotlib.
 
 
 
-| 小作业：
-| 获取你们产品的销量数据、价格数据，提取得到一个一数组，画一个直方图看一下数据分布
+| 小作业：获取你们产品的销量数据、价格数据，提取得到一个一数组，画一个直方图看一下数据分布

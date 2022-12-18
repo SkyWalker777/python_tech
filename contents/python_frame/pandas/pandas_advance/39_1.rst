@@ -1,4 +1,4 @@
-Pandas处理Excel - 复杂多列到多行转换
+Pandas 处理 Excel - 复杂多列到多行转换
 ------------------------------------
 
 用户需求图片
@@ -7,11 +7,11 @@ Pandas处理Excel - 复杂多列到多行转换
 分析：
 ^^^^^^
 
-1. 一行变多行，可以用explode实现；
-2. 要使用explode，需要先将多列变成一列；
-3. 注意有的列为空，需要做空值过滤；
+    | 1. 一行变多行，可以用explode实现；
+    | 2. 要使用explode，需要先将多列变成一列；
+    | 3. 注意有的列为空，需要做空值过滤；
 
-1. 读取数据
+读取数据
 ~~~~~~~~~~~
 
 .. code:: ipython3
@@ -26,9 +26,6 @@ Pandas处理Excel - 复杂多列到多行转换
 .. code:: ipython3
 
     df
-
-
-
 
 .. raw:: html
 
@@ -99,8 +96,7 @@ Pandas处理Excel - 复杂多列到多行转换
     </div>
 
 
-
-2. 把多列合并到一列
+把多列合并到一列
 ~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -108,9 +104,6 @@ Pandas处理Excel - 复杂多列到多行转换
     # 提取待合并的所有列名，一会可以把它们drop掉
     merge_names = list(df.loc[:, "Supplier":].columns.values)
     merge_names
-
-
-
 
 .. parsed-literal::
 
@@ -280,9 +273,7 @@ Pandas处理Excel - 复杂多列到多行转换
     </table>
     </div>
 
-
-
-3. 使用explode把一列变多行
+使用 explode 把一列变多行
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -290,9 +281,6 @@ Pandas处理Excel - 复杂多列到多行转换
     # 先将merge列变成list的形式
     df["merge"] = df["merge"].str.split("#")
     df
-
-
-
 
 .. raw:: html
 
@@ -419,9 +407,7 @@ Pandas处理Excel - 复杂多列到多行转换
     </table>
     </div>
 
-
-
-4. 将一列还原成结果的多列
+将一列还原成结果的多列
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -598,9 +584,7 @@ Pandas处理Excel - 复杂多列到多行转换
     </table>
     </div>
 
-
-
-5. 输出到结果Excel
+输出到结果Excel
 ~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3

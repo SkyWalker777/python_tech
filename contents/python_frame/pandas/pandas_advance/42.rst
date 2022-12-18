@@ -1,7 +1,7 @@
-Python处理Excel一列变多列
--------------------------
+Python 处理 Excel 一列变多列
+-----------------------------
 
-1. 读取数据
+读取数据
 ~~~~~~~~~~~
 
 .. code:: ipython3
@@ -15,9 +15,6 @@ Python处理Excel一列变多列
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -75,7 +72,7 @@ Python处理Excel一列变多列
 
 
 
-2. 实现拆分
+实现拆分
 ~~~~~~~~~~~
 
 .. code:: ipython3
@@ -258,7 +255,7 @@ Python处理Excel一列变多列
 
 
 
-3. 输出到结果Excel
+输出到结果 Excel
 ~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
