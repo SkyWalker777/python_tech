@@ -1,9 +1,9 @@
-Pandas和Flask配合实现快速在网页上展示表格数据
+Pandas 和 Flask 配合实现快速在网页上展示表格数据
 ---------------------------------------------
 
-本次演示是使用PyCharm实现的
+本次演示是使用 PyCharm 实现的
 
 在当前目录下有一个子目录就是代码：pandas-flask
 
-打开Pycharm，然后打开pandas-flask这个目录，然后运行app.py就可以启动web服务器
+打开 Pycharm，然后打开 pandas-flask 这个目录，然后运行 app.py 就可以启动 web 服务器
 

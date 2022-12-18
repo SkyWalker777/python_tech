@@ -1,17 +1,25 @@
-Pandas和数据库查询语言SQL的对比
--------------------------------
+Pandas 和数据库查询语言 SQL 的对比
+---------------------------------
 
--  Pandas：Python最流行的数据处理与数据分析的类库
--  SQL：结构化查询语言，用于对MySQL、Oracle等关系型数据库的增删改查
+-  Pandas：Python 最流行的数据处理与数据分析的类库
+-  SQL：结构化查询语言，用于对 MySQL、Oracle 等关系型数据库的增删改查
 
 两者都是对“表格型”数据的操作和查询，所以很多语法都能对应起来
 
-对比列表： 1. SELECT数据查询 2. WHERE按条件查询 3. in和not in的条件查询
-4. groupby分组统计 5. JOIN数据关联 6. UNION数据合并 7. Order
-Limit先排序后分页 8. 取每个分组group的top n 9. UPDATE数据更新 10.
-DELETE删除数据
+对比列表： 
 
-0. 读取泰坦尼克数据集
+    | 1. SELECT 数据查询 
+    | 2. WHERE 按条件查询 
+    | 3. in 和 not in 的条件查询
+    | 4. groupby 分组统计 
+    | 5. JOIN 数据关联 
+    | 6. UNION 数据合并 
+    | 7. Order Limit 先排序后分页 
+    | 8. 取每个分组 group 的 top n 
+    | 9. UPDATE 数据更新 
+    | 10. DELETE 删除数据
+
+读取泰坦尼克数据集
 ~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -23,9 +31,6 @@ DELETE删除数据
 
     df = pd.read_csv("./datas/titanic/titanic_train.csv")
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -141,9 +146,7 @@ DELETE删除数据
     </table>
     </div>
 
-
-
-1. SELECT数据查询
+SELECT数据查询
 ~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -230,10 +233,9 @@ DELETE删除数据
     </div>
 
 
+df.head(5) 类似 ``select from table limit 5``，查询所有的字段
 
-df.head(5)类似select \* from table limit 5，查询所有的字段
-
-2. WHERE按条件查询
+WHERE 按条件查询
 ~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -252,23 +254,15 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     condition = (df["Sex"]=="male") & (df["Age"]>=20.0) & (df["Age"]<=40.0)
     condition.value_counts()
 
-
-
-
 .. parsed-literal::
 
     False    629
     True     262
     dtype: int64
 
-
-
 .. code:: ipython3
 
     df[condition].head(5)
-
-
-
 
 .. raw:: html
 
@@ -384,17 +378,12 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-3. in和not in的条件查询
+in 和 not in 的条件查询
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     df["Pclass"].unique()
-
-
-
 
 .. parsed-literal::
 
@@ -658,12 +647,10 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-4. groupby分组统计
+groupby 分组统计
 ~~~~~~~~~~~~~~~~~~
 
-4.1 单个列的聚合
+单个列的聚合
 ^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
@@ -737,8 +724,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </div>
 
 
-
-4.2 多个列的聚合
+多个列的聚合
 ^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
@@ -820,8 +806,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </div>
 
 
-
-5. JOIN数据关联
+JOIN 数据关联
 ~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -829,8 +814,6 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     # 电影评分数据集，评分表
     df_rating = pd.read_csv("./datas/ml-latest-small/ratings.csv")
     df_rating.head(5)
-
-
 
 
 .. raw:: html
@@ -906,9 +889,6 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     # 电影评分数据集，电影信息表
     df_movies = pd.read_csv("./datas/ml-latest-small/movies.csv")
     df_movies.head(5)
-
-
-
 
 .. raw:: html
 
@@ -1069,9 +1049,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-6. UNION数据合并
+UNION 数据合并
 ~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1079,9 +1057,6 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     df1 = pd.DataFrame({'city': ['Chicago', 'San Francisco', 'New York City'],
                         'rank': range(1, 4)}) 
     df1
-
-
-
 
 .. raw:: html
 
@@ -1264,9 +1239,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-7. Order Limit先排序后分页
+Order Limit 先排序后分页
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1282,9 +1255,6 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
 .. code:: ipython3
 
     df.sort_values("Fare", ascending=False).head(5)
-
-
-
 
 .. raw:: html
 
@@ -1400,9 +1370,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-8. 取每个分组group的top n
+取每个分组 group 的 top n
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1415,8 +1383,6 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     # 按（Survived，Sex）分组，取Age的TOP 2
     df.groupby(["Survived", "Sex"]).apply(
         lambda df:df.sort_values("Age", ascending=False).head(2))
-
-
 
 
 .. raw:: html
@@ -1603,9 +1569,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     </table>
     </div>
 
-
-
-9. UPDATE数据更新
+UPDATE 数据更新
 ~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -1675,9 +1639,7 @@ df.head(5)类似select \* from table limit 5，查询所有的字段
     False    891
     Name: Age, dtype: int64
 
-
-
-10. DELETE删除数据
+DELETE 删除数据
 ~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3

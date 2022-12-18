@@ -5,7 +5,7 @@ Pandas使用explode实现一行变多行统计
 
 比如：一个电影有多个分类、一个人有多个喜好，需要按分类、喜好做统计
 
-1、读取数据
+读取数据
 ~~~~~~~~~~~
 
 .. code:: ipython3
@@ -25,9 +25,6 @@ Pandas使用explode实现一行变多行统计
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -93,10 +90,13 @@ Pandas使用explode实现一行变多行统计
 
 **问题：怎样实现这样的统计，每个题材有多少部电影？**
 
-解决思路： \* 将Genres按照分隔符|拆分 \* 按Genres拆分成多行 \*
-统计每个Genres下的电影数目
+解决思路： 
 
-2、将Genres字段拆分成列表
+    | 将 Genres 按照分隔符 拆分 
+    | 按 Genres 拆分成多行 
+    | 统计每个 Genres 下的电影数目
+
+将 Genres 字段拆分成列表
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -241,11 +241,11 @@ Pandas使用explode实现一行变多行统计
     memory usage: 121.5+ KB
 
 
-3、使用explode将一行拆分成多行
+使用 explode 将一行拆分成多行
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-| 语法：pandas.DataFrame.explode(column)
-| 将dataframe的一个list-like的元素按行复制，index索引随之复制
+    | 语法：pandas.DataFrame.explode(column)
+    | 将 dataframe 的一个 list-like 的元素按行复制，index 索引随之复制
 
 .. code:: ipython3
 
@@ -361,15 +361,13 @@ Pandas使用explode实现一行变多行统计
 
 
 
-4、实现拆分后的题材的统计
+实现拆分后的题材的统计
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     %matplotlib inline
     df_new["Genre"].value_counts().plot.bar()
-
-
 
 
 .. parsed-literal::

@@ -2,8 +2,9 @@ Pandas怎样结合Pyecharts绘制交互性折线图？
 ========================================
 
 | 背景：
-| \* Pandas是Python用于数据分析领域的超级牛的库 \*
-  Echarts是百度开源的非常好用强大的可视化图表库，Pyecharts是它的Python库版本
+
+    | Pandas 是 Python 用于数据分析领域的超级牛的库
+    | Echarts是百度开源的非常好用强大的可视化图表库，Pyecharts 是它的 Python库版本
 
 1、读取数据
 -----------
@@ -17,9 +18,6 @@ Pandas怎样结合Pyecharts绘制交互性折线图？
     xlsx_path = "./datas/stocks/baidu_stocks.xlsx"
     df = pd.read_excel(xlsx_path, index_col="datetime", parse_dates=True)
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -120,9 +118,6 @@ Pandas怎样结合Pyecharts绘制交互性折线图？
 .. code:: ipython3
 
     df.index
-
-
-
 
 .. parsed-literal::
 
@@ -241,7 +236,7 @@ Pandas怎样结合Pyecharts绘制交互性折线图？
 
 
 
-2、使用Pyecharts绘制折线图
+2、使用 Pyecharts 绘制折线图
 --------------------------
 
 .. code:: ipython3
@@ -267,9 +262,6 @@ Pandas怎样结合Pyecharts绘制交互性折线图？
         title_opts=opts.TitleOpts(title="百度股票2019年"),
         tooltip_opts=opts.TooltipOpts(trigger="axis", axis_pointer_type="cross")
     )
-
-
-
 
 .. parsed-literal::
 

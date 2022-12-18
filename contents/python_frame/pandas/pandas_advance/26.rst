@@ -1,18 +1,20 @@
 Pandas处理分析网站原始访问日志
 ------------------------------
 
-目标：真实项目的实战，探索Pandas的数据处理与分析
+目标：真实项目的实战，探索 Pandas 的数据处理与分析
 
 | 实例：
-| 数据来源：我自己的wordpress博客http://www.crazyant.net/ 的访问日志
+    
+    | 数据来源：我自己的 wordpress 博客 http://www.crazyant.net/ 的访问日志
 
 | 实现步骤：
-| 1、读取数据、清理、格式化
-| 2、统计爬虫spider的访问比例，输出柱状图
-| 3、统计http状态码的访问占比，输出饼图
-| 4、统计按小时、按天的PV/UV流量趋势，输出折线图
 
-1、读取数据并清理格式化
+    | 1、读取数据、清理、格式化
+    | 2、统计爬虫 spider 的访问比例，输出柱状图
+    | 3、统计 http 状态码的访问占比，输出饼图
+    | 4、统计按小时、按天的PV/UV流量趋势，输出折线图
+
+读取数据并清理格式化
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -48,9 +50,6 @@ Pandas处理分析网站原始访问日志
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -325,16 +324,13 @@ Pandas处理分析网站原始访问日志
 
 
 
-2、统计spider的比例
+统计 spider 的比例
 ~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     df["is_spider"] = df["client"].str.lower().str.contains("spider")
     df.head()
-
-
-
 
 .. raw:: html
 
@@ -435,8 +431,6 @@ Pandas处理分析网站原始访问日志
             .set_global_opts(title_opts=opts.TitleOpts(title="爬虫访问量占比"))
     )
     bar.render_notebook()
-
-
 
 
 .. raw:: html
@@ -589,9 +583,7 @@ Pandas处理分析网站原始访问日志
     </script>
 
 
-
-
-3、访问状态码的数量对比
+访问状态码的数量对比
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
@@ -829,18 +821,12 @@ Pandas处理分析网站原始访问日志
         });
     </script>
 
-
-
-
-4、实现按小时、按天粒度的流量统计
+实现按小时、按天粒度的流量统计
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 

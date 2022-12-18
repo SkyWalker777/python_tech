@@ -1,9 +1,7 @@
-Pandas的Categorical数据类型可以降低数据存储提升计算速度
+Pandas 的 Categorical 数据类型可以降低数据存储提升计算速度
 -------------------------------------------------------
 
-
-
-1、读取数据
+读取数据
 ~~~~~~~~~~~
 
 .. code:: ipython3
@@ -21,9 +19,6 @@ Pandas的Categorical数据类型可以降低数据存储提升计算速度
 .. code:: ipython3
 
     df.head()
-
-
-
 
 .. raw:: html
 
