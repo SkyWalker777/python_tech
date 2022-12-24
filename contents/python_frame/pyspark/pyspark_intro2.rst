@@ -370,15 +370,882 @@ operators_join
 
 .. code-block:: python
 
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd1 = sc.parallelize([ (1001, "zhangsan"), (1002, "lisi"), (1003, "wangwu"), (1004, "zhaoliu") ])
+        rdd2 = sc.parallelize([ (1001, "销售部"), (1002, "科技部")])
+
+        # 通过join算子来进行rdd之间的关联
+        # 对于join算子来说 关联条件 按照二元元组的key来进行关联
+        print(rdd1.join(rdd2).collect())
+
+        # 左外连接, 右外连接 可以更换一下rdd的顺序 或者调用rightOuterJoin即可
+        print(rdd1.leftOuterJoin(rdd2).collect())
+
+operators_intersection
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd1 = sc.parallelize([('a', 1), ('a', 3)])
+        rdd2 = sc.parallelize([('a', 1), ('b', 3)])
+
+        # 通过intersection算子求RDD之间的交集, 将交集取出 返回新RDD
+        rdd3 = rdd1.intersection(rdd2)
+
+        print(rdd3.collect())
+
+operators_glom
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9], 2)
+
+        print(rdd.glom().flatMap(lambda x: x).collect())
+
+operators_gorupByKey
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([('a', 1), ('a', 1), ('b', 1), ('b', 1), ('b', 1)])
+
+        rdd2 = rdd.groupByKey()
+
+        print(rdd2.map(lambda x: (x[0], list(x[1]))).collect())
+
+operators_sortBy
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([('c', 3), ('f', 1), ('b', 11), ('c', 3), ('a', 1), ('c', 5), ('e', 1), ('n', 9), ('a', 1)], 3)
+
+        # 使用sortBy对rdd执行排序
+
+        # 按照value 数字进行排序
+        # 参数1函数, 表示的是 ,  告知Spark 按照数据的哪个列进行排序
+        # 参数2: True表示升序 False表示降序
+        # 参数3: 排序的分区数
+        """注意: 如果要全局有序, 排序分区数请设置为1"""
+        print(rdd.sortBy(lambda x: x[1], ascending=True, numPartitions=1).collect())
+
+        # 按照key来进行排序
+        print(rdd.sortBy(lambda x: x[0], ascending=False, numPartitions=1).collect())
+
+operators_sortByKey
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([('a', 1), ('E', 1), ('C', 1), ('D', 1), ('b', 1), ('g', 1), ('f', 1),
+                              ('y', 1), ('u', 1), ('i', 1), ('o', 1), ('p', 1),
+                              ('m', 1), ('n', 1), ('j', 1), ('k', 1), ('l', 1)], 3)
+
+        print(rdd.sortByKey(ascending=True, numPartitions=1, keyfunc=lambda key: str(key).lower()).collect())
+
+operators_demo
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+    import json
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        # 读取数据文件
+        file_rdd = sc.textFile("../data/input/order.text")
+
+        # 进行rdd数据的split 按照|符号进行, 得到一个个的json数据
+        jsons_rdd = file_rdd.flatMap(lambda line: line.split("|"))
+
+        # 通过Python 内置的json库, 完成json字符串到字典对象的转换
+        dict_rdd = jsons_rdd.map(lambda json_str: json.loads(json_str))
+
+        # 过滤数据, 只保留北京的数据
+        beijing_rdd = dict_rdd.filter(lambda d: d['areaName'] == "北京")
+
+        # 组合北京 和 商品类型形成新的字符串
+        category_rdd = beijing_rdd.map(lambda x: x['areaName'] + "_" + x['category'])
+
+        # 对结果集进行去重操作
+        result_rdd = category_rdd.distinct()
+
+        # 输出
+        print(result_rdd.collect())
+
+operators_demo_run_yarn
+==================================================================================
+
+.. code-block:: python
+
+    def city_with_category(data):
+        return data['areaName'] + "_" + data['category']
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+    from defs_19 import city_with_category
+    import json
+    import os
+    os.environ['HADOOP_CONF_DIR'] = "/export/server/hadoop/etc/hadoop"
+
+    if __name__ == '__main__':
+        # 提交 到yarn集群, master 设置为yarn
+        conf = SparkConf().setAppName("test-yarn-1").setMaster("yarn")
+        # 如果提交到集群运行, 除了主代码以外, 还依赖了其它的代码文件
+        # 需要设置一个参数, 来告知spark ,还有依赖文件要同步上传到集群中
+        # 参数叫做: spark.submit.pyFiles
+        # 参数的值可以是 单个.py文件,   也可以是.zip压缩包(有多个依赖文件的时候可以用zip压缩后上传)
+        conf.set("spark.submit.pyFiles", "defs_19.py")
+        sc = SparkContext(conf=conf)
+
+        # 在集群中运行, 我们需要用HDFS路径了. 不能用本地路径
+        file_rdd = sc.textFile("hdfs://node1:8020/input/order.text")
+
+        # 进行rdd数据的split 按照|符号进行, 得到一个个的json数据
+        jsons_rdd = file_rdd.flatMap(lambda line: line.split("|"))
+
+        # 通过Python 内置的json库, 完成json字符串到字典对象的转换
+        dict_rdd = jsons_rdd.map(lambda json_str: json.loads(json_str))
+
+        # 过滤数据, 只保留北京的数据
+        beijing_rdd = dict_rdd.filter(lambda d: d['areaName'] == "北京")
+
+        # 组合北京 和 商品类型形成新的字符串
+        category_rdd = beijing_rdd.map(city_with_category)
+
+        # 对结果集进行去重操作
+        result_rdd = category_rdd.distinct()
+
+        # 输出
+        print(result_rdd.collect())
+
+operators_countByKey
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.textFile("../data/input/words.txt")
+        rdd2 = rdd.flatMap(lambda x: x.split(" ")).map(lambda x: (x, 1))
+
+        # 通过countByKey来对key进行计数, 这是一个Action算子
+        result = rdd2.countByKey()
+
+        print(result)
+        print(type(result))
+
+operators_countByValue
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([('c', 3), ('f', 1), ('b', 11), ('c', 3), ('a', 1), ('c', 5), ('e', 1), ('n', 9), ('a', 1)], 3)
+
+        # 使用sortBy对rdd执行排序
+
+        # 按照value 数字进行排序
+        # 参数1函数, 表示的是 ,  告知Spark 按照数据的哪个列进行排序
+        # 参数2: True表示升序 False表示降序
+        # 参数3: 排序的分区数
+        """注意: 如果要全局有序, 排序分区数请设置为1"""
+        print(rdd.sortBy(lambda x: x[1], ascending=True, numPartitions=1).collect())
+
+        # 按照key来进行排序
+        print(rdd.sortBy(lambda x: x[0], ascending=False, numPartitions=1).collect())
+
+operators_reduce
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5])
+
+        print(rdd.reduce(lambda a, b: a + b))
+
+operators_fold
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9], 3)
+
+        print(rdd.fold(10, lambda a, b: a + b))
+
+operators_takeSample
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 5, 3, 1, 3, 2, 6, 7, 8, 6], 1)
+
+        print(rdd.takeSample(False, 5, 1))
+
+operators_takeOrdered
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 2, 4, 7, 9, 6], 1)
+
+        print(rdd.takeOrdered(3))
+
+        print(rdd.takeOrdered(3, lambda x: -x))
+
+operators_foreach
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 2, 4, 7, 9, 6], 1)
+
+        result = rdd.foreach(lambda x: print(x * 10))
+
+operators_saveAsTextFile
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 2, 4, 7, 9, 6], 3)
+
+        rdd.saveAsTextFile("hdfs://node1:8020/output/out1")
+
+operators_mapPartitions
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 2, 4, 7, 9, 6], 3)
+
+        def process(iter):
+            result = list()
+            for it in iter:
+                result.append(it * 10)
+
+            return result
 
 
+        print(rdd.mapPartitions(process).collect())
+
+operators_foreachPartition
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 3, 2, 4, 7, 9, 6], 3)
+
+        def process(iter):
+            result = list()
+            for it in iter:
+                result.append(it * 10)
+
+            print(result)
+
+        rdd.foreachPartition(process)
+
+operators_partitionBy
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([('hadoop', 1), ('spark', 1), ('hello', 1), ('flink', 1), ('hadoop', 1), ('spark', 1)])
+
+        # 使用partitionBy 自定义 分区
+        def process(k):
+            if 'hadoop' == k or 'hello' == k: return 0
+            if 'spark' == k: return 1
+            return 2
+
+        print(rdd.partitionBy(3, process).glom().collect())
+
+operators_repartition_and_coalesce
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark import SparkConf, SparkContext
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5], 3)
+
+        # repartition 修改分区
+        print(rdd.repartition(1).getNumPartitions())
+
+        print(rdd.repartition(5).getNumPartitions())
+
+        # coalesce 修改分区
+        print(rdd.coalesce(1).getNumPartitions())
+
+        print(rdd.coalesce(5, shuffle=True).getNumPartitions())
+
+cache
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd1 = sc.textFile("../data/input/words.txt")
+        rdd2 = rdd1.flatMap(lambda x: x.split(" "))
+        rdd3 = rdd2.map(lambda x: (x, 1))
+
+        rdd3.cache()
+        rdd3.persist(StorageLevel.MEMORY_AND_DISK_2)
+
+        rdd4 = rdd3.reduceByKey(lambda a, b: a + b)
+        print(rdd4.collect())
+
+        rdd5 = rdd3.groupByKey()
+        rdd6 = rdd5.mapValues(lambda x: sum(x))
+        print(rdd6.collect())
+
+        rdd3.unpersist()
+        time.sleep(100000)
+
+checkpoint
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        # 1. 告知spark, 开启CheckPoint功能
+        sc.setCheckpointDir("hdfs://node1:8020/output/ckp")
+        rdd1 = sc.textFile("../data/input/words.txt")
+        rdd2 = rdd1.flatMap(lambda x: x.split(" "))
+        rdd3 = rdd2.map(lambda x: (x, 1))
+
+        # 调用checkpoint API 保存数据即可
+        rdd3.checkpoint()
+
+        rdd4 = rdd3.reduceByKey(lambda a, b: a + b)
+        print(rdd4.collect())
+
+        rdd5 = rdd3.groupByKey()
+        rdd6 = rdd5.mapValues(lambda x: sum(x))
+        print(rdd6.collect())
+
+        rdd3.unpersist()
+        time.sleep(100000)
+
+broadcast
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        stu_info_list = [(1, '张大仙', 11),
+                         (2, '王晓晓', 13),
+                         (3, '张甜甜', 11),
+                         (4, '王大力', 11)]
+        # 1. 将本地Python List对象标记为广播变量
+        broadcast = sc.broadcast(stu_info_list)
+
+        score_info_rdd = sc.parallelize([
+            (1, '语文', 99),
+            (2, '数学', 99),
+            (3, '英语', 99),
+            (4, '编程', 99),
+            (1, '语文', 99),
+            (2, '编程', 99),
+            (3, '语文', 99),
+            (4, '英语', 99),
+            (1, '语文', 99),
+            (3, '英语', 99),
+            (2, '编程', 99)
+        ])
+
+        def map_func(data):
+            id = data[0]
+            name = ""
+            # 匹配本地list和分布式rdd中的学生ID  匹配成功后 即可获得当前学生的姓名
+            # 2. 在使用到本地集合对象的地方, 从广播变量中取出来用即可
+            for stu_info in broadcast.value:
+                stu_id = stu_info[0]
+                if id == stu_id:
+                    name = stu_info[1]
+
+            return (name, data[1], data[2])
 
 
+        print(score_info_rdd.map(map_func).collect())
+
+    """
+    场景: 本地集合对象 和 分布式集合对象(RDD) 进行关联的时候
+    需要将本地集合对象 封装为广播变量
+    可以节省:
+    1. 网络IO的次数
+    2. Executor的内存占用
+    """
+
+accumulator
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+    import re
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        # 1. 读取数据文件
+        file_rdd = sc.textFile("../data/input/accumulator_broadcast_data.txt")
+
+        # 特殊字符的list定义
+        abnormal_char = [",", ".", "!", "#", "$", "%"]
+
+        # 2. 将特殊字符list 包装成广播变量
+        broadcast = sc.broadcast(abnormal_char)
+
+        # 3. 对特殊字符出现次数做累加, 累加使用累加器最好
+        acmlt = sc.accumulator(0)
+
+        # 4. 数据处理, 先处理数据的空行, 在Python中有内容就是True None就是False
+        lines_rdd = file_rdd.filter(lambda line: line.strip())
+
+        # 5. 去除前后的空格
+        data_rdd = lines_rdd.map(lambda line: line.strip())
+
+        # 6. 对数据进行切分, 按照正则表达式切分, 因为空格分隔符某些单词之间是两个或多个空格
+        # 正则表达式 \s+ 表示 不确定多少个空格, 最少一个空格
+        words_rdd = data_rdd.flatMap(lambda line: re.split("\s+", line))
+
+        # 7. 当前words_rdd中有正常单词 也有特殊符号.
+        # 现在需要过滤数据, 保留正常单词用于做单词计数, 在过滤 的过程中 对特殊符号做计数
+        def filter_func(data):
+            """过滤数据, 保留正常单词用于做单词计数, 在过滤 的过程中 对特殊符号做计数"""
+            global acmlt
+            # 取出广播变量中存储的特殊符号list
+            abnormal_chars = broadcast.value
+            if data in abnormal_chars:
+                # 表示这个是 特殊字符
+                acmlt += 1
+                return False
+            else:
+                return True
+
+        normal_words_rdd = words_rdd.filter(filter_func)
+        # 8. 正常单词的单词计数逻辑
+        result_rdd = normal_words_rdd.map(lambda x: (x, 1)).\
+            reduceByKey(lambda a, b: a + b)
+
+        print("正常单词计数结果: ", result_rdd.collect())
+        print("特殊字符数量: ", acmlt)
+
+accumulator
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], 2)
+
+        # Spark提供的累加器变量, 参数是初始值
+        acmlt = sc.accumulator(0)
+
+        def map_func(data):
+            global acmlt
+            acmlt += 1
+            # print(acmlt)
+
+        rdd2 = rdd.map(map_func)
+        rdd2.cache()
+        rdd2.collect()
+
+        rdd3 = rdd2.map(lambda x:x)
+        rdd3.collect()
+        print(acmlt)
+
+broadcast_and_accumulator_demo
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+    import re
+
+    if __name__ == '__main__':
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        # 1. 读取数据文件
+        file_rdd = sc.textFile("../data/input/accumulator_broadcast_data.txt")
+
+        # 特殊字符的list定义
+        abnormal_char = [",", ".", "!", "#", "$", "%"]
+
+        # 2. 将特殊字符list 包装成广播变量
+        broadcast = sc.broadcast(abnormal_char)
+
+        # 3. 对特殊字符出现次数做累加, 累加使用累加器最好
+        acmlt = sc.accumulator(0)
+
+        # 4. 数据处理, 先处理数据的空行, 在Python中有内容就是True None就是False
+        lines_rdd = file_rdd.filter(lambda line: line.strip())
+
+        # 5. 去除前后的空格
+        data_rdd = lines_rdd.map(lambda line: line.strip())
+
+        # 6. 对数据进行切分, 按照正则表达式切分, 因为空格分隔符某些单词之间是两个或多个空格
+        # 正则表达式 \s+ 表示 不确定多少个空格, 最少一个空格
+        words_rdd = data_rdd.flatMap(lambda line: re.split("\s+", line))
+
+        # 7. 当前words_rdd中有正常单词 也有特殊符号.
+        # 现在需要过滤数据, 保留正常单词用于做单词计数, 在过滤 的过程中 对特殊符号做计数
+        def filter_func(data):
+            """过滤数据, 保留正常单词用于做单词计数, 在过滤 的过程中 对特殊符号做计数"""
+            global acmlt
+            # 取出广播变量中存储的特殊符号list
+            abnormal_chars = broadcast.value
+            if data in abnormal_chars:
+                # 表示这个是 特殊字符
+                acmlt += 1
+                return False
+            else:
+                return True
+
+        normal_words_rdd = words_rdd.filter(filter_func)
+        # 8. 正常单词的单词计数逻辑
+        result_rdd = normal_words_rdd.map(lambda x: (x, 1)).\
+            reduceByKey(lambda a, b: a + b)
+
+        print("正常单词计数结果: ", result_rdd.collect())
+        print("特殊字符数量: ", acmlt)
+
+jieba 分词
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import jieba
+
+    def context_jieba(data):
+        """通过jieba分词工具 进行分词操作"""
+        seg = jieba.cut_for_search(data)
+        l = list()
+        for word in seg:
+            l.append(word)
+        return l
 
 
+    def filter_words(data):
+        """过滤不要的 谷 \ 帮 \ 客"""
+        return data not in ['谷', '帮', '客']
 
 
+    def append_words(data):
+        """修订某些关键词的内容"""
+        if data == '传智播': data = '传智播客'
+        if data == '院校': data = '院校帮'
+        if data == '博学': data = '博学谷'
+        return (data, 1)
 
+
+    def extract_user_and_word(data):
+        """传入数据是 元组 (1, 我喜欢传智播客)"""
+        user_id = data[0]
+        content = data[1]
+        # 对content进行分词
+        words = context_jieba(content)
+
+        return_list = list()
+        for word in words:
+            # 不要忘记过滤 \谷 \ 帮 \ 客
+            if filter_words(word):
+                return_list.append((user_id + "_" + append_words(word)[0], 1))
+
+        return return_list
+
+    # coding:utf8
+
+    import jieba
+
+    if __name__ == '__main__':
+        content = "小明硕士毕业于中国科学院计算所,后在清华大学深造"
+
+        result = jieba.cut(content, True)
+        print(list(result))
+        print(type(result))
+
+        #
+        result2 = jieba.cut(content, False)
+        print(list(result2))
+
+        # 搜索引擎模式, 等同于允许二次组合的场景
+        result3 = jieba.cut_for_search(content)
+        print(",".join(result3))
+
+    # coding:utf8
+
+    # 导入Spark的相关包
+    import time
+
+    from pyspark import SparkConf, SparkContext
+    from pyspark.storagelevel import StorageLevel
+    from defs import context_jieba, filter_words, append_words, extract_user_and_word
+    from operator import add
+
+    if __name__ == '__main__':
+        # 0. 初始化执行环境 构建SparkContext对象
+        conf = SparkConf().setAppName("test").setMaster("local[*]")
+        sc = SparkContext(conf=conf)
+
+        # 1. 读取数据文件
+        file_rdd = sc.textFile("hdfs://node1:8020/input/SogouQ.txt")
+
+        # 2. 对数据进行切分 \t
+        split_rdd = file_rdd.map(lambda x: x.split("\t"))
+
+        # 3. 因为要做多个需求, split_rdd 作为基础的rdd 会被多次使用.
+        split_rdd.persist(StorageLevel.DISK_ONLY)
+
+        # TODO: 需求1: 用户搜索的关键`词`分析
+        # 主要分析热点词
+        # 将所有的搜索内容取出
+        # print(split_rdd.takeSample(True, 3))
+        context_rdd = split_rdd.map(lambda x: x[2])
+
+        # 对搜索的内容进行分词分析
+        words_rdd = context_rdd.flatMap(context_jieba)
+
+        # print(words_rdd.collect())
+        # 院校 帮 -> 院校帮
+        # 博学 谷 -> 博学谷
+        # 传智播 客 -> 传智播客
+        filtered_rdd = words_rdd.filter(filter_words)
+        # 将关键词转换: 穿直播 -> 传智播客
+        final_words_rdd = filtered_rdd.map(append_words)
+        # 对单词进行 分组 聚合 排序 求出前5名
+        result1 = final_words_rdd.reduceByKey(lambda a, b: a + b).\
+            sortBy(lambda x: x[1], ascending=False, numPartitions=1).\
+            take(5)
+
+        print("需求1结果: ", result1)
+
+        # TODO: 需求2: 用户和关键词组合分析
+        # 1, 我喜欢传智播客
+        # 1+我  1+喜欢 1+传智播客
+        user_content_rdd = split_rdd.map(lambda x: (x[1], x[2]))
+        # 对用户的搜索内容进行分词, 分词后和用户ID再次组合
+        user_word_with_one_rdd = user_content_rdd.flatMap(extract_user_and_word)
+        # 对内容进行 分组 聚合 排序 求前5
+        result2 = user_word_with_one_rdd.reduceByKey(lambda a, b: a + b).\
+            sortBy(lambda x: x[1], ascending=False, numPartitions=1).\
+            take(5)
+
+        print("需求2结果: ", result2)
+
+        # TODO: 需求3: 热门搜索时间段分析
+        # 取出来所有的时间
+        time_rdd = split_rdd.map(lambda x: x[0])
+        # 对时间进行处理, 只保留小时精度即可
+        hour_with_one_rdd = time_rdd.map(lambda x: (x.split(":")[0], 1))
+        # 分组 聚合 排序
+        result3 = hour_with_one_rdd.reduceByKey(add).\
+            sortBy(lambda x: x[1], ascending=False, numPartitions=1).\
+            collect()
+
+        print("需求3结果: ", result3)
+
+        time.sleep(100000)
+
+SQL
+**********************************************************************************
+
+spark_session_create
+==================================================================================
+
+.. code-block:: python
 
 
 
