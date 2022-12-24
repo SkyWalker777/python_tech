@@ -1247,35 +1247,936 @@ spark_session_create
 
 .. code-block:: python
 
+    # coding:utf8
+
+    # SparkSession对象的导包, 对象是来自于 pyspark.sql包中
+    from pyspark.sql import SparkSession
+
+    if __name__ == '__main__':
+        # 构建SparkSession执行环境入口对象
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+
+        # 通过SparkSession对象 获取 SparkContext对象
+        sc = spark.sparkContext
+
+        # SparkSQL的HelloWorld
+        df = spark.read.csv("../data/input/stu_score.txt", sep=',', header=False)
+        df2 = df.toDF("id", "name", "score")
+        df2.printSchema()
+        df2.show()
+
+        df2.createTempView("score")
+
+        # SQL 风格
+        spark.sql("""
+            SELECT * FROM score WHERE name='语文' LIMIT 5
+        """).show()
+
+        # DSL 风格
+        df2.where("name='语文'").limit(5).show()
+
+dataframe_create_1
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 基于RDD转换成DataFrame
+        rdd = sc.textFile("../data/input/sql/people.txt").\
+            map(lambda x: x.split(",")).\
+            map(lambda x: (x[0], int(x[1])))
+
+        # 构建DataFrame对象
+        # 参数1 被转换的RDD
+        # 参数2 指定列名, 通过list的形式指定, 按照顺序依次提供字符串名称即可
+        df = spark.createDataFrame(rdd, schema=['name', 'age'])
+
+        # 打印DataFrame的表结构
+        df.printSchema()
+
+        # 打印df中的数据
+        # 参数1 表示 展示出多少条数据, 默认不传的话是20
+        # 参数2 表示是否对列进行截断, 如果列的数据长度超过20个字符串长度, 后续的内容不显示以...代替
+        # 如果给False 表示不阶段全部显示, 默认是True
+        df.show(20, False)
+
+        # 将DF对象转换成临时视图表, 可供sql语句查询
+        df.createOrReplaceTempView("people")
+        spark.sql("SELECT * FROM people WHERE age < 30").show()
+
+dataframe_create_2
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 基于RDD转换成DataFrame
+        rdd = sc.textFile("../data/input/sql/people.txt").\
+            map(lambda x: x.split(",")).\
+            map(lambda x: (x[0], int(x[1])))
+
+        # 构建表结构的描述对象: StructType对象
+        schema = StructType().add("name", StringType(), nullable=True).\
+            add("age", IntegerType(), nullable=False)
+
+        # 基于StructType对象去构建RDD到DF的转换
+        df = spark.createDataFrame(rdd, schema=schema)
+
+        df.printSchema()
+        df.show()
+
+dataframe_create_3
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 基于RDD转换成DataFrame
+        rdd = sc.textFile("../data/input/sql/people.txt").\
+            map(lambda x: x.split(",")).\
+            map(lambda x: (x[0], int(x[1])))
 
 
+        # toDF的方式构建DataFrame
+        df1 = rdd.toDF(["name", "age"])
+        df1.printSchema()
+        df1.show()
+
+        # toDF的方式2 通过StructType来构建
+        schema = StructType().add("name", StringType(), nullable=True).\
+            add("age", IntegerType(), nullable=False)
+
+        df2 = rdd.toDF(schema=schema)
+        df2.printSchema()
+        df2.show()
+
+dataframe_create_4
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 基于Pandas的DataFrame构建SparkSQL的DataFrame对象
+        pdf = pd.DataFrame(
+            {
+                "id": [1, 2, 3],
+                "name": ["张大仙", "王晓晓", "吕不为"],
+                "age": [11, 21, 11]
+            }
+        )
+
+        df = spark.createDataFrame(pdf)
+
+        df.printSchema()
+        df.show()
+
+dataframe_create_5_text
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 构建StructType, text数据源, 读取数据的特点是, 将一整行只作为`一个列`读取, 默认列名是value 类型是String
+        schema = StructType().add("data", StringType(), nullable=True)
+        df = spark.read.format("text").\
+            schema(schema=schema).\
+            load("../data/input/sql/people.txt")
+
+        df.printSchema()
+        df.show()
+
+dataframe_create_6_json
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # JSON类型自带有Schema信息
+        df = spark.read.format("json").load("../data/input/sql/people.json")
+        df.printSchema()
+        df.show()
+
+dataframe_create_7_csv
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 读取CSV文件
+        df = spark.read.format("csv").\
+            option("sep", ";").\
+            option("header", True).\
+            option("encoding", "utf-8").\
+            schema("name STRING, age INT, job STRING").\
+            load("../data/input/sql/people.csv")
+
+        df.printSchema()
+        df.show()
+
+dataframe_create_8_parquet
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 读取parquet类型的文件
+        df = spark.read.format("parquet").load("../data/input/sql/users.parquet")
+
+        df.printSchema()
+        df.show()
+
+dataframe_process_dsl_helloworld
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        df = spark.read.format("csv").\
+            schema("id INT, subject STRING, score INT").\
+            load("../data/input/sql/stu_score.txt")
+
+        # Column对象的获取
+        id_column = df['id']
+        subject_column = df['subject']
+
+        # DLS风格演示
+        df.select(["id", "subject"]).show()
+        df.select("id", "subject").show()
+        df.select(id_column, subject_column).show()
+
+        # filter API
+        df.filter("score < 99").show()
+        df.filter(df['score'] < 99).show()
+
+        # where API
+        df.where("score < 99").show()
+        df.where(df['score'] < 99).show()
+
+        # group By API
+        df.groupBy("subject").count().show()
+        df.groupBy(df['subject']).count().show()
 
 
+        # df.groupBy API的返回值 GroupedData
+        # GroupedData对象 不是DataFrame
+        # 它是一个 有分组关系的数据结构, 有一些API供我们对分组做聚合
+        # SQL: group by 后接上聚合: sum avg count min man
+        # GroupedData 类似于SQL分组后的数据结构, 同样有上述5种聚合方法
+        # GroupedData 调用聚合方法后, 返回值依旧是DataFrame
+        # GroupedData 只是一个中转的对象, 最终还是要获得DataFrame的结果
+        r = df.groupBy("subject")
+
+dataframe_process_sql_helloworld
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        df = spark.read.format("csv").\
+            schema("id INT, subject STRING, score INT").\
+            load("../data/input/sql/stu_score.txt")
+
+        # 注册成临时表
+        df.createTempView("score") # 注册临时视图(表)
+        df.createOrReplaceTempView("score_2") # 注册 或者 替换  临时视图
+        df.createGlobalTempView("score_3") # 注册全局临时视图 全局临时视图在使用的时候 需要在前面带上global_temp. 前缀
+
+        # 可以通过SparkSession对象的sql api来完成sql语句的执行
+        spark.sql("SELECT subject, COUNT(*) AS cnt FROM score GROUP BY subject").show()
+        spark.sql("SELECT subject, COUNT(*) AS cnt FROM score_2 GROUP BY subject").show()
+        spark.sql("SELECT subject, COUNT(*) AS cnt FROM global_temp.score_3 GROUP BY subject").show()
+
+wordcount_demo
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
 
 
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # TODO 1: SQL 风格进行处理
+        rdd = sc.textFile("../data/input/words.txt").\
+            flatMap(lambda x: x.split(" ")).\
+            map(lambda x: [x])
+
+        df = rdd.toDF(["word"])
+
+        # 注册DF为表格
+        df.createTempView("words")
+
+        spark.sql("SELECT word, COUNT(*) AS cnt FROM words GROUP BY word ORDER BY cnt DESC").show()
 
 
+        # TODO 2: DSL 风格处理
+        df = spark.read.format("text").load("../data/input/words.txt")
 
+        # withColumn方法
+        # 方法功能: 对已存在的列进行操作, 返回一个新的列, 如果名字和老列相同, 那么替换, 否则作为新列存在
+        df2 = df.withColumn("value", F.explode(F.split(df['value'], " ")))
+        df2.groupBy("value").\
+            count().\
+            withColumnRenamed("value", "word").\
+            withColumnRenamed("count", "cnt").\
+            orderBy("cnt", ascending=False).\
+            show()
+
+movie_demo
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        """
+        spark.sql.shuffle.partitions 参数指的是, 在sql计算中, shuffle算子阶段默认的分区数是200个.
+        对于集群模式来说, 200个默认也算比较合适
+        如果在local下运行, 200个很多, 在调度上会带来额外的损耗
+        所以在local下建议修改比较低 比如2\4\10均可
+        这个参数和Spark RDD中设置并行度的参数 是相互独立的.
+        """
+
+        # 1. 读取数据集
+        schema = StructType().add("user_id", StringType(), nullable=True).\
+            add("movie_id", IntegerType(), nullable=True).\
+            add("rank", IntegerType(), nullable=True).\
+            add("ts", StringType(), nullable=True)
+        df = spark.read.format("csv").\
+            option("sep", "\t").\
+            option("header", False).\
+            option("encoding", "utf-8").\
+            schema(schema=schema).\
+            load("../data/input/sql/u.data")
+
+        # TODO 1: 用户平均分
+        df.groupBy("user_id").\
+            avg("rank").\
+            withColumnRenamed("avg(rank)", "avg_rank").\
+            withColumn("avg_rank", F.round("avg_rank", 2)).\
+            orderBy("avg_rank", ascending=False).\
+            show()
+
+        # TODO 2: 电影的平均分查询
+        df.createTempView("movie")
+        spark.sql("""
+            SELECT movie_id, ROUND(AVG(rank), 2) AS avg_rank FROM movie GROUP BY movie_id ORDER BY avg_rank DESC
+        """).show()
+
+        # TODO 3: 查询大于平均分的电影的数量 # Row
+        print("大于平均分电影的数量: ", df.where(df['rank'] > df.select(F.avg(df['rank'])).first()['avg(rank)']).count())
+
+        # TODO 4: 查询高分电影中(>3)打分次数最多的用户, 此人打分的平均分
+        # 先找出这个人
+        user_id = df.where("rank > 3").\
+            groupBy("user_id").\
+            count().\
+            withColumnRenamed("count", "cnt").\
+            orderBy("cnt", ascending=False).\
+            limit(1).\
+            first()['user_id']
+        # 计算这个人的打分平均分
+        df.filter(df['user_id'] == user_id).\
+            select(F.round(F.avg("rank"), 2)).show()
+
+        # TODO 5: 查询每个用户的平局打分, 最低打分, 最高打分
+        df.groupBy("user_id").\
+            agg(
+                F.round(F.avg("rank"), 2).alias("avg_rank"),
+                F.min("rank").alias("min_rank"),
+                F.max("rank").alias("max_rank")
+            ).show()
+
+        # TODO 6: 查询评分超过100次的电影, 的平均分 排名 TOP10
+        df.groupBy("movie_id").\
+            agg(
+                F.count("movie_id").alias("cnt"),
+                F.round(F.avg("rank"), 2).alias("avg_rank")
+            ).where("cnt > 100").\
+            orderBy("avg_rank", ascending=False).\
+            limit(10).\
+            show()
+
+        time.sleep(10000)
+
+    """
+    1. agg: 它是GroupedData对象的API, 作用是 在里面可以写多个聚合
+    2. alias: 它是Column对象的API, 可以针对一个列 进行改名
+    3. withColumnRenamed: 它是DataFrame的API, 可以对DF中的列进行改名, 一次改一个列, 改多个列 可以链式调用
+    4. orderBy: DataFrame的API, 进行排序, 参数1是被排序的列, 参数2是 升序(True) 或 降序 False
+    5. first: DataFrame的API, 取出DF的第一行数据, 返回值结果是Row对象.
+    # Row对象 就是一个数组, 你可以通过row['列名'] 来取出当前行中, 某一列的具体数值. 返回值不再是DF 或者GroupedData 或者Column而是具体的值(字符串, 数字等)
+    """
+
+data_clear_api
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        """读取数据"""
+        df = spark.read.format("csv").\
+            option("sep", ";").\
+            option("header", True).\
+            load("../data/input/sql/people.csv")
+
+        # # 数据清洗: 数据去重
+        # # dropDuplicates 是DataFrame的API, 可以完成数据去重
+        # # 无参数使用, 对全部的列 联合起来进行比较, 去除重复值, 只保留一条
+        # df.dropDuplicates().show()
+        #
+        # df.dropDuplicates(['age', 'job']).show()
+        #
+        #
+        # # 数据清洗: 缺失值处理
+        # # dropna api是可以对缺失值的数据进行删除
+        # # 无参数使用, 只要列中有null 就删除这一行数据
+        # df.dropna().show()
+        # # thresh = 3表示, 最少满足3个有效列,  不满足 就删除当前行数据
+        # df.dropna(thresh=3).show()
+        #
+        # df.dropna(thresh=2, subset=['name', 'age']).show()
+
+        # 缺失值处理也可以完成对缺失值进行填充
+        # DataFrame的 fillna 对缺失的列进行填充
+        df.fillna("loss").show()
+
+        # 指定列进行填充
+        df.fillna("N/A", subset=['job']).show()
+
+        # 设定一个字典, 对所有的列 提供填充规则
+        df.fillna({"name": "未知姓名", "age": 1, "job": "worker"}).show()
+
+dataframe_write
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 1. 读取数据集
+        schema = StructType().add("user_id", StringType(), nullable=True). \
+            add("movie_id", IntegerType(), nullable=True). \
+            add("rank", IntegerType(), nullable=True). \
+            add("ts", StringType(), nullable=True)
+        df = spark.read.format("csv"). \
+            option("sep", "\t"). \
+            option("header", False). \
+            option("encoding", "utf-8"). \
+            schema(schema=schema). \
+            load("../data/input/sql/u.data")
+
+        # Write text 写出, 只能写出一个列的数据, 需要将df转换为单列df
+        df.select(F.concat_ws("---", "user_id", "movie_id", "rank", "ts")).\
+            write.\
+            mode("overwrite").\
+            format("text").\
+            save("../data/output/sql/text")
+
+        # Write csv
+        df.write.mode("overwrite").\
+            format("csv").\
+            option("sep", ";").\
+            option("header", True).\
+            save("../data/output/sql/csv")
+
+        # Write json
+        df.write.mode("overwrite").\
+            format("json").\
+            save("../data/output/sql/json")
+
+        # Write parquet
+        df.write.mode("overwrite").\
+            format("parquet").\
+            save("../data/output/sql/parquet")
+
+dataframe_jdbc
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 1. 读取数据集
+        schema = StructType().add("user_id", StringType(), nullable=True). \
+            add("movie_id", IntegerType(), nullable=True). \
+            add("rank", IntegerType(), nullable=True). \
+            add("ts", StringType(), nullable=True)
+        df = spark.read.format("csv"). \
+            option("sep", "\t"). \
+            option("header", False). \
+            option("encoding", "utf-8"). \
+            schema(schema=schema). \
+            load("../data/input/sql/u.data")
+
+        # # 1. 写出df到mysql数据库中
+        # df.write.mode("overwrite").\
+        #     format("jdbc").\
+        #     option("url", "jdbc:mysql://node1:3306/bigdata?useSSL=false&useUnicode=true").\
+        #     option("dbtable", "movie_data").\
+        #     option("user", "root").\
+        #     option("password", "2212072ok1").\
+        #     save()
+
+        df2 = spark.read.format("jdbc"). \
+            option("url", "jdbc:mysql://node1:3306/bigdata?useSSL=false&useUnicode=true"). \
+            option("dbtable", "movie_data"). \
+            option("user", "root"). \
+            option("password", "2212072ok1"). \
+            load()
+
+        df2.printSchema()
+        df2.show()
+    """
+    JDBC写出, 会自动创建表的.
+    因为DataFrame中有表结构信息, StructType记录的 各个字段的 名称 类型  和是否运行为空
+    """
+
+udf_define
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 构建一个RDD
+        rdd = sc.parallelize([1, 2, 3, 4, 5, 6, 7]).map(lambda x:[x])
+        df = rdd.toDF(["num"])
+
+        # TODO 1: 方式1 sparksession.udf.register(), DSL和SQL风格均可以使用
+        # UDF的处理函数
+        def num_ride_10(num):
+            return num * 10
+        # 参数1: 注册的UDF的名称, 这个udf名称, 仅可以用于 SQL风格
+        # 参数2: UDF的处理逻辑, 是一个单独的方法
+        # 参数3: 声明UDF的返回值类型, 注意: UDF注册时候, 必须声明返回值类型, 并且UDF的真实返回值一定要和声明的返回值一致
+        # 返回值对象: 这是一个UDF对象, 仅可以用于 DSL 语法
+        # 当前这种方式定义的UDF, 可以通过参数1的名称用于SQL风格, 通过返回值对象用户DSL风格
+        udf2 = spark.udf.register("udf1", num_ride_10, IntegerType())
+
+        # SQL风格中使用
+        # selectExpr 以SELECT的表达式执行, 表达式 SQL风格的表达式(字符串)
+        # select方法, 接受普通的字符串字段名, 或者返回值是Column对象的计算
+        df.selectExpr("udf1(num)").show()
+
+        # DSL 风格中使用
+        # 返回值UDF对象 如果作为方法使用, 传入的参数 一定是Column对象
+        df.select(udf2(df['num'])).show()
+
+        # TODO 2: 方式2注册, 仅能用于DSL风格
+        udf3 = F.udf(num_ride_10, IntegerType())
+        df.select(udf3(df['num'])).show()
+
+        df.selectExpr("udf3(num)").show()
+
+udf_define_return_array
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType, ArrayType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 构建一个RDD
+        rdd = sc.parallelize([["hadoop spark flink"], ["hadoop flink java"]])
+        df = rdd.toDF(["line"])
+
+        # 注册UDF, UDF的执行函数定义
+        def split_line(data):
+            return data.split(" ")  # 返回值是一个Array对象
+        # TODO1 方式1 构建UDF
+        udf2 = spark.udf.register("udf1", split_line, ArrayType(StringType()))
+
+        # DLS风格
+        df.select(udf2(df['line'])).show()
+        # SQL风格
+        df.createTempView("lines")
+        spark.sql("SELECT udf1(line) FROM lines").show(truncate=False)
+
+        # TODO 2 方式2的形式构建UDF
+        udf3 = F.udf(split_line, ArrayType(StringType()))
+        df.select(udf3(df['line'])).show(truncate=False)
+
+udaf_by_rdd
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import string
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType, ArrayType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        rdd = sc.parallelize([1, 2, 3, 4, 5], 3)
+        df = rdd.map(lambda x: [x]).toDF(['num'])
+
+        # 折中的方式 就是使用RDD的mapPartitions 算子来完成聚合操作
+        # 如果用mapPartitions API 完成UDAF聚合, 一定要单分区
+        single_partition_rdd = df.rdd.repartition(1)
+
+        def process(iter):
+            sum = 0
+            for row in iter:
+                sum += row['num']
+
+            return [sum]    # 一定要嵌套list, 因为mapPartitions方法要求的返回值是list对象
+
+        print(single_partition_rdd.mapPartitions(process).collect())
+
+udf_define_return_dict
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import string
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType, ArrayType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        # 假设 有三个数字  1 2 3  我们传入数字 ,返回数字所在序号对应的 字母 然后和数字结合形成dict返回
+        # 比如传入1 我们返回 {"num":1, "letters": "a"}
+        rdd = sc.parallelize([[1], [2], [3]])
+        df = rdd.toDF(["num"])
+
+        # 注册UDF
+        def process(data):
+            return {"num": data, "letters": string.ascii_letters[data]}
+
+        """
+        UDF的返回值是字典的话, 需要用StructType来接收
+        """
+        udf1 = spark.udf.register("udf1", process, StructType().add("num", IntegerType(), nullable=True).\
+                                  add("letters", StringType(), nullable=True))
+
+        df.selectExpr("udf1(num)").show(truncate=False)
+        df.select(udf1(df['num'])).show(truncate=False)
+
+spark_on_hive
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+    import string
+    import time
+
+    from pyspark.sql import SparkSession
+    from pyspark.sql.types import StructType, StringType, IntegerType, ArrayType
+    import pandas as pd
+    from pyspark.sql import functions as F
+
+
+    if __name__ == '__main__':
+        # 0. 构建执行环境入口对象SparkSession
+        spark = SparkSession.builder.\
+            appName("test").\
+            master("local[*]").\
+            config("spark.sql.shuffle.partitions", 2).\
+            config("spark.sql.warehouse.dir", "hdfs://node1:8020/user/hive/warehouse").\
+            config("hive.metastore.uris", "thrift://node3:9083").\
+            enableHiveSupport().\
+            getOrCreate()
+        sc = spark.sparkContext
+
+        spark.sql("SELECT * FROM student").show()
+
+jdbc_spark_thrift_server
+==================================================================================
+
+.. code-block:: python
+
+    # coding:utf8
+
+    from pyhive import hive
+
+    if __name__ == '__main__':
+        # 获取到Hive(Spark ThriftServer的链接)
+        conn = hive.Connection(host="node1", port=10000, username="hadoop")
+
+        # 获取一个游标对象
+        cursor = conn.cursor()
+
+        # 执行SQL
+        cursor.execute("SELECT * FROM student")
+
+        # 通过fetchall API 获得返回值
+        result = cursor.fetchall()
+
+        print(result)
 
 
 
