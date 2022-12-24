@@ -1,6 +1,22 @@
 Python 问题篇
 ##################################################################################
 
+pyspark 本地运行 socket.gaierror
+**********************************************************************************
+
+pyspark 本地运行 ``socket.gaierror: [Errno 8] nodename nor servname provided, or not known``
+
+解决方法，加一个函数即可：
+
+.. code-block:: python
+
+	def patch_pyspark_accumulators():
+	    from inspect import getsource
+	    import pyspark.accumulators as pa
+	    exec(getsource(pa._start_update_server).replace("localhost", "127.0.0.1"), pa.__dict__)
+
+	patch_pyspark_accumulators()
+
 jupyter notebook 格式转化
 **********************************************************************************
 
