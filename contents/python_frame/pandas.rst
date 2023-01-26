@@ -7,3 +7,4 @@ Pandas 篇
 
   pandas/pandas_base1
   pandas/pandas_advance1
+  pandas/pandas_practice
