@@ -31,5 +31,6 @@ Python 基础篇
 	python_base_intro/python_base_intro_2_007
 	python_base_intro/python_base_intro_3_001
 	python_base_intro/python_base_intro_3_002
+	python_base_intro/python_base_intro_3_003
 
 .. |image0| image:: /_static/python_ai/579dab01f2ec.jpeg
