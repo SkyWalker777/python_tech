@@ -10,8 +10,8 @@ Pandas 将 SQL 数据查询转化为 DataFrame
 
 		.. code-block:: python
 
-			import pymysql
 			import warnings
+			import pymysql
 			import pandas as pd
 			warnings.filterwarnings('ignore')
 
