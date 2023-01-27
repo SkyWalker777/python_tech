@@ -96,7 +96,7 @@ timedelta 类的实例，支持加、减、乘、除等操作，所得的结果�
 	delta = datetime.timedelta(days=3)
 
 	n_days = now + delta
-	print( n_days.strftime('%Y-%m-%d %H:%M:%S')  )
+	print(n_days.strftime('%Y-%m-%d %H:%M:%S'))
 
 	输出：2022-04-10 19:16:34
 

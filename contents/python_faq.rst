@@ -119,6 +119,124 @@ num_op函数一共有四个返回值，但是调用的时候只接收三个返�
 	   crossorigin="anonymous"
 	/>
 
+pandas 查询 MySQL 显示无法回滚(unable to rollback)
+**********************************************************************************
+
+【问题描述】：连接很好，但是查询语句似乎有问题
+
+.. code-block:: python
+
+	query1 = """SELECT * FROM `DATABASE` WHERE `coin` = 'LTC'"""
+	query2 = """SELECT * FROM `DATABASE` WHERE `coin` = 'LTC' AND `date` > '2019-01-01 15:06:23'"""
+
+	import pandas as pd    
+	result = pd.read_sql(query, connection)
+
+它在 query1 上工作得很好，但在 query2 上却出现了这样的错误： 结果 = pd.read_sql(查询、连接)
+
+.. code-block:: python
+
+	Traceback (most recent call last):
+
+	  File "<ipython-input-25-c7c27cfd9a6b>", line 1, in <module>
+	    result = pd.06)">read_sql(query, connection)
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pandas\io\sql.py", line 381, in 06)">read_sql
+	    chunksize=chunksize)
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pandas\io\sql.py", line 1413, in read_query
+	    cursor = self.execute(*args)
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pandas\io\sql.py", line 1386, in execute
+	    06)">raise_06)">with_traceback(ex)
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pandas\compat\__init__.py", line 404, in 06)">raise_06)">with_traceback
+	    raise exc.06)">with_traceback(traceback)
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pandas\io\sql.py", line 1382, in execute
+	    self.con.06)">rollback()
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pymysql\connections.py", line 808, in 06)">rollback
+	    self._execute_command(06)">COMMAND.COM_QUERY, "ROLLBACK")
+
+	  File "C:\Users\luzhe\Anaconda3\lib\site-packages\pymysql\connections.py", line 1122, in _execute_command
+	    raise err.06)">InterfaceError("(0, '')")
+
+	DatabaseError: Execution failed on sql: SELECT * FROM `DATABASE` WHERE `coin` = 'LTC' AND `date` > '2019-01-01 15:06:23'
+	(0, '')
+	unable to 06)">rollback 
+
+解决方案: 无法回滚表示您的查询没有成功执行。未关闭的连接通常是导致该错误的原因。您可能没有关闭之前的连接。您通常可以使用与连接实例关联的 close 方法来执行此操作。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
