@@ -82,7 +82,33 @@ clickhouse_driver.errors.UnexpectedPacketFromServerError: Code: 102. Unexpected 
 这是因为端口使用错误导致，clickhouse有两个端口，8123和9000。分别用于接收 http协议和tcp协议请求，管理后台登录用的8123(jdbc连接)，而程序连接clickhouse(driver连接)则需要使用9000端口。如果在程序中使用8123端口连接就会报错：
 clickhouse_driver.errors.UnexpectedPacketFromServerError: Code: 102. Unexpected packet from server None:None (expected Hello or Exception, got Unknown packet)
 
+clickhouse 转化为 pandas DataaFrame 数据结构(HTTP 接口)
+**********************************************************************************
 
+.. code-block:: python
+
+	import clickhouse_connect
+
+	client = clickhouse_connect.get_client(host='11.115.3.80', port='80', username='Gateway', password='Gateway123',
+	                                       database='gateway')
+
+	api_code_info_df = client.query_df(code_info_sql)
+	print(api_code_info_df)
+
+	#                          function_id code  limit_count
+	# 0                        initPetTown   -9           95
+	# 1                        submitOrder   -9            1
+	# 2                     plantBeanIndex   -9          102
+	# 3           getJingBeanBalanceDetail   -9         1331
+	# 4                      isvObfuscator   -9           36
+	# 5                           apDoTask   -9           17
+	# 6                        getChatInfo   -9            5
+	# 7                         searchWare   -9          795
+	# 8                       wareBusiness   -9           23
+	# 9             te_m_searchWareComment   -9            3
+	# 10                          genToken   -9       318195
+	# 11             te_m_searchStockPrice   -9            2
+	# 12             queryMaterialProducts   -9          310
 
 
 
