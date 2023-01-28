@@ -224,6 +224,22 @@ itertuples（）方法将返回一个迭代器，为 DataFrame 中的每一行�
 	2  0.095121 -1.870492  0.596165
 	3  1.885483 -0.122502 -1.531169
 
+pandas Timestamp 类型转化
+**********************************************************************************
+
+pandas._libs.tslibs.timestamps.Timestamp 时间戳类型转化(转化是毫秒级/秒级时间戳)
+
+.. code-block:: python
+
+	print(type(row['top_time']))
+	<class 'pandas._libs.tslibs.timestamps.Timestamp'>
+
+	print(row['top_time'])
+	2023-01-26 21:55:20
+
+	print(row['top_time'].value // 10**9)
+	1674770120
+
 
 
 
