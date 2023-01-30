@@ -247,12 +247,119 @@ pandas._libs.tslibs.timestamps.Timestamp 时间戳类型转化(转化是毫秒�
 	print(row['top_time'].value // 10**9 - 8*60*60) # 8 小时时差
 	1674770120
 
+Pandas 按行遍历 DataFrame 的 3 种方式
+**********************************************************************************
 
+想象一个场景, 遍历 df 的每一行, 调用远程 API, 结果按行存储到 MySQL 三种方法, 以及遍历 100W 行数据的性能对比:
 
+	| df.iterrows 每次返回行 Series, 100w 行数据: 1 分钟 12s, 时间花费在类型检查
+	| df.itertuples 每次返回行 namedtuple 100w 行数据: 1.78s, 时间花费在构建 namedtuple
+	| for + zip 每次返回原生元组 100w 行数据: 1.01s 原生 tuple 的性能
 
+* 数据初始化
 
+.. code-block:: python
 
+	import pandas as pd
+	import numpy as np
+	import collections
 
+	df = pd.DataFrame(
+	    np.random.random(size=(10000,4)),
+	    columns=list('ABCD')
+	)
+	print(df.head(3))
+
+	#           A         B         C         D
+	# 0  0.023746  0.771824  0.868307  0.382066
+	# 1  0.575802  0.177679  0.296141  0.154065
+	# 2  0.162892  0.787405  0.790856  0.227067
+
+	print(df.shape)
+	# (10000, 4)
+
+df.iterrows()
+=================================================================================
+
+* 使用方式
+
+.. code-block:: python
+
+	for idx, row in df.iterrows():
+	    print(idx, row)
+	    print(idx, row["A"], row["B"], row["C"], row["D"])
+	    break
+
+	# 0 A    0.023746
+	# B    0.771824
+	# C    0.868307
+	# D    0.382066
+	# Name: 0, dtype: float64
+	# 0 0.02374565358229197 0.7718237876755136 0.8683068317508778 0.3820657741560728
+
+* 时间耗时
+
+.. code-block:: python
+
+	%%time
+	result = collections.defaultdict(int)
+	for idx, row in df.iterrows():
+	    result[(row['A'], row['B'])] += row['A'] + row['B']
+
+	# CPU times: user 555 ms, sys: 8.79 ms, total: 564 ms
+	# Wall time: 615 ms
+
+df.itertuples()
+=================================================================================
+
+* 使用方式
+
+.. code-block:: python
+
+	for row in df.itertuples():
+	    print(row)
+	    print(row.Index, row.A, row.B, row.C, row.D)
+	    break
+
+	# Pandas(Index=0, A=0.02374565358229197, B=0.7718237876755136, C=0.8683068317508778, D=0.3820657741560728)
+	# 0 0.02374565358229197 0.7718237876755136 0.8683068317508778 0.3820657741560728
+
+* 时间耗时
+
+.. code-block:: python
+
+	%%time
+	result = collections.defaultdict(int)
+	for row in df.itertuples():
+	    result[(row.A, row.B)] += row.A + row.B
+
+	# CPU times: user 20.2 ms, sys: 1.29 ms, total: 21.5 ms
+	# Wall time: 21.1 ms
+
+for+zip
+=================================================================================
+
+* 使用方式
+
+.. code-block:: python
+
+	for A, B in zip(df["A"], df["B"]):
+	    print(A, B)
+	    break
+
+	# 0.02374565358229197 0.7718237876755136
+
+* 时间耗时
+
+.. code-block:: python
+
+	%%time
+	result = collections.defaultdict(int)
+	for A, B in zip(df["A"], df["B"]):
+	    result[(A, B)] += A + B
+
+	# CPU times: user 11.2 ms, sys: 2.25 ms, total: 13.4 ms
+	# Wall time: 12.2 ms
 
 
 
