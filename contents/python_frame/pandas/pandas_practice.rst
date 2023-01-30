@@ -244,7 +244,7 @@ pandas._libs.tslibs.timestamps.Timestamp 时间戳类型转化(转化是毫秒�
 	print(row['top_time'])
 	2023-01-26 21:55:20
 
-	print(row['top_time'].value // 10**9)
+	print(row['top_time'].value // 10**9 - 8*60*60) # 8 小时时差
 	1674770120
 
 
